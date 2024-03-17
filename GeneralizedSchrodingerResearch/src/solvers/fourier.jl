@@ -30,7 +30,13 @@ function fourier_solve(
     inverse = exp.(1im .* mun * x')
     M=exp.(-1im.*mun.^2 .*tau)
 
-    U = initial_function(x)
+    U = initial_function.(x)
+
+    sum(abs.(U) .> abs(U[1])) * sum(abs.(U) .> abs(U[end])) != 0 ||
+        throw(BoundsError("Initial solution out of x interval"))
+    (abs(U[1]) < 1e-5) & (abs(U[end]) < 1e-5)  ||
+        throw(BoundsError("x-interval does not cover the pulse"))
+        
     if filtration_flag
         power_dissipated=0.0
     end
