@@ -1,6 +1,22 @@
-function NSE_5_soliton(x, t, k, ω, ε_2, theta_0, z_0)
+function NSE_5_soliton(
+    x,
+    t,
+    k,
+    ω,
+    ε_2,
+    theta_0,
+    z_0; 
+    cycle::Bool=false,
+    L::Float64=0.0,
+    c::Float64=0.0,
+)
     μ = 4*(ω-k^2)
     μ > 0.0 || throw(ArgumentError("μ ≤ 0. Check k and ω."))
+    if cycle
+        if t>(L/2+x)/c
+            t-=L/c*floor(1/2 + (c*t -x)/L)
+        end
+    end
     power = sqrt(μ) * (x - 2k * t - z_0)
     ν = 4/3 * ε_2
     Complex(
