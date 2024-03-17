@@ -1,6 +1,8 @@
 module Solvers
 
+using ProgressMeter
+
 include("fourier.jl")
-export fourie_solve
+export fourier_solve
 
 end
