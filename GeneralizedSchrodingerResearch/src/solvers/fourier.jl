@@ -31,12 +31,14 @@ function fourier_solve(
     M=exp.(-1im.*mun.^2 .*tau)
 
     U = initial_function.(x)
+    
+    (sum(abs.(U) .> abs(U[1])) * sum(abs.(U) .> abs(U[end])) != 0) ||
+        throw(AssertionError("Initial pulse out of x interval."))
+    
+    ε_tail = 1e-5
+    (abs(U[1]) < ε_tail) & (abs(U[end]) < ε_tail)  ||
+        throw(AssertionError("Pulse tail modulus exceeds $ε_tail with the value of $(max(abs(U[1]), abs(U[end]))). Consider larger x-interval."))
 
-    sum(abs.(U) .> abs(U[1])) * sum(abs.(U) .> abs(U[end])) != 0 ||
-        throw(BoundsError("Initial solution out of x interval"))
-    (abs(U[1]) < 1e-5) & (abs(U[end]) < 1e-5)  ||
-        throw(BoundsError("x-interval does not cover the pulse"))
-        
     if filtration_flag
         power_dissipated=0.0
     end

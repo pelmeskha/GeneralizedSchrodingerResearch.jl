@@ -1,4 +1,4 @@
-module Initials
+module AnalyticalSolutions
 
 include("NSE_soliton.jl")
 export NSE_soliton

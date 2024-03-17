@@ -6,7 +6,7 @@ export Utilities
 include("solvers/solvers.jl")
 export Solvers
 
-include("initials/initials.jl")
-export Initials
+include("analytical_solutions/analytical_solutions.jl")
+export AnalyticalSolutions
 
 end
