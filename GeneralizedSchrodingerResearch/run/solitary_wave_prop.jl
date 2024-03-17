@@ -1,5 +1,7 @@
 # include("run/solitary_wave_prop.jl")
+using Revise
 using GeneralizedSchrodingerResearch
+using Plots
 
 model=3
 
@@ -22,4 +24,8 @@ x, U = GeneralizedSchrodingerResearch.Solvers.fourier_solve(
     initial_function;
     ε_2 = -1,
     ε_3 = 0,
+    filtration_flag = true,
+    filtration_step = 2,
+    filtration_factor = 2^(1/10),
 )
+plot(x, abs.(U))
