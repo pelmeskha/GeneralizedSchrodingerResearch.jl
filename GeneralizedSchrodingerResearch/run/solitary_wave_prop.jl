@@ -16,11 +16,11 @@ h=0.25
 tau=h^2
 
 initial_function_3 = (x) -> NSE_soliton(x, 0, k, ω, theta_0, z_0)
-#analytical_solution_3 = (x, t) -> NSE_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
+analytical_solution_3 = (x, t) -> NSE_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
 #initial_function_5 = (x) ->NSE_5_soliton(x, 0, k, ω, -1, theta_0, z_0)
 #analytical_solution_5 = (x, t) -> NSE_5_soliton(x, t, k, ω, -1, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
 ε_2 = -0.5
-x, U, power, tolerance = GeneralizedSchrodingerResearch.Solvers.fourier_solve(
+x, U, power, tolerance, (I1, I2) = GeneralizedSchrodingerResearch.Solvers.fourier_solve(
     tspan,
     xspan,
     tau,
@@ -34,6 +34,7 @@ x, U, power, tolerance = GeneralizedSchrodingerResearch.Solvers.fourier_solve(
     l_nominal = 60,
     tolerance_flag = false,
     analytical_solution = analytical_solution_3,
+    integrals_flag = true,
 )
 
 y_max=maximum(abs.(U))

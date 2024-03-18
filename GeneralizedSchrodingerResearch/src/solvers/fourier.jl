@@ -17,6 +17,8 @@ function fourier_solve(
     # tolerance calculations
     tolerance_flag = false,
     analytical_solution = [],
+    # record integrals
+    integrals_flag = false,
 )
     theta = 0.5
     L = xspan[2] - xspan[1]
@@ -50,6 +52,11 @@ function fourier_solve(
         tolerance = zeros(N_t)
         tolerance[1] = maximum(abs.(U)-abs.(analytical_solution.(x,tspan[1])))
     end
+    if integrals_flag
+        I_1 = zeros(N_t)
+        I_2 = zeros(N_t)
+        I_1[1]=integral_1(U,h)
+    end
     @showprogress for i in 1:N_t-1
         if filtration_flag
             if mod(i*tau, filtration_step) == 0.0
@@ -78,11 +85,15 @@ function fourier_solve(
                 (abs.(analytical_solution.(x,i*tau)) - abs.(U))
             ) / maximum(abs.(analytical_solution.(x,i*tau))) * 100
         end
+        if integrals_flag
+            I_1[i+1] = integral_1(U,h)
+        end
     end
     return(
         x,
         U,
         filtration_flag ? power_dissipated : nothing,
         tolerance_flag ? tolerance : nothing,
+        integrals_flag ? (I_1, I_2) : nothing,
     )
 end
