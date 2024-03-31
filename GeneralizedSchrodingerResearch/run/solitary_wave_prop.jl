@@ -5,15 +5,15 @@ using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_5_soliton, NSE_sol
 using GeneralizedSchrodingerResearch.Utilities: construct_approximate_NSE_5_solution
 using Plots, Statistics
 
-k = 0.1
-ω = 0.2
+k = 0.15
+ω = 0.4
 
 theta_0 = 0.0
 z_0 = 0.0
 
-tspan = (0.0,1870.0)
+tspan = (0.0,2500.0)
 xspan = (-80.0, 80.0)
-h=0.2
+h=0.25
 tau=h^2
 
 initial_function_3 = (x) -> NSE_soliton(x, 0.0, k, ω, theta_0, z_0)
@@ -33,8 +33,8 @@ x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = fourier_solve(
     filtration_time = 2.0,
     filtration_factor = 1 + 2e-2,
     l_nominal = 60.0,
-    tolerance_flag = false,
-    analytical_solution = analytical_solution_3,
+    tolerance_flag = true,
+    analytical_solution = 0.7095313739317196,
     integrals_flag = true,
 )
 
@@ -46,10 +46,13 @@ possible_NSE_5_solution = construct_approximate_NSE_5_solution(
     z_0,
 )
 
-plot_1 = plot(x,abs.(U); label="итоговое численное решение")
-plot!(x,abs.(analytical_solution_3.(x,0)); label="решение в начальный момент")
-plot!(x,abs.(possible_NSE_5_solution); label="подобранное аналитическое решение")
-plot!(legend=:outerbottom)
+reduce=Int(round(0.00*length(x)))+1
+plot_1 = plot(x[reduce:end-reduce],abs.(U)[reduce:end-reduce]; label="численное решение", line=(:path,:solid,:blue,2))
+plot!(x[reduce:end-reduce],abs.(analytical_solution_3.(x,0))[reduce:end-reduce]; label="начальный импульс", lw=2, ls=:dot)
+plot!(x[reduce:end-reduce],abs.(possible_NSE_5_solution)[reduce:end-reduce]; label="соответствующее\nаналитическое решение", lw=3, ls=:dashdot)
+plot!(legend=:topright, tickfontsize=10, legendfontsize=8, yguidefontrotation=0.0)
+xlabel!("x")
+ylabel!("|U|")
 savefig(plot_1, "run/solution_profiles.png")
 
 err_1=(maximum(I1) - minimum(I1)) / mean(I1) * 100
@@ -67,3 +70,10 @@ if I2_dissipated != nothing
 end
 plot!(legend=:outerbottom)
 savefig(plot_3, "run/I2.png")
+
+if !isnothing(tolerance)
+    plot_4 = plot(t,abs.(tolerance); line=(:path,:solid,:black,1), legend = false)
+    xlabel!("t")
+    ylabel!("относительная ошибка, %")
+    savefig(plot_4, "run/tolerance.png")
+end

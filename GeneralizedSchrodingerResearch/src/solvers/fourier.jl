@@ -61,10 +61,14 @@ function fourier_solve(
     end
     @showprogress for i in 1:N_t
         if tolerance_flag
-            # Percentage tolerance
-            tolerance[i] = maximum( 
-                (abs.(analytical_solution.(x,i*tau)) - abs.(U))
-            ) / maximum(abs.(analytical_solution.(x,i*tau))) * 100
+            if isa(analytical_solution,Real) # calculate the "pike" tolerance
+                tolerance[i]=(maximum(abs.(U))-analytical_solution)/maximum(abs.(U)) * 100
+            else
+                # Percentage tolerance
+                tolerance[i] = maximum( 
+                    (abs.(analytical_solution.(x,i*tau)) - abs.(U))
+                ) / maximum(abs.(analytical_solution.(x,i*tau))) * 100
+            end
         end
         if integrals_flag
             I_1[i] = integral_1(U,h)
