@@ -1,8 +1,9 @@
 # include("run/solitary_wave_prop.jl")
 using Revise
-using GeneralizedSchrodingerResearch
+using GeneralizedSchrodingerResearch.Solvers: fourier_solve
 using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_5_soliton, NSE_soliton
-using Plots
+using GeneralizedSchrodingerResearch.Utilities: construct_approximate_NSE_5_solution
+using Plots, Statistics
 
 k = 0.1
 ω = 0.2
@@ -10,9 +11,9 @@ k = 0.1
 theta_0 = 0
 z_0 = 0
 
-tspan = (0,1870)
+tspan = (0,187)
 xspan = (-80.0, 80.0)
-h=0.25
+h=0.2
 tau=h^2
 
 initial_function_3 = (x) -> NSE_soliton(x, 0, k, ω, theta_0, z_0)
@@ -20,7 +21,7 @@ analytical_solution_3 = (x, t) -> NSE_soliton(x, t, k, ω, theta_0, z_0; cycle=t
 #initial_function_5 = (x) ->NSE_5_soliton(x, 0, k, ω, -1, theta_0, z_0)
 #analytical_solution_5 = (x, t) -> NSE_5_soliton(x, t, k, ω, -1, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
 ε_2 = -0.5
-x, U, power, tolerance, (I1, I2) = GeneralizedSchrodingerResearch.Solvers.fourier_solve(
+x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = fourier_solve(
     tspan,
     xspan,
     tau,
@@ -37,13 +38,32 @@ x, U, power, tolerance, (I1, I2) = GeneralizedSchrodingerResearch.Solvers.fourie
     integrals_flag = true,
 )
 
-y_max=maximum(abs.(U))
-possible_μ = 2/3 * (2 * ε_2 * y_max^4 + 3 * y_max^2)
-possible_solution_5 = NSE_5_soliton.(x, 0, 0, possible_μ/4, ε_2, theta_0, z_0)
-_z_0 = x[argmax(abs.(possible_solution_5))]-x[argmax(abs.(U))]
-possible_solution_5 = NSE_5_soliton.(x, 0, 0, possible_μ/4, ε_2, theta_0, -_z_0)
+possible_NSE_5_solution = construct_approximate_NSE_5_solution(
+    x,
+    U,
+    ε_2,
+    theta_0,
+    z_0,
+)
 
-plot(x,abs.(U); label="итоговое численное решение")
+plot_1 = plot(x,abs.(U); label="итоговое численное решение")
 plot!(x,abs.(analytical_solution_3.(x,0)); label="решение в начальный момент")
-plot!(x,abs.(possible_solution_5); label="подобранное аналитическое решение")
+plot!(x,abs.(possible_NSE_5_solution); label="подобранное аналитическое решение")
 plot!(legend=:outerbottom)
+savefig(plot_1, "run/solution_profiles.png")
+
+err_1=(maximum(I1) - minimum(I1)) / mean(I1) * 100
+plot_2 = plot(t,I1; label="First integral, rel_err = $err_1")
+if I1_dissipated != nothing
+    plot!(t,I1+I1_dissipated; label="I1 + I1_dissipated")
+end
+plot!(legend=:outerbottom)
+savefig(plot_2, "run/I1.png")
+
+err_2=(maximum(I2) - minimum(I2)) / mean(I2) * 100
+plot_3 = plot(t,I2; label="Second integral, rel_err = $err_2")
+if I2_dissipated != nothing
+    plot!(t,I2+I2_dissipated; label="I2 + I2_dissipated")
+end
+plot!(legend=:outerbottom)
+savefig(plot_3, "run/I2.png")

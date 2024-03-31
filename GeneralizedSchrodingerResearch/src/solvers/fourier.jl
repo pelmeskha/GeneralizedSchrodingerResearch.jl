@@ -46,27 +46,41 @@ function fourier_solve(
         throw(AssertionError("Pulse tail modulus exceeds $ε_tail with the value of $(max(abs(U[1]), abs(U[end]))). Consider larger x-interval."))
 
     if filtration_flag
-        power_dissipated=0.0
+        t_slider=filtration_step
+        I1_dissipated=zeros(N_t)
+        I2_dissipated=zeros(N_t)
     end
     if tolerance_flag
         tolerance = zeros(N_t)
-        tolerance[1] = maximum(abs.(U)-abs.(analytical_solution.(x,tspan[1])))
     end
     if integrals_flag
         I_1 = zeros(N_t)
         I_2 = zeros(N_t)
         I_1[1]=integral_1(U,h)
+        I_2[1]=integral_2(U,h)
     end
-    @showprogress for i in 1:N_t-1
+    @showprogress for i in 1:N_t
+        if tolerance_flag
+            # Percentage tolerance
+            tolerance[i] = maximum( 
+                (abs.(analytical_solution.(x,i*tau)) - abs.(U))
+            ) / maximum(abs.(analytical_solution.(x,i*tau))) * 100
+        end
+        if integrals_flag
+            I_1[i] = integral_1(U,h)
+            I_2[i] = integral_2(U,h)
+        end
         if filtration_flag
-            if mod(i*tau, filtration_step) == 0.0
-                U, power = filtration(
+            if i*tau >= t_slider
+                t_slider+=filtration_step
+                U, (power_I1, power_I2) = filtration(
                     U,
                     x,
                     filtration_factor,
                     l_nominal,
                 )
-                power_dissipated += power
+                I1_dissipated[i] = power_I1
+                I2_dissipated[i] = power_I2
             end
         end
 
@@ -79,21 +93,13 @@ function fourier_solve(
                 )
             )
         )
-        if tolerance_flag
-            # Percentage tolerance
-            tolerance[i+1] = maximum( 
-                (abs.(analytical_solution.(x,i*tau)) - abs.(U))
-            ) / maximum(abs.(analytical_solution.(x,i*tau))) * 100
-        end
-        if integrals_flag
-            I_1[i+1] = integral_1(U,h)
-        end
     end
     return(
         x,
+        t,
         U,
-        filtration_flag ? power_dissipated : nothing,
+        filtration_flag ? (cumsum(I1_dissipated), cumsum(I2_dissipated)) : (nothing, nothing),
         tolerance_flag ? tolerance : nothing,
-        integrals_flag ? (I_1, I_2) : nothing,
+        integrals_flag ? (I_1, I_2) : (nothing, nothing),
     )
 end

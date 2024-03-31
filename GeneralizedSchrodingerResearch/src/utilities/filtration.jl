@@ -17,6 +17,7 @@ function filtration(
     i_right = i_right > N ? i_right - N : i_right
 
     I1 = integral_1(U, h)
+    I2 = integral_2(U, h)
 
     if i_right < i_left
         U[i_right:i_left]/=factor
@@ -25,5 +26,5 @@ function filtration(
         U[i_right:end]/=factor
     end
 
-    return U, I1 - integral_1(U, h)
+    return U, (I1 - integral_1(U, h), I2 - integral_2(U, h))
 end
