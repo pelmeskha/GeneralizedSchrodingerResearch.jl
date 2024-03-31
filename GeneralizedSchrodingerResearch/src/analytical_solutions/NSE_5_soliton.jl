@@ -1,11 +1,11 @@
 function NSE_5_soliton(
     x,
     t,
-    k,
-    ω,
-    ε_2,
-    theta_0,
-    z_0; 
+    k::Float64,
+    ω::Float64,
+    ε_2::Float64,
+    theta_0::Float64,
+    z_0::Float64; 
     cycle::Bool=false,
     L::Float64=0.0,
     c::Float64=0.0,

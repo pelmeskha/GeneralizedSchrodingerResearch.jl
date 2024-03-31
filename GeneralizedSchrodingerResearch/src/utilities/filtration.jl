@@ -1,8 +1,8 @@
 function filtration(
-    U,
-    x,
-    factor,
-    l_nominal,
+    U::Union{Vector{ComplexF64}, Vector{Float64}},
+    x::Vector{Float64},
+    factor::Float64,
+    l_nominal::Float64,
 )
     h = x[2]-x[1]
     delta = trunc(Int, l_nominal / h / 2) # полупротяжённость в ячейках сетки

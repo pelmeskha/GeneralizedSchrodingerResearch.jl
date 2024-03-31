@@ -2,18 +2,18 @@
     По начальному условию и заданным промежуткам решает начально-краевую задачу методом Фурье
 =#
 function fourier_solve(
-    tspan,
-    xspan,
-    tau,
-    h,
+    tspan::Tuple{Float64, Float64},
+    xspan::Tuple{Float64, Float64},
+    tau::Float64,
+    h::Float64,
     initial_function;
-    ε_2 = 1,
-    ε_3 = 1,
+    ε_2::Float64 = 0.0,
+    ε_3::Float64 = 0.0,
     # filtration parameters
     filtration_flag::Bool = false,
-    filtration_step::Int = 10,
+    filtration_time::Float64 = 10.0,
     filtration_factor::Float64 = 0.5,
-    l_nominal=100,
+    l_nominal::Float64=100.0,
     # tolerance calculations
     tolerance_flag = false,
     analytical_solution = [],
@@ -46,7 +46,7 @@ function fourier_solve(
         throw(AssertionError("Pulse tail modulus exceeds $ε_tail with the value of $(max(abs(U[1]), abs(U[end]))). Consider larger x-interval."))
 
     if filtration_flag
-        t_slider=filtration_step
+        t_slider=filtration_time
         I1_dissipated=zeros(N_t)
         I2_dissipated=zeros(N_t)
     end
@@ -72,7 +72,7 @@ function fourier_solve(
         end
         if filtration_flag
             if i*tau >= t_slider
-                t_slider+=filtration_step
+                t_slider+=filtration_time
                 U, (power_I1, power_I2) = filtration(
                     U,
                     x,
