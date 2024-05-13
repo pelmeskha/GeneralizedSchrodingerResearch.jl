@@ -1,6 +1,6 @@
 # include("run/solitary_wave_prop.jl")
 using Revise
-using GeneralizedSchrodingerResearch.Solvers: fourier_solve
+using GeneralizedSchrodingerResearch.Solvers: solve
 using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_5_soliton, NSE_soliton
 using GeneralizedSchrodingerResearch.Utilities: construct_approximate_NSE_5_solution
 using Plots, Statistics
@@ -11,45 +11,46 @@ k = 0.15
 theta_0 = 0.0
 z_0 = 0.0
 
-tspan = (0.0,2500.0)
-xspan = (-80.0, 80.0)
 h=0.25
-tau=h^2
+tau=h^2 /10
+tspan = (0.0,25.0)
+xspan = (-80.0, 80.0)
 
 initial_function_3 = (x) -> NSE_soliton(x, 0.0, k, ω, theta_0, z_0)
 analytical_solution_3 = (x, t) -> NSE_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
 #initial_function_5 = (x) ->NSE_5_soliton(x, 0, k, ω, -1, theta_0, z_0)
 #analytical_solution_5 = (x, t) -> NSE_5_soliton(x, t, k, ω, -1, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
-ε_2 = -0.5
-x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = fourier_solve(
+ε_2 = -0.0
+x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = solve(
     tspan,
     xspan,
     tau,
     h,
     initial_function_3;
+    method = "fourier",
     ε_2 = ε_2,
     ε_3 = 0.0,
-    filtration_flag = true,
+    filtration_flag = false,
     filtration_time = 2.0,
     filtration_factor = 1 + 2e-2,
     l_nominal = 60.0,
     tolerance_flag = true,
-    analytical_solution = 0.7095313739317196,
+    analytical_solution = analytical_solution_3,
     integrals_flag = true,
 )
 
-possible_NSE_5_solution = construct_approximate_NSE_5_solution(
+#= possible_NSE_5_solution = construct_approximate_NSE_5_solution(
     x,
     U,
     ε_2,
     theta_0,
     z_0,
-)
+) =#
 
 reduce=Int(round(0.00*length(x)))+1
 plot_1 = plot(x[reduce:end-reduce],abs.(U)[reduce:end-reduce]; label="численное решение", line=(:path,:solid,:blue,2))
 plot!(x[reduce:end-reduce],abs.(analytical_solution_3.(x,0))[reduce:end-reduce]; label="начальный импульс", lw=2, ls=:dot)
-plot!(x[reduce:end-reduce],abs.(possible_NSE_5_solution)[reduce:end-reduce]; label="соответствующее\nаналитическое решение", lw=3, ls=:dashdot)
+#plot!(x[reduce:end-reduce],abs.(possible_NSE_5_solution)[reduce:end-reduce]; label="соответствующее\nаналитическое решение", lw=3, ls=:dashdot)
 plot!(legend=:topright, tickfontsize=10, legendfontsize=8, yguidefontrotation=0.0)
 xlabel!("x")
 ylabel!("|U|")

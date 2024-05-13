@@ -11,4 +11,7 @@ export filtration
 include("construct_approximate_solutions.jl")
 export construct_approximate_NSE_5_solution
 
+include("create_FD_matrix.jl")
+export create_FD_matrix
+
 end

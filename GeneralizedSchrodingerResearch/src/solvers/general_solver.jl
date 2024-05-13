@@ -1,12 +1,13 @@
 #= 
     По начальному условию и заданным промежуткам решает начально-краевую задачу методом Фурье
 =#
-function fourier_solve(
+function solve(
     tspan::Tuple{Float64, Float64},
     xspan::Tuple{Float64, Float64},
     tau::Float64,
     h::Float64,
     initial_function;
+    method::String = "fourier",
     ε_2::Float64 = 0.0,
     ε_3::Float64 = 0.0,
     # filtration parameters
@@ -31,10 +32,18 @@ function fourier_solve(
     x = collect(j .* h)[1:end-1]
     t = range(tspan[1], tspan[2], length = N_t)
 
-    mun = collect(2 * pi / L .* range(-N / 2, stop = N / 2 - 1, length = N))
-    direct = (h / L .* exp.(-1im .* mun * x'))
-    inverse = exp.(1im .* mun * x')
-    M=exp.(-1im.*mun.^2 .*tau)
+    if method == "fourier"
+        mun = collect(2 * pi / L .* range(-N / 2, stop = N / 2 - 1, length = N))
+        direct = (h / L .* exp.(-1im .* mun * x'))
+        inverse = exp.(1im .* mun * x')
+        M=exp.(-1im.*mun.^2 .*tau)
+        precomputed_matrix = inverse * (M .* direct)
+    else
+        S = create_FD_matrix(N)
+        I = Diagonal(ones(N))
+        r = tau/h^2
+        M = (I-1im*r*theta*S)^-1 * (I+1im*r*(1-theta)*S)
+    end
 
     U = initial_function.(x)
 
@@ -88,15 +97,14 @@ function fourier_solve(
             end
         end
 
-        U=inverse*(
-            M.*(
-                direct*(
-                    exp.(
-                        1im*tau* ((abs.(U)).^2 + ε_2*(abs.(U)).^4 + ε_3*(abs.(U)).^6 ) 
-                    ).*U
-                )
-            )
-        )
+        V = exp.(
+                1im*tau* ((abs.(U)).^2 + ε_2*(abs.(U)).^4 + ε_3*(abs.(U)).^6 ) 
+            ).*U
+        if method == "fourier"
+            U = precomputed_matrix * V
+        else
+            U = M * V
+        end
     end
     return(
         x,
