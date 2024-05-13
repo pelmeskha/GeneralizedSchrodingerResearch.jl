@@ -1,6 +1,12 @@
-#= 
-    По начальному условию и заданным промежуткам решает начально-краевую задачу методом Фурье
-=#
+"""
+    По начальному условию и заданным промежуткам решает начально-краевую задачу Фурье или
+    конечно-разностным методом.
+
+    Опционально:
+        - сравнивает численное решение с заданным аналитическим;
+        - вычисляет интегралы в процессе моделирования;
+        - реализует алгоритм фильтрации излучения.
+"""
 function solve(
     tspan::Tuple{Float64, Float64},
     xspan::Tuple{Float64, Float64},
@@ -36,9 +42,9 @@ function solve(
         mun = collect(2 * pi / L .* range(-N / 2, stop = N / 2 - 1, length = N))
         direct = (h / L .* exp.(-1im .* mun * x'))
         inverse = exp.(1im .* mun * x')
-        M=exp.(-1im.*mun.^2 .*tau)
-        precomputed_matrix = inverse * (M .* direct)
-    else
+        fourier_ratio=exp.(-1im.*mun.^2 .*tau)
+        M = inverse * (fourier_ratio .* direct)
+    else # method == "finite_difference"
         S = create_FD_matrix(N)
         I = Diagonal(ones(N))
         r = tau/h^2
@@ -100,11 +106,7 @@ function solve(
         V = exp.(
                 1im*tau* ((abs.(U)).^2 + ε_2*(abs.(U)).^4 + ε_3*(abs.(U)).^6 ) 
             ).*U
-        if method == "fourier"
-            U = precomputed_matrix * V
-        else
-            U = M * V
-        end
+        U = M * V
     end
     return(
         x,
