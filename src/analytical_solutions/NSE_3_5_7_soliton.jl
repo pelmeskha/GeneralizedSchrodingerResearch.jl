@@ -11,8 +11,8 @@ function ξ_edges(μ, M₀, M₁, ε_left, ε_right, ξ₀)
     )
 end
 function hyperbolic_space(a::Real, b::Real, N::Int; density::Real=1.0)
-    N ≥ 2 || error("N должно быть по крайней мере 2")
-    density > 0 || error("Параметр density должен быть положительным")
+    N ≥ 2 || error("You must specify at least 2 points")
+    density > 0 || error("Parameter density must be positive")
     linear_space = range(-1.0, stop=1.0, length=N)
     hyperbolic_space = tanh.(linear_space * 2 * density) / tanh(2 * density)
     return a .+ (b - a) .* (hyperbolic_space .+ 1) / 2
