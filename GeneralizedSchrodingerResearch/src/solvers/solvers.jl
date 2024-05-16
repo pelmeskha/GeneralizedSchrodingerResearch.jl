@@ -1,8 +1,8 @@
 module Solvers
 
 using ProgressMeter, LinearAlgebra
-using GeneralizedSchrodingerResearch.Utilities: filtration, create_FD_matrix
-using GeneralizedSchrodingerResearch.Utilities: integral_1, integral_2
+using GeneralizedSchrodingerResearch.BaseUtilities: filtration, create_FD_matrix
+using GeneralizedSchrodingerResearch.BaseUtilities: integral_1, integral_2
 
 include("general_solver.jl")
 export solve

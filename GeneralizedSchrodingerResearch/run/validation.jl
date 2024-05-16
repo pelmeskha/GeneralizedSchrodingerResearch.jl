@@ -22,8 +22,8 @@ Fourier_error=zeros(length(h_list))
 FD_time=zeros(length(h_list))
 Fourier_time=zeros(length(h_list))
 
-initial_function_3 = (x) -> NSE_soliton(x, 0.0, k, ω, theta_0, z_0)
-analytical_solution_3 = (x, t) -> NSE_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
+initial_function_3 = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
+analytical_solution_3 = (x, t) -> NSE_3_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
 
 for i in eachindex(h_list)
     local h=h_list[i]

@@ -1,45 +1,55 @@
 # include("run/solitary_wave_prop.jl")
 using Revise
 using GeneralizedSchrodingerResearch.Solvers: solve
-using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_5_soliton, NSE_soliton
-using GeneralizedSchrodingerResearch.Utilities: construct_approximate_NSE_5_solution
+using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton,                  
+    NSE_3_soliton, precompile_NSE_3_5_7_soliton, NSE_3_5_7_soliton
+using GeneralizedSchrodingerResearch.Utilities: construct_approximate_NSE_3_5_solution
 using Plots, Statistics
 
-k = 0.15
+k = 1.6
 ω = 0.4
 
-theta_0 = 0.0
-z_0 = 0.0
+ε_2 = 2.16
+ε_3 = 0.99
 
-h=0.25
-tau=h^2 /10
-tspan = (0.0,25.0)
+theta_0 = 0.0
+z_0 = -20.0
+ξ₀ = 0.0
+
+h=0.2
+tau=h^2
+tspan = (0.0,16.0)
 xspan = (-80.0, 80.0)
 
-initial_function_3 = (x) -> NSE_soliton(x, 0.0, k, ω, theta_0, z_0)
-analytical_solution_3 = (x, t) -> NSE_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
-#initial_function_5 = (x) ->NSE_5_soliton(x, 0, k, ω, -1, theta_0, z_0)
-#analytical_solution_5 = (x, t) -> NSE_5_soliton(x, t, k, ω, -1, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1], c=2*k)
-ε_2 = -0.0
+#= initial_function = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
+analytical_solution = (x, t) -> NSE_3_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1]) =#
+
+#initial_function = (x) ->NSE_3_5_soliton(x, 0, k, ω, -1, theta_0, z_0)
+#analytical_solution = (x, t) -> NSE_3_5_soliton(x, t, k, ω, -1, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1])
+
+interpolator = precompile_NSE_3_5_7_soliton(ε_2,ε_3,z_0,ξ₀,xspan[2]-xspan[1])
+analytical_solution = (x, t) -> NSE_3_5_7_soliton(x,t,k,ω,theta_0,z_0,interpolator; cycle=true, L=xspan[2]-xspan[1])
+initial_function = (x) -> analytical_solution(x,0.0)
+
 x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = solve(
     tspan,
     xspan,
     tau,
     h,
-    initial_function_3;
+    initial_function;
     method = "fourier",
     ε_2 = ε_2,
-    ε_3 = 0.0,
+    ε_3 = ε_3,
     filtration_flag = false,
     filtration_time = 2.0,
     filtration_factor = 1 + 2e-2,
     l_nominal = 60.0,
     tolerance_flag = true,
-    analytical_solution = analytical_solution_3,
+    analytical_solution = analytical_solution,
     integrals_flag = true,
 )
 
-#= possible_NSE_5_solution = construct_approximate_NSE_5_solution(
+#= possible_NSE_5_solution = construct_approximate_NSE_3_5_solution(
     x,
     U,
     ε_2,
@@ -48,8 +58,30 @@ x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = solve(
 ) =#
 
 reduce=Int(round(0.00*length(x)))+1
-plot_1 = plot(x[reduce:end-reduce],abs.(U)[reduce:end-reduce]; label="численное решение", line=(:path,:solid,:blue,2))
-plot!(x[reduce:end-reduce],abs.(analytical_solution_3.(x,0))[reduce:end-reduce]; label="начальный импульс", lw=2, ls=:dot)
+plot_1 = plot(
+    x[reduce:end-reduce],
+    abs.(U)[reduce:end-reduce];
+    label="численное решение",
+    line=(:path,:solid,:black,2)
+)
+plot!(
+    x[reduce:end-reduce],
+    abs.(analytical_solution.(x,0))[reduce:end-reduce];
+    label="начальный импульс",
+    line=(:path,:solid,:red,2),
+    #marker=(:circle,4,:black,:black)
+)
+plot!(
+    x[reduce:end-reduce],
+    abs.(analytical_solution.(x,tspan[2]))[reduce:end-reduce];
+    label="аналитическое решение",
+    line=(:dash,:dash,:green,4),
+    #= markershape = :d,
+    markersize = 1,
+    markercolor = :green,
+    markerstrokewidth = 3,
+    markerstrokecolor = :green, =#
+)
 #plot!(x[reduce:end-reduce],abs.(possible_NSE_5_solution)[reduce:end-reduce]; label="соответствующее\nаналитическое решение", lw=3, ls=:dashdot)
 plot!(legend=:topright, tickfontsize=10, legendfontsize=8, yguidefontrotation=0.0)
 xlabel!("x")

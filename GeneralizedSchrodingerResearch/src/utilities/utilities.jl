@@ -1,17 +1,8 @@
 module Utilities
 
-using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_5_soliton
-
-include("integrals.jl")
-export integral_1, integral_2
-
-include("filtration.jl")
-export filtration
+using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton
 
 include("construct_approximate_solutions.jl")
-export construct_approximate_NSE_5_solution
-
-include("create_FD_matrix.jl")
-export create_FD_matrix
+export construct_approximate_NSE_3_5_solution
 
 end

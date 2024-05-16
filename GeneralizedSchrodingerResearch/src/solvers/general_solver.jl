@@ -58,7 +58,7 @@ function solve(
     
     ε_tail = 1e-5
     (abs(U[1]) < ε_tail) & (abs(U[end]) < ε_tail)  ||
-        throw(AssertionError("Pulse tail modulus exceeds $ε_tail with the value of $(max(abs(U[1]), abs(U[end]))). Consider larger x-interval."))
+    @warn "Pulse tail modulus exceeds $ε_tail with the value of $(max(abs(U[1]), abs(U[end]))). Consider larger x-interval."
 
     if filtration_flag
         t_slider=filtration_time
@@ -81,8 +81,8 @@ function solve(
             else
                 # Percentage tolerance
                 tolerance[i] = maximum( 
-                    (abs.(analytical_solution.(x,i*tau)) - abs.(U))
-                ) / maximum(abs.(analytical_solution.(x,i*tau))) * 100
+                    abs.((abs.(analytical_solution.(x,(i-1)*tau)) - abs.(U)))
+                ) / maximum(abs.(analytical_solution.(x,(i-1)*tau))) * 100
             end
         end
         if integrals_flag

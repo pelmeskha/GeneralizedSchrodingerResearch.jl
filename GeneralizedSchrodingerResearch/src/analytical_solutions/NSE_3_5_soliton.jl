@@ -1,17 +1,17 @@
-function NSE_5_soliton(
+function NSE_3_5_soliton(
     x,
     t,
-    k::Float64,
-    ω::Float64,
-    ε_2::Float64,
-    theta_0::Float64,
-    z_0::Float64; 
+    k::Real,
+    ω::Real,
+    ε_2::Real,
+    theta_0::Real,
+    z_0::Real; 
     cycle::Bool=false,
-    L::Float64=0.0,
-    c::Float64=0.0,
+    L::Real=0.0,
 )
     μ = 4*(ω-k^2)
     μ > 0.0 || throw(ArgumentError("μ ≤ 0. Check k and ω."))
+    c=2*k
     if cycle
         if t>(L/2+x)/c
             t-=L/c*floor(1/2 + (c*t -x)/L)
