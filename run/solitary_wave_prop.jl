@@ -1,5 +1,5 @@
 # include("run/solitary_wave_prop.jl")
-using Revise
+using Revise, LaTeXStrings
 using GeneralizedSchrodingerResearch.Solvers: solve
 using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton,                  
     NSE_3_soliton, precompile_NSE_3_5_7_soliton, NSE_3_5_7_soliton
@@ -62,7 +62,8 @@ plot_1 = plot(
     x[reduce:end-reduce],
     abs.(U)[reduce:end-reduce];
     label="численное решение",
-    line=(:path,:solid,:black,2)
+    line=(:path,:solid,:black,2),
+    dpi=800,
 )
 plot!(
     x[reduce:end-reduce],
@@ -105,8 +106,20 @@ plot!(legend=:outerbottom)
 savefig(plot_3, "run/I2.png")
 
 if !isnothing(tolerance)
-    plot_4 = plot(t,abs.(tolerance); line=(:path,:solid,:black,1), legend = false)
+    plot_4 = plot(
+        t,
+        abs.(tolerance); 
+        line=(:path,:solid,:black,1), 
+        legend = false,
+        dpi=800,
+        tickfontsize=10,
+        guidefontsize=14,
+    )
+    xaxis = Plots.get_axis(Plots.get_subplot(plot_4,1),:x)
+    yaxis = Plots.get_axis(Plots.get_subplot(plot_4,1),:y)
+    xaxis[:gridalpha] = 0.4
+    yaxis[:gridalpha] = 0.4
     xlabel!("t")
-    ylabel!("относительная ошибка, %")
+    ylabel!(L"\Delta_{\%}^{n}")
     savefig(plot_4, "run/tolerance.png")
 end
