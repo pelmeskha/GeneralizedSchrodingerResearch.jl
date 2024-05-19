@@ -1,5 +1,6 @@
 # include("run/run_4_nonlinear_influence.jl")
 using Revise, LaTeXStrings
+using GeneralizedSchrodingerResearch.BaseUtilities: smooth_vector
 using GeneralizedSchrodingerResearch.Solvers: solve, cuda_solve
 using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton,                  
     NSE_3_soliton, precompile_NSE_3_5_7_soliton, NSE_3_5_7_soliton
@@ -36,7 +37,8 @@ x, t, _U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = cuda_solve(
     filtration_flag = true,
     filtration_time = 2.0,
     filtration_factor = 1 + 2e-2,
-    l_nominal = 40.0,
+    filtration_end_t = 3500.0,
+    l_nominal = 50.0,
 )
 x, t, U_set, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = cuda_solve(
     tspan,
@@ -50,7 +52,8 @@ x, t, U_set, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = cuda_solve(
     filtration_flag = true,
     filtration_time = 2.0,
     filtration_factor = 1 + 2e-2,
-    l_nominal = 40.0,
+    filtration_end_t = 3500.0,
+    l_nominal = 50.0,
     tolerance_flag = true,
     threshold = maximum(abs.(_U)), #0.7090485655665479,
     integrals_flag = true,
@@ -204,7 +207,7 @@ savefig(plot_3, "run/plots/I2_influenced.png")
 if !isnothing(tolerance)
     plot_4 = plot(
         t,
-        abs.(tolerance); 
+        smooth_vector(tolerance,2000); 
         line=(:path,:solid,:black,1), 
         legend = false,
         dpi=800,

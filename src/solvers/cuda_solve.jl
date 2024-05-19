@@ -24,6 +24,7 @@ function cuda_solve(
     filtration_flag::Bool = false,
     filtration_time::Float64 = 10.0,
     filtration_factor::Float64 = 0.5,
+    filtration_end_t::Float64 = tspan[2],
     l_nominal::Float64=100.0,
     # tolerance calculations
     tolerance_flag = false,
@@ -104,7 +105,7 @@ function cuda_solve(
         if tolerance_flag
             tolerance[i]=cuda_simple_tolerance(cuda_U,threshold)
         end
-        if filtration_flag
+        if filtration_flag && (i*tau <= filtration_end_t)
             if i*tau >= t_slider
                 t_slider+=filtration_time
                 cuda_U, (power_I1, power_I2) = cuda_filtration(

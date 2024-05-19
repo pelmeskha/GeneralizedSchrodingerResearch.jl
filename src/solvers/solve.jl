@@ -21,6 +21,7 @@ function solve(
     filtration_flag::Bool = false,
     filtration_time::Float64 = 10.0,
     filtration_factor::Float64 = 0.5,
+    filtration_end_t::Float64 = tspan[2],
     l_nominal::Float64=100.0,
     # tolerance calculations
     tolerance_flag = false,
@@ -105,7 +106,7 @@ function solve(
                 ) / maximum(abs.(analytical_solution.(x,(i-1)*tau))) * 100
             end
         end
-        if filtration_flag
+        if filtration_flag && (i*tau <= filtration_end_t)
             if i*tau >= t_slider
                 t_slider+=filtration_time
                 U, (power_I1, power_I2) = filtration(

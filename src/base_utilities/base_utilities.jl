@@ -20,4 +20,7 @@ export cuda_integral_1, cuda_integral_2
 include("cuda_filtration.jl")
 export cuda_filtration
 
+include("smooth_vector.jl")
+export smooth_vector
+
 end
