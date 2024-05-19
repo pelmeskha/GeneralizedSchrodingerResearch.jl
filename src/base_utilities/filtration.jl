@@ -1,10 +1,9 @@
 function filtration(
     U::Union{Vector{ComplexF64}, Vector{Float64}},
-    x::Vector{Float64},
+    h::Float64,
     factor::Float64,
     l_nominal::Float64,
 )
-    h = x[2]-x[1]
     delta = trunc(Int, l_nominal / h / 2) # полупротяжённость в ячейках сетки
     N = size(U)[1]
     N != 1 || throw(BoundsError("solution N = 1. Consider transpose(U)."))

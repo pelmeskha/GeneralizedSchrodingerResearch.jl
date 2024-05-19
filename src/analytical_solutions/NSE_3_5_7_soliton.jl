@@ -27,7 +27,11 @@ function evaluate_z(ξ_vector, μ, M₀, M₁, z₀, ξ₀)
 end
 function evaluate_y(ξ_vector, μ, M₀, M₁, ξ₀)
     exp_expression = (1 .+ exp.(μ * (ξ_vector .- ξ₀)))
-    return sqrt.(M₀ .+ M₁ ./ exp_expression - M₁ ./ (exp_expression .^ 2))
+    
+    complex_y = sqrt.(Complex.(M₀ .+ M₁ ./ exp_expression - M₁ ./ (exp_expression .^ 2)))
+    all(imag(complex_y).==0) || @warn "При вычислении y(z) обнаружены и отброшены комплесные числа."
+    complex_y[imag(complex_y).!=0.0].=Complex(0.0)
+    return Float64[real(x) for x in complex_y]
 end
 function precompile_NSE_3_5_7_soliton(
     ε₂::Real,
@@ -70,6 +74,13 @@ function precompile_NSE_3_5_7_soliton(
     interpolator = extrapolate(interpolate((z_vector,), y_vector, Gridded(Linear())), Line())
     return interpolator
 end
+function reduce_negative_values(x::Real)::Real
+    value = interpolator(x)
+    return value < 0 ? 0 : value
+end
+function reduce_negative_values(xs::AbstractVector{<:Real})::Vector{Real}
+    return [reduce_negative_values(x) for x in xs]
+end
 function NSE_3_5_7_soliton(
     x,
     t,
@@ -90,8 +101,8 @@ function NSE_3_5_7_soliton(
         end
     end
     z = x - 2k * t - z₀
-
-    y.(z) * exp(
+    
+    reduce_negative_values(y.(z)) * exp(
         1im * (k * x - θ₀ - ω * t)
     )
 end

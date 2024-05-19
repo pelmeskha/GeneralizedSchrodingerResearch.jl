@@ -1,4 +1,4 @@
-# include("run/solitary_wave_prop.jl")
+# include("run/run_3_solitary_wave_prop.jl")
 using Revise, LaTeXStrings
 using GeneralizedSchrodingerResearch.Solvers: solve
 using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton,                  
@@ -6,30 +6,30 @@ using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton,
 using GeneralizedSchrodingerResearch.Utilities: construct_approximate_NSE_3_5_solution
 using Plots, Statistics
 
-k = 1.6
-ω = 0.4
+k = 0.4
+ω = 1.6
 
-ε_2 = 2.16
-ε_3 = 0.99
+ε_2 = 0.0
+ε_3 = 0.0
 
 theta_0 = 0.0
-z_0 = -20.0
+z_0 = 0.0
 ξ₀ = 0.0
 
 h=0.2
 tau=h^2
-tspan = (0.0,16.0)
-xspan = (-80.0, 80.0)
+tspan = (0.0,100.0)
+xspan = (-50.0, 50.0)
 
-#= initial_function = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
-analytical_solution = (x, t) -> NSE_3_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1]) =#
+initial_function = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
+analytical_solution = (x, t) -> NSE_3_soliton(x, t, k, ω, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1])
 
 #initial_function = (x) ->NSE_3_5_soliton(x, 0, k, ω, -1, theta_0, z_0)
 #analytical_solution = (x, t) -> NSE_3_5_soliton(x, t, k, ω, -1, theta_0, z_0; cycle=true, L=xspan[2]-xspan[1])
 
-interpolator = precompile_NSE_3_5_7_soliton(ε_2,ε_3,z_0,ξ₀,xspan[2]-xspan[1])
+#= interpolator = precompile_NSE_3_5_7_soliton(ε_2,ε_3,z_0,ξ₀,xspan[2]-xspan[1])
 analytical_solution = (x, t) -> NSE_3_5_7_soliton(x,t,k,ω,theta_0,z_0,interpolator; cycle=true, L=xspan[2]-xspan[1])
-initial_function = (x) -> analytical_solution(x,0.0)
+initial_function = (x) -> analytical_solution(x,0.0) =#
 
 x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = solve(
     tspan,
@@ -49,7 +49,7 @@ x, t, U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = solve(
     integrals_flag = true,
 )
 
-#= possible_NSE_5_solution = construct_approximate_NSE_3_5_solution(
+#= =possible_NSE_5_solution = construct_approximate_NSE_3_5_solution(
     x,
     U,
     ε_2,
@@ -87,23 +87,56 @@ plot!(
 plot!(legend=:topright, tickfontsize=10, legendfontsize=8, yguidefontrotation=0.0)
 xlabel!("x")
 ylabel!("|U|")
-savefig(plot_1, "run/solution_profiles.png")
+savefig(plot_1, "run/plots/solution_profiles.png")
 
 err_1=(maximum(I1) - minimum(I1)) / mean(I1) * 100
-plot_2 = plot(t,I1; label="First integral, rel_err = $err_1")
+y_ticks= [4.8-2e-12, 4.8-1e-12, 4.8, 4.8+1e-12]
+ytick_labels = ["4.8 - 2e-12", "4.8 - 1e-12", "4.8", "4.8 + 1e-12"]
+plot_2 = plot(
+    t,
+    I1;
+    legend = false,
+    dpi=800,
+    tickfontsize=10,
+    guidefontsize=14,
+    line=(:path,:solid,:black,1), 
+    yformatter = y -> string(round(y,digits=13)),
+    yticks=(y_ticks, ytick_labels)
+)
+xlabel!("t")
+ylabel!("I₁, δ = 4.1e-11 %")
+#ylabel!("I₁, δ = $(round(err_1,digits=6)) %")
+xaxis = Plots.get_axis(Plots.get_subplot(plot_2,1),:x)
+yaxis = Plots.get_axis(Plots.get_subplot(plot_2,1),:y)
+xaxis[:gridalpha] = 0.4
+yaxis[:gridalpha] = 0.4
 if I1_dissipated != nothing
     plot!(t,I1+I1_dissipated; label="I1 + I1_dissipated")
 end
-plot!(legend=:outerbottom)
-savefig(plot_2, "run/I1.png")
+#plot!(legend=:outerbottom)
+savefig(plot_2, "run/plots/I1.png")
 
 err_2=(maximum(I2) - minimum(I2)) / mean(I2) * 100
-plot_3 = plot(t,I2; label="Second integral, rel_err = $err_2")
+plot_3 = plot(
+    t,
+    I2; 
+    legend = false,
+    dpi=800,
+    tickfontsize=10,
+    guidefontsize=14,
+    line=(:path,:solid,:black,1), 
+    yformatter = y -> string(round(y,digits=5)),
+)
+xlabel!("t")
+ylabel!("I₂, δ = $(round(err_2,digits=6)) %")
+xaxis = Plots.get_axis(Plots.get_subplot(plot_3,1),:x)
+yaxis = Plots.get_axis(Plots.get_subplot(plot_3,1),:y)
+xaxis[:gridalpha] = 0.4
+yaxis[:gridalpha] = 0.4
 if I2_dissipated != nothing
     plot!(t,I2+I2_dissipated; label="I2 + I2_dissipated")
 end
-plot!(legend=:outerbottom)
-savefig(plot_3, "run/I2.png")
+savefig(plot_3, "run/plots/I2.png")
 
 if !isnothing(tolerance)
     plot_4 = plot(
@@ -121,5 +154,5 @@ if !isnothing(tolerance)
     yaxis[:gridalpha] = 0.4
     xlabel!("t")
     ylabel!(L"\Delta_{\%}^{n}")
-    savefig(plot_4, "run/tolerance.png")
+    savefig(plot_4, "run/plots/tolerance.png")
 end

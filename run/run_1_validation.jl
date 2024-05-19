@@ -1,4 +1,4 @@
-# include("run/validation.jl")
+# include("run/run_1_validation.jl")
 using Revise, LaTeXStrings
 using GeneralizedSchrodingerResearch.Solvers: solve
 using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton,                  
@@ -98,4 +98,4 @@ yaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:y)
 xaxis[:gridalpha] = 0.4
 yaxis[:gridalpha] = 0.4
 
-savefig(plot_1, "run/validation.png")
+savefig(plot_1, "run/plots/validation.png")

@@ -1,13 +1,17 @@
 """
     По начальному условию и заданным промежуткам решает начально-краевую задачу Фурье или
-    конечно-разностным методом.
+    конечно-разностным методом. Реализация на CUDA.
 
     Опционально:
         - сравнивает численное решение с заданным аналитическим;
         - вычисляет интегралы в процессе моделирования;
-        - реализует алгоритм фильтрации излучения.
+        - реализует алгоритм фильтрации излучения;
+        - сохраняет решение в заданные моменты времени.
+    
+    #TODO:
+    - Совместить с основным solve.
 """
-function solve(
+function cuda_solve(
     tspan::Tuple{Float64, Float64},
     xspan::Tuple{Float64, Float64},
     tau::Float64,
@@ -23,9 +27,11 @@ function solve(
     l_nominal::Float64=100.0,
     # tolerance calculations
     tolerance_flag = false,
-    analytical_solution = [],
+    threshold::Real = 0.0,
     # record integrals
     integrals_flag = false,
+    # times of interest
+    capture_times = [],
 )
     theta = 0.5
     L = xspan[2] - xspan[1]
@@ -74,27 +80,36 @@ function solve(
         I_1[1]=integral_1(U,h)
         I_2[1]=integral_2(U,h)
     end
+    capture_times_flag=false
+    if ~isempty(capture_times)
+        (any(capture_times.>tspan[2]) || any(capture_times.<tspan[1])) && @error "capture_times contains an element out of modeling time"
+        capture_times_flag=true
+        push!(capture_times,Inf)
+        capture_times_slider=1
+        t_capture_entry=capture_times[capture_times_slider]
+        U_set=[]
+    end
+    cuda_U = CuArray(U)
+    cuda_M = CuArray(M)
     @showprogress for i in 1:N_t
-        if tolerance_flag
-            if isa(analytical_solution,Real) # calculate the "pike" tolerance
-                tolerance[i]=(maximum(abs.(U))-analytical_solution)/maximum(abs.(U)) * 100
-            else
-                # Percentage tolerance
-                tolerance[i] = maximum( 
-                    abs.((abs.(analytical_solution.(x,(i-1)*tau)) - abs.(U)))
-                ) / maximum(abs.(analytical_solution.(x,(i-1)*tau))) * 100
+        if capture_times_flag && t_capture_entry≠Inf
+            t_current=(i-1)*tau
+            if t_current>=t_capture_entry
+                host_U=Array(cuda_U)
+                push!(U_set, host_U)
+                capture_times_slider+=1
+                t_capture_entry=capture_times[capture_times_slider]
             end
         end
-        if integrals_flag
-            I_1[i] = integral_1(U,h)
-            I_2[i] = integral_2(U,h)
+        if tolerance_flag
+            tolerance[i]=cuda_simple_tolerance(cuda_U,threshold)
         end
         if filtration_flag
             if i*tau >= t_slider
                 t_slider+=filtration_time
-                U, (power_I1, power_I2) = filtration(
-                    U,
-                    x,
+                cuda_U, (power_I1, power_I2) = cuda_filtration(
+                    cuda_U,
+                    h,
                     filtration_factor,
                     l_nominal,
                 )
@@ -103,15 +118,18 @@ function solve(
             end
         end
 
-        V = exp.(
-                1im*tau* ((abs.(U)).^2 + ε_2*(abs.(U)).^4 + ε_3*(abs.(U)).^6 ) 
-            ).*U
-        U = M * V
+        cuda_V = cuda_calculate_V(cuda_U, tau, ε_2, ε_3)
+        cuda_U = cuda_matrix_vector_multiplication(cuda_M,cuda_V)
+
+        if integrals_flag
+            I_1[i] = cuda_integral_1(cuda_U,h)
+            I_2[i] = cuda_integral_2(cuda_U,h)
+        end
     end
     return(
         x,
         t,
-        U,
+        capture_times_flag ? U_set : Array(cuda_U),
         filtration_flag ? (cumsum(I1_dissipated), cumsum(I2_dissipated)) : (nothing, nothing),
         tolerance_flag ? tolerance : nothing,
         integrals_flag ? (I_1, I_2) : (nothing, nothing),

@@ -1,8 +1,9 @@
 module Utilities
 
-using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton
+using GeneralizedSchrodingerResearch.AnalyticalSolutions: NSE_3_5_soliton, precompile_NSE_3_5_7_soliton, NSE_3_5_7_soliton
+using GeneralizedSchrodingerResearch.BaseUtilities: M0_M1_to_ε2_ε3
 
 include("construct_approximate_solutions.jl")
-export construct_approximate_NSE_3_5_solution
+export construct_approximate_NSE_3_5_solution, construct_approximate_NSE_3_5_7_solution
 
 end
