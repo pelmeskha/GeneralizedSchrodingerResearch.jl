@@ -9,20 +9,20 @@
         - сохраняет решение в заданные моменты времени.
 """
 function solve(
-    tspan::Tuple{Float64, Float64},
-    xspan::Tuple{Float64, Float64},
-    tau::Float64,
-    h::Float64,
+    tspan::Tuple{Real, Real},
+    xspan::Tuple{Real, Real},
+    tau::Real,
+    h::Real,
     initial_function;
     method::String = "fourier",
-    ε_2::Float64 = 0.0,
-    ε_3::Float64 = 0.0,
+    ε_2::Real = 0.0,
+    ε_3::Real = 0.0,
     # filtration parameters
     filtration_flag::Bool = false,
-    filtration_time::Float64 = 10.0,
-    filtration_factor::Float64 = 0.5,
-    filtration_end_t::Float64 = tspan[2],
-    l_nominal::Float64=100.0,
+    filtration_time::Real = 10.0,
+    filtration_factor::Union{Real, Function} = 1.0,
+    filtration_end_t::Real = tspan[2],
+    l_nominal::Real=100.0,
     # tolerance calculations
     tolerance_flag = false,
     analytical_solution = [],
@@ -112,7 +112,7 @@ function solve(
                 U, (power_I1, power_I2) = filtration(
                     U,
                     h,
-                    filtration_factor,
+                    isa(filtration_factor, Function) ? filtration_factor(i*tau) : filtration_factor,
                     l_nominal,
                 )
                 I1_dissipated[i] = power_I1

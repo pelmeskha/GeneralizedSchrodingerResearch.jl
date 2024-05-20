@@ -17,15 +17,18 @@ theta_0 = 0.0
 z_0 = 0.0
 ξ₀ = 0.0
 
-h=0.1
+h=0.25
 tau=h^2
-tspan = (0.0,5300.0)
-xspan = (-70.0, 70.0)
-capture_times = [10.0, 2800.0, 3000.0, 5300.0]
+tspan = (0.0,8000.0)
+xspan = (-80.0, 80.0)
+capture_times = [10.0, tspan[2]]
 
 initial_function = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
 
-x, t, _U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = cuda_solve(
+filtration_factor, filtration_end_t = 1.03, 8000.0
+filtration_factor_function = t -> t > filtration_end_t ? 1.0 : ((1.0 - filtration_factor) / filtration_end_t) * t + filtration_factor
+
+x, t, U_set, (I1_dissipated, I2_dissipated), pulse_maximum, (I1, I2) = cuda_solve(
     tspan,
     xspan,
     tau,
@@ -35,30 +38,18 @@ x, t, _U, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = cuda_solve(
     ε_2 = ε_2,
     ε_3 = ε_3,
     filtration_flag = true,
-    filtration_time = 2.0,
-    filtration_factor = 1 + 2e-2,
-    filtration_end_t = 3500.0,
-    l_nominal = 50.0,
-)
-x, t, U_set, (I1_dissipated, I2_dissipated), tolerance, (I1, I2) = cuda_solve(
-    tspan,
-    xspan,
-    tau,
-    h,
-    initial_function;
-    method = "fourier",
-    ε_2 = ε_2,
-    ε_3 = ε_3,
-    filtration_flag = true,
-    filtration_time = 2.0,
-    filtration_factor = 1 + 2e-2,
-    filtration_end_t = 3500.0,
-    l_nominal = 50.0,
-    tolerance_flag = true,
-    threshold = maximum(abs.(_U)), #0.7090485655665479,
+    filtration_time = 0.8,
+    filtration_factor = filtration_factor_function,
+    filtration_end_t = filtration_end_t,
+    l_nominal = 60.0,
+    pulse_maximum_flag = true,
     integrals_flag = true,
     capture_times = capture_times,
+    live_plot_solution_flag = true,
+    live_plot_tau = 1.0,
 )
+
+naive_tolerance = (pulse_maximum.-maximum(abs.(U_set[end]))) ./ maximum(abs.(U_set[end])) .* 100
 possible_NSE_3_5_solution = []
 for i in eachindex(U_set)
     push!(
@@ -204,10 +195,10 @@ if I2_dissipated != nothing
 end
 savefig(plot_3, "run/plots/I2_influenced.png")
 
-if !isnothing(tolerance)
+if !isnothing(pulse_maximum)
     plot_4 = plot(
         t,
-        smooth_vector(tolerance,2000); 
+        smooth_vector(naive_tolerance,200); 
         line=(:path,:solid,:black,1), 
         legend = false,
         dpi=800,
@@ -225,12 +216,15 @@ end
 possible=join(abs.(possible_NSE_3_5_7_solution[end]), " ")
 exact=join(abs.(U_set[end]), " ")
 x_str=join(x, " ")
-open("results/x.txt", "w") do file
+if !isdir("run/results")
+    mkdir("run/results")
+end
+open("run/results/x.txt", "w") do file
     write(file, x_str)
 end
-open("results/possible.txt", "w") do file
+open("run/results/possible.txt", "w") do file
     write(file, possible)
 end
-open("results/exact.txt", "w") do file
+open("run/results/exact.txt", "w") do file
     write(file, exact)
 end

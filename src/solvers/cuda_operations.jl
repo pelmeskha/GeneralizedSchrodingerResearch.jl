@@ -37,3 +37,7 @@ function cuda_simple_tolerance(U::CuArray{ComplexF64, 1}, threshold::Real)
     result = (max_abs_value - threshold) / max_abs_value * 100.0
     return result
 end
+function cuda_maximum(U::CuArray{ComplexF64, 1})
+    abs_U = abs.(U)
+    return CUDA.reduce(max, abs_U)
+end

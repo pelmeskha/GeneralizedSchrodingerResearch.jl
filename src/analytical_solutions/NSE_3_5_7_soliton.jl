@@ -75,8 +75,7 @@ function precompile_NSE_3_5_7_soliton(
     return interpolator
 end
 function reduce_negative_values(x::Real)::Real
-    value = interpolator(x)
-    return value < 0 ? 0 : value
+    return x < 0.0 ? 0.0 : x
 end
 function reduce_negative_values(xs::AbstractVector{<:Real})::Vector{Real}
     return [reduce_negative_values(x) for x in xs]

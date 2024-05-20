@@ -12,27 +12,29 @@
     - Совместить с основным solve.
 """
 function cuda_solve(
-    tspan::Tuple{Float64, Float64},
-    xspan::Tuple{Float64, Float64},
-    tau::Float64,
-    h::Float64,
+    tspan::Tuple{Real, Real},
+    xspan::Tuple{Real, Real},
+    tau::Real,
+    h::Real,
     initial_function;
     method::String = "fourier",
-    ε_2::Float64 = 0.0,
-    ε_3::Float64 = 0.0,
+    ε_2::Real = 0.0,
+    ε_3::Real = 0.0,
     # filtration parameters
     filtration_flag::Bool = false,
-    filtration_time::Float64 = 10.0,
-    filtration_factor::Float64 = 0.5,
-    filtration_end_t::Float64 = tspan[2],
-    l_nominal::Float64=100.0,
-    # tolerance calculations
-    tolerance_flag = false,
-    threshold::Real = 0.0,
+    filtration_time::Real = 10.0,
+    filtration_factor::Union{Real, Function} = 1.0,
+    filtration_end_t::Real = tspan[2],
+    l_nominal::Real=100.0,
+    # pulse_maximum calculations
+    pulse_maximum_flag = false,
     # record integrals
     integrals_flag = false,
     # times of interest
     capture_times = [],
+    # live plot
+    live_plot_solution_flag = false,
+    live_plot_tau = 1.0,
 )
     theta = 0.5
     L = xspan[2] - xspan[1]
@@ -72,8 +74,8 @@ function cuda_solve(
         I1_dissipated=zeros(N_t)
         I2_dissipated=zeros(N_t)
     end
-    if tolerance_flag
-        tolerance = zeros(N_t)
+    if pulse_maximum_flag
+        pulse_maximum = zeros(N_t)
     end
     if integrals_flag
         I_1 = zeros(N_t)
@@ -92,26 +94,39 @@ function cuda_solve(
     end
     cuda_U = CuArray(U)
     cuda_M = CuArray(M)
+    if live_plot_solution_flag
+        observable_U = Observable(abs.(U))
+        observable_x = Observable(x)
+        live_plot_t_slider = 0.0
+        live_plot = Figure()
+        live_axis = Axis(live_plot[1, 1])
+        lines!(live_axis, observable_x, observable_U)
+        display(live_plot)
+    end
     @showprogress for i in 1:N_t
+        t_current=(i-1)*tau
+        if live_plot_solution_flag && (t_current ≥ live_plot_t_slider)
+            observable_U[] = abs.(Array(cuda_U))
+            live_plot_t_slider += live_plot_tau
+        end
         if capture_times_flag && t_capture_entry≠Inf
-            t_current=(i-1)*tau
-            if t_current>=t_capture_entry
+            if t_current ≥ t_capture_entry
                 host_U=Array(cuda_U)
                 push!(U_set, host_U)
                 capture_times_slider+=1
                 t_capture_entry=capture_times[capture_times_slider]
             end
         end
-        if tolerance_flag
-            tolerance[i]=cuda_simple_tolerance(cuda_U,threshold)
+        if pulse_maximum_flag
+            pulse_maximum[i]=cuda_maximum(cuda_U)
         end
-        if filtration_flag && (i*tau <= filtration_end_t)
-            if i*tau >= t_slider
+        if filtration_flag && (t_current <= filtration_end_t)
+            if t_current ≥ t_slider
                 t_slider+=filtration_time
                 cuda_U, (power_I1, power_I2) = cuda_filtration(
                     cuda_U,
                     h,
-                    filtration_factor,
+                    isa(filtration_factor, Function) ? filtration_factor(t_current) : filtration_factor,
                     l_nominal,
                 )
                 I1_dissipated[i] = power_I1
@@ -132,7 +147,7 @@ function cuda_solve(
         t,
         capture_times_flag ? U_set : Array(cuda_U),
         filtration_flag ? (cumsum(I1_dissipated), cumsum(I2_dissipated)) : (nothing, nothing),
-        tolerance_flag ? tolerance : nothing,
+        pulse_maximum_flag ? pulse_maximum : nothing,
         integrals_flag ? (I_1, I_2) : (nothing, nothing),
     )
 end

@@ -1,6 +1,6 @@
 module BaseUtilities
 
-using CUDA
+using CUDA, Statistics
 
 include("integrals.jl")
 export integral_1, integral_2
