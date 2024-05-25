@@ -17,15 +17,15 @@ theta_0 = 0.0
 z_0 = 0.0
 ξ₀ = 0.0
 
-h=0.25
+h=0.1
 tau=h^2
-tspan = (0.0,8000.0)
+tspan = (0.0,100000.0)
 xspan = (-80.0, 80.0)
-capture_times = [10.0, tspan[2]]
+capture_times = [10.0, 50000.0, 75000.0, tspan[2]]
 
 initial_function = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
 
-filtration_factor, filtration_end_t = 1.03, 8000.0
+filtration_factor, filtration_end_t = 1.02, 100000.0
 filtration_factor_function = t -> t > filtration_end_t ? 1.0 : ((1.0 - filtration_factor) / filtration_end_t) * t + filtration_factor
 
 x, t, U_set, (I1_dissipated, I2_dissipated), pulse_maximum, (I1, I2) = cuda_solve(
@@ -45,29 +45,12 @@ x, t, U_set, (I1_dissipated, I2_dissipated), pulse_maximum, (I1, I2) = cuda_solv
     pulse_maximum_flag = true,
     integrals_flag = true,
     capture_times = capture_times,
-    live_plot_solution_flag = true,
+    live_plot_solution_flag = false,
     live_plot_tau = 1.0,
 )
 
 naive_tolerance = (pulse_maximum.-maximum(abs.(U_set[end]))) ./ maximum(abs.(U_set[end])) .* 100
-possible_NSE_3_5_solution = []
-for i in eachindex(U_set)
-    push!(
-        possible_NSE_3_5_solution,
-        construct_approximate_NSE_3_5_solution(
-            x,
-            capture_times[i],
-            U_set[i],
-            k,
-            ε_2,
-            theta_0,
-            z_0,
-            xspan[2]-xspan[1],
-        ),
-    )
-end
-
-possible_NSE_3_5_7_solution = []
+#= possible_NSE_3_5_7_solution = []
 for i in eachindex(U_set)
     push!(
         possible_NSE_3_5_7_solution,
@@ -83,7 +66,7 @@ for i in eachindex(U_set)
             xspan[2]-xspan[1],
         ),
     )
-end
+end =#
 
 
 for i in eachindex(U_set)
@@ -105,20 +88,12 @@ for i in eachindex(U_set)
     )
     #= plot!(
         x[reduce:end-reduce],
-        abs.(possible_NSE_3_5_solution[i])[reduce:end-reduce];
-        label="соответствующее\nаналитическое решение",
-        lw=3,
-        ls=:dashdot,
-        dpi=600,
-    ) =#
-    plot!(
-        x[reduce:end-reduce],
         abs.(possible_NSE_3_5_7_solution[i])[reduce:end-reduce];
         label="соответствующее\nаналитическое решение",
         lw=3,
         ls=:dashdot,
         dpi=600,
-    )
+    ) =#
     xaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:x)
     yaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:y)
     xaxis[:gridalpha] = 0.4
@@ -166,7 +141,7 @@ err_2=(maximum(I2+I2_dissipated) - minimum(I2+I2_dissipated)) / mean(I2+I2_dissi
 println("Рассеяно ", ((I2+I2_dissipated)[end] - I2[end])/(I2+I2_dissipated)[end] * 100, "% от I_2")
 plot_3 = plot(
     t,
-    I2; 
+    smooth_vector(I2,100); 
     dpi=800,
     tickfontsize=10,
     legendfontsize=10,
@@ -185,7 +160,7 @@ yaxis[:gridalpha] = 0.4
 if I2_dissipated != nothing
     plot!(
         t,
-        I2+I2_dissipated;
+        smooth_vector(I2+I2_dissipated,100);
         tickfontsize=10,
         legendfontsize=10,
         guidefontsize=14,
@@ -194,6 +169,7 @@ if I2_dissipated != nothing
     )
 end
 savefig(plot_3, "run/plots/I2_influenced.png")
+
 
 if !isnothing(pulse_maximum)
     plot_4 = plot(
@@ -212,18 +188,55 @@ if !isnothing(pulse_maximum)
     xlabel!("t")
     ylabel!(L"\Delta_{\%}^{n}")
     savefig(plot_4, "run/plots/pike_tolerance.png")
+
+    time_gap=300.0
+    t1_index=Int(round(time_gap/tau))
+    t2_index=Int(round((tspan[2]-time_gap)/tau))
+    plot_5 = plot(
+        t[1:t1_index],
+        pulse_maximum[1:t1_index]; 
+        line=(:path,:solid,:black,1), 
+        legend = false,
+        dpi=800,
+        tickfontsize=10,
+        guidefontsize=14,
+        margin=2Plots.mm,
+    )
+    xaxis = Plots.get_axis(Plots.get_subplot(plot_5,1),:x)
+    yaxis = Plots.get_axis(Plots.get_subplot(plot_5,1),:y)
+    xaxis[:gridalpha] = 0.4
+    yaxis[:gridalpha] = 0.4
+    xlabel!("t")
+    ylabel!(L"\max|U^{m}|")
+    savefig(plot_5, "run/plots/pike_behaviour_initial.png")
+
+    N_smooth=200
+    plot_6 = plot(
+        t[t2_index:(end-N_smooth)],
+        smooth_vector(pulse_maximum[t2_index:end],N_smooth)[1:(end-N_smooth)]; 
+        line=(:path,:solid,:black,1), 
+        legend = false,
+        dpi=800,
+        tickfontsize=10,
+        guidefontsize=14,
+        margin=2Plots.mm,
+    )
+    xaxis = Plots.get_axis(Plots.get_subplot(plot_6,1),:x)
+    yaxis = Plots.get_axis(Plots.get_subplot(plot_6,1),:y)
+    xaxis[:gridalpha] = 0.4
+    yaxis[:gridalpha] = 0.4
+    xlabel!("t")
+    ylabel!(L"\max|U^{m}|")
+    savefig(plot_6, "run/plots/pike_behaviour_final.png")
 end
-possible=join(abs.(possible_NSE_3_5_7_solution[end]), " ")
-exact=join(abs.(U_set[end]), " ")
-x_str=join(x, " ")
+
+exact=join(U_set[end], ", ")
+x_str=join(x, ", ")
 if !isdir("run/results")
     mkdir("run/results")
 end
 open("run/results/x.txt", "w") do file
     write(file, x_str)
-end
-open("run/results/possible.txt", "w") do file
-    write(file, possible)
 end
 open("run/results/exact.txt", "w") do file
     write(file, exact)

@@ -38,9 +38,14 @@ function precompile_NSE_3_5_7_soliton(
     ε₃::Real,
     z₀::Real,
     ξ₀::Real,
-    L::Real,
+    L::Real;
+    use_M_values=false,
+    M₀=0.0,
+    M₁=0.0,
 )
-    (M₀, M₁) = ε2_ε3_to_M0_M1(ε₂, ε₃)
+    if ~use_M_values
+        (M₀, M₁) = ε2_ε3_to_M0_M1(ε₂, ε₃)
+    end
     println("M₀=",round(M₀,digits=4)," M₁=",round(M₁,digits=4))
     μ = evaluate_μ(M₀, M₁)
 
