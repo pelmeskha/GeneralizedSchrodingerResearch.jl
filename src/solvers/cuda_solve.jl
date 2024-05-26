@@ -99,11 +99,12 @@ function cuda_solve(
         observable_x = Observable(x)
         live_plot_t_slider = 0.0
         live_plot = Figure()
-        live_axis = Axis(live_plot[1, 1])
+        live_axis = Axis(live_plot[1, 1], limits = (minimum(x), maximum(x), 0.0, 1.0))
         lines!(live_axis, observable_x, observable_U)
         display(live_plot)
     end
-    @showprogress for i in 1:N_t
+    #@showprogress for i in 1:N_t
+    for i in 1:N_t
         t_current=(i-1)*tau
         if live_plot_solution_flag && (t_current ≥ live_plot_t_slider)
             observable_U[] = abs.(Array(cuda_U))
