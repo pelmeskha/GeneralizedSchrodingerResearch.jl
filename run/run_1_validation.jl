@@ -98,4 +98,4 @@ yaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:y)
 xaxis[:gridalpha] = 0.4
 yaxis[:gridalpha] = 0.4
 
-savefig(plot_1, "run/plots/validation.png")
+savefig(plot_1, "run/plots/run_1/validation.png")

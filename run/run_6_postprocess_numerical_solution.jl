@@ -1,4 +1,4 @@
-#include("run/run_5_postprocess_numerical_solution.jl")
+#include("run/run_6_postprocess_numerical_solution.jl")
 using Revise, LaTeXStrings, Plots, Statistics, Interpolations, Optim
 using GeneralizedSchrodingerResearch.BaseUtilities: smooth_vector,
     parse_to_vector, set_grid_alpha, shift_pulse_to_center, find_threshold

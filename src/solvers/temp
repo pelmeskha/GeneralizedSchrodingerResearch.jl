@@ -1,0 +1,98 @@
+function prepare_filtration_args(filtration_args, N_t)
+    @unpack filtration_flag, filtration_tau, filtration_factor, filtration_end_t, filtration_l_nominal = filtration_args
+    return(
+        filtration_flag ? filtration_tau : nothing,
+        filtration_flag ? filtration_factor : nothing,
+        filtration_flag ? filtration_end_t : nothing,
+        filtration_flag ? [filtration_tau] : nothing,
+        filtration_flag ? filtration_l_nominal : nothing,
+        filtration_flag ? zeros(N_t) : nothing,
+        filtration_flag ? zeros(N_t) : nothing,
+    )    
+end
+function prepare_capture_times_args(capture_times, tspan, N)
+    (any(capture_times.>tspan[2]) || any(capture_times.<tspan[1])) && @error "capture_times contains an element out of modeling time"
+    capture_times_flag=~isempty(capture_times)
+    return(
+        capture_times_flag,
+        capture_times_flag ? [Vector{ComplexF64}(undef, N) for _ in 1:length(capture_times)] : nothing,
+        capture_times_flag ? [1] : nothing,
+        capture_times_flag ? [capture_times..., Inf] : nothing,
+        capture_times_flag ? [capture_times[1]] : nothing,
+    )   
+end
+
+"""
+    По начальному условию и заданным промежуткам решает начально-краевую задачу Фурье или
+    конечно-разностным методом. Реализация на CUDA.
+
+    Опционально:
+        - сравнивает численное решение с заданным аналитическим;
+        - вычисляет интегралы в процессе моделирования;
+        - реализует алгоритм фильтрации излучения;
+        - сохраняет решение в заданные моменты времени.
+    
+    #TODO:
+    - Совместить с основным solve.
+"""
+function cuda_solve(
+    tspan::Tuple{Real, Real},
+    xspan::Tuple{Real, Real},
+    tau::Real,
+    h::Real,
+    initial_function;
+    ε_2::Real = 0.0,
+    ε_3::Real = 0.0,
+    # filtration parameters
+    filtration_args::NamedTuple = (
+        filtration_flag = false,
+        filtration_tau = 10.0,
+        filtration_factor = 1.0,
+        filtration_end_t = tspan[2],
+        filtration_l_nominal = 100.0,
+    ),
+    live_plot_tau = 1.0,
+)
+    @unpack filtration_flag, filtration_tau, filtration_factor, filtration_end_t, filtration_l_nominal = filtration_args
+    L = xspan[2] - xspan[1]
+    T = tspan[2] - tspan[1]
+    N = Int(L / h)
+    N_x = N + 1
+    N_t = Int(round(T / tau + 1, digits = 1))
+
+    j = range(-N / 2, stop = N / 2 , length = N_x)
+    x = collect(j .* h)[1:end-1]
+    t = range(tspan[1], tspan[2], length = N_t)
+
+    mun = collect(2 * pi / L .* range(-N / 2, stop = N / 2 - 1, length = N))
+    direct = (h / L .* exp.(-1im .* mun * x'))
+    inverse = exp.(1im .* mun * x')
+    fourier_ratio=exp.(-1im.*mun.^2 .*tau)
+    M = inverse * (fourier_ratio .* direct)
+
+    U = initial_function.(x)
+
+    cuda_U = CuArray(U)
+    cuda_M = CuArray(M)
+
+    observable_U = Observable(abs.(U))
+    observable_x = Observable(x)
+    live_plot_t_slider = 0.0
+
+    live_plot = Figure()
+    live_axis = Axis(live_plot[1, 1], limits = (minimum(x), maximum(x), 0.0, 1.0))
+    lines!(live_axis, observable_x, observable_U)
+    display(live_plot)
+
+    @for i in 1:N_t
+        t_current=(i-1)*tau
+        if (t_current ≥ live_plot_t_slider)
+            observable_U[] = abs.(Array(cuda_U))
+            live_plot_t_slider += live_plot_tau
+        end
+    
+        cuda_V = cuda_calculate_V(cuda_U, tau, ε_2, ε_3)
+        cuda_U = cuda_matrix_vector_multiplication(cuda_M,cuda_V)
+    end
+
+end

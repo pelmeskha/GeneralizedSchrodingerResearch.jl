@@ -25,11 +25,11 @@ function evaluate_z(ξ_vector, μ, M₀, M₁, z₀, ξ₀)
     return z₀ .+ ξ_vector / M₀ + (2 * M₁) / (μ * M₀ * sqrt_expression) *
         atanh.(atanh_expression)
 end
-function evaluate_y(ξ_vector, μ, M₀, M₁, ξ₀)
+function evaluate_y(ξ_vector, μ, M₀, M₁, ξ₀; warn_ignore=false)
     exp_expression = (1 .+ exp.(μ * (ξ_vector .- ξ₀)))
     
     complex_y = sqrt.(Complex.(M₀ .+ M₁ ./ exp_expression - M₁ ./ (exp_expression .^ 2)))
-    all(imag(complex_y).==0) || @warn "При вычислении y(z) обнаружены и отброшены комплесные числа."
+    all(imag(complex_y).==0) || (warn_ignore || @warn "При вычислении y(z) обнаружены и отброшены комплесные числа.")
     complex_y[imag(complex_y).!=0.0].=Complex(0.0)
     return Float64[real(x) for x in complex_y]
 end
@@ -42,11 +42,13 @@ function precompile_NSE_3_5_7_soliton(
     use_M_values=false,
     M₀=0.0,
     M₁=0.0,
+    debug_flag = false,
+    warn_ignore=false,
 )
     if ~use_M_values
         (M₀, M₁) = ε2_ε3_to_M0_M1(ε₂, ε₃)
     end
-    println("M₀=",round(M₀,digits=4)," M₁=",round(M₁,digits=4))
+    debug_flag && println("M₀=",round(M₀,digits=4)," M₁=",round(M₁,digits=4))
     μ = evaluate_μ(M₀, M₁)
 
     iters, iters_limit, success, ε_left, ε_right = 0, 50, false, 0, 0
@@ -64,11 +66,11 @@ function precompile_NSE_3_5_7_soliton(
         success = ~any(isinf, z_vector)
         iters==iters_limit && error("solution precompilation failed: MaxIters")
     end
-    maximum(z_vector) > L/2 || @warn "solution precompilation: BoundsError on right, extrapolation will be used"
-    minimum(z_vector) < -L/2 || @warn "solution precompilation: BoundsError on left, extrapolation will be used"
+    maximum(z_vector) > L/2 || (warn_ignore || @warn "solution precompilation: BoundsError on right, extrapolation will be used")
+    minimum(z_vector) < -L/2 || (warn_ignore || @warn "solution precompilation: BoundsError on left, extrapolation will be used")
 
-    y_vector = evaluate_y(ξ_vector, μ, M₀, M₁, ξ₀)
-    println(
+    y_vector = evaluate_y(ξ_vector, μ, M₀, M₁, ξ₀, warn_ignore=warn_ignore)
+    debug_flag && println(
         "interpolation defined for [",
         round(minimum(z_vector),digits=4),
         ", ",

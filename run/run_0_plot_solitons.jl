@@ -60,4 +60,4 @@ yaxis[:gridalpha] = 0.4
 plot!(legend=:topright, tickfontsize=10, legendfontsize=8, yguidefontrotation=0.0)
 xlabel!("x")
 ylabel!("|U|")
-savefig(plot_1, "run/plots/solitons.png")
+savefig(plot_1, "run/plots/run_7/solitons.png")

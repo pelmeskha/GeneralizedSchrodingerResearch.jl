@@ -1,4 +1,4 @@
-#include("run/run_6_dissipation_of_epsilon.jl")
+#include("run/run_7_dissipation_of_epsilon.jl")
 using Revise, LaTeXStrings, ProgressMeter
 using GeneralizedSchrodingerResearch.BaseUtilities: smooth_vector, relative_error_to_amplitude
 using GeneralizedSchrodingerResearch.Solvers: solve, cuda_solve
@@ -11,7 +11,7 @@ k = 0.15
 ω = 0.4
 
 #ε_2_vector = collect(-1.0:0.05:0.0)
-ε_2_vector = collect(0.0:0.05:1.0)
+ε_2_vector = collect(0.0:0.01:2.0)
 ε_3 = 0.0
 
 theta_0 = 0.0
@@ -24,7 +24,7 @@ xspan = (-80.0, 80.0)
 
 initial_function = (x) -> NSE_3_soliton(x, 0.0, k, ω, theta_0, z_0)
 
-filtration_factor, filtration_end_t = 1.02, tspan[2]
+filtration_factor, filtration_end_t = 1.05, tspan[2]
 filtration_factor_function = t -> t > filtration_end_t ? 1.0 : ((1.0 - filtration_factor) / filtration_end_t) * t + filtration_factor
 
 I1_dissipated_percents=Vector{Float64}([])
@@ -83,7 +83,7 @@ xaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:x)
 yaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:y)
 xaxis[:gridalpha] = 0.4
 yaxis[:gridalpha] = 0.4
-savefig(plot_1, "run/plots/dissipation_over_epsilon_2.png")
+savefig(plot_1, "run/plots/run_7/dissipation_over_epsilon_2.png")
 
 plot_2 = plot(
     ε_2_vector,
@@ -103,4 +103,4 @@ xaxis = Plots.get_axis(Plots.get_subplot(plot_2,1),:x)
 yaxis = Plots.get_axis(Plots.get_subplot(plot_2,1),:y)
 xaxis[:gridalpha] = 0.4
 yaxis[:gridalpha] = 0.4
-savefig(plot_2, "run/plots/final_amplitude_over_epsilon_2.png")
+savefig(plot_2, "run/plots/run_7/final_amplitude_over_epsilon_2.png")

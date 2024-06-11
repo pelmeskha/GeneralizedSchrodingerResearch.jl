@@ -1,6 +1,6 @@
 module Solvers
 
-using ProgressMeter, LinearAlgebra, CUDA, GLMakie
+using ProgressMeter, LinearAlgebra, CUDA, GLMakie, Parameters, FFMPEG, Plots
 using GeneralizedSchrodingerResearch.BaseUtilities: filtration, create_FD_matrix,
     integral_1, integral_2, cuda_integral_1, cuda_integral_2, cuda_filtration
 

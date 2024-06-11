@@ -66,4 +66,4 @@ yaxis = Plots.get_axis(Plots.get_subplot(plot_1,1),:y)
 xaxis[:gridalpha] = 0.4
 xaxis[:flip] = true
 yaxis[:gridalpha] = 0.4
-savefig(plot_1, "run/plots/step_error.png")
+savefig(plot_1, "run/plots/run_2/step_error.png")

@@ -1,3 +1,26 @@
+function cuda_calculate_V_and_multiplicate_kernel!(M, U, V, tau, ε_2, ε_3, y)
+    i = threadIdx().x + (blockIdx().x - 1) * blockDim().x
+    if i <= length(U)
+        abs_U = abs(U[i])
+        phase_factor = exp(1im * tau * (abs_U^2 + ε_2 * abs_U^4 + ε_3 * abs_U^6))
+        V[i] = phase_factor * U[i]
+    end
+    if i <= length(y)
+        sum = 0.0 + 0.0im
+        for j in axes(M, 2)
+            sum += M[i, j] * V[j]
+        end
+        y[i] = sum
+    end
+    return
+end
+function cuda_calculate_V_and_multiplicate(M::CuArray{ComplexF64, 2}, U::CuArray{ComplexF64, 1}, tau::Float64, ε_2::Float64, ε_3::Float64)
+    m, _ = size(M)
+    V = CUDA.fill(0.0 + 0.0im, length(U))
+    y = CUDA.fill(0.0 + 0.0im, m)
+    @cuda threads=256 blocks=ceil(Int, max(length(U), m)/256) cuda_calculate_V_and_multiplicate_kernel!(M, U, V, tau, ε_2, ε_3, y)
+    return y
+end
 function cuda_matrix_vector_multiplication(M::CuArray{ComplexF64, 2}, x::CuArray{ComplexF64, 1})
     m, _ = size(M)
     y = CUDA.fill(0.0 + 0.0im, m)
