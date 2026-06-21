@@ -13,4 +13,7 @@ export cuda_matrix_vector_multiplication, cuda_simple_tolerance, cuda_maximum
 include("cuda_solve.jl")
 export cuda_solve
 
+include("solve_coupled.jl")
+export solve_coupled_gl
+
 end
