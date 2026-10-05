@@ -39,7 +39,8 @@ function solve_coupled_gl(
     V_out[:,1] .= v
 
     # ---- FFT plans (create proper plans for in-place and out-of-place transforms) ----
-    # For in-place transformation of u and v separately
+    # For in-place transformation of u and v separately.
+    # Here we pre-compute PLANS for mutating v and u
     P_u    = plan_fft!(u)        # in-place FFT for u
     Pinv_u = plan_ifft!(u)       # in-place inverse FFT for u
     P_v    = plan_fft!(v)        # in-place FFT for v  
@@ -52,10 +53,14 @@ function solve_coupled_gl(
 
     # nonlinear right‑hand side (in‑place, writes into du, dv)
     function nonlinear_rhs!(du, dv, u_cur, v_cur)
-        @. du = 1im*γ * ( (abs2(u_cur) + (2/3)*abs2(v_cur)) * u_cur +
-                          (1/3) * v_cur^2 * conj(u_cur) )
-        @. dv = 1im*γ * ( (abs2(v_cur) + (2/3)*abs2(u_cur)) * v_cur +
-                          (1/3) * u_cur^2 * conj(v_cur) )
+        @. du = 1im*γ * (
+            (abs2(u_cur) + (2/3)*abs2(v_cur)) * u_cur +
+            (1/3) * v_cur^2 * conj(u_cur)
+        )
+        @. dv = 1im*γ * (
+            (abs2(v_cur) + (2/3)*abs2(u_cur)) * v_cur +
+            (1/3) * u_cur^2 * conj(v_cur)
+        )
     end
 
     # RK4 step for the nonlinear ODE (in‑place update of u, v)
@@ -86,25 +91,25 @@ function solve_coupled_gl(
     for k in iter
         # --- half linear step ---
         # Apply in-place: FFT, multiply, inverse FFT
-        mul!(u, P_u, u)          # u = fft(u)
+        mul!(u, P_u, u)    # u = fft(u)
         u .*= Lin_half
-        mul!(u, Pinv_u, u)       # u = ifft(u)
+        mul!(u, Pinv_u, u) # u = ifft(u)
         
-        mul!(v, P_v, v)          # v = fft(v)
+        mul!(v, P_v, v)    # v = fft(v)
         v .*= Lin_half
-        mul!(v, Pinv_v, v)       # v = ifft(v)
+        mul!(v, Pinv_v, v) # v = ifft(v)
 
         # --- full nonlinear step ---
         rk4_nonlinear!(u, v, Δz)
 
         # --- second half linear step ---
-        mul!(u, P_u, u)          # u = fft(u)
+        mul!(u, P_u, u)    # u = fft(u)
         u .*= Lin_half
-        mul!(u, Pinv_u, u)       # u = ifft(u)
+        mul!(u, Pinv_u, u) # u = ifft(u)
         
-        mul!(v, P_v, v)          # v = fft(v)
+        mul!(v, P_v, v)    # v = fft(v)
         v .*= Lin_half
-        mul!(v, Pinv_v, v)       # v = ifft(v)
+        mul!(v, Pinv_v, v) # v = ifft(v)
 
         # store
         U_out[:,k] .= u

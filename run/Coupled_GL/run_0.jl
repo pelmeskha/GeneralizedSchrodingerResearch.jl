@@ -141,45 +141,44 @@ function plot_error_profiles(T, z, U, V; prefix="error", dpi=300)
 end
 
 # pulse parameters
-k = 0
-c0 = 1
-mu = 1
-I1 = 0.1
+k = 12.6
+c0 = 1.4
+mu = 0.97
+I1 = 1
 ω = 0
-u0(T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(0-c0*T-0)))) * exp(1im * (ω*T))
-v0(T) = 0 # 2*sqrt(2*I1)/abs(mu) - 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(0-c0*T-0)))) * exp(1im * (ω*T))
+w0 = 15 # displacement
+u0(T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(0-c0*T-w0)))) * exp(1im * (ω*T))
+v0(T) = 0 # sin(T) * exp(-(-c0*T-w0)^2) # 
+
+# u0(T) = exp(-(T-15)^2)* exp(1im * (10*T)) 
+# v0(T) = 0
 
 # equation parameters. Construct corresponding equation
-β2 = -1.0; # Any
-Ω_g = 20.0; # not matter
+β2 = 0.025; # should be ~ 0.025
+Ω_g = 10.0; # should be ~ [10, 100]
 
-Δβ = (β2*c0^3*mu^2 + 2*β2*c0*ω^2 + 4*c0*k - 4*ω)/(2*c0); # derieved from restrictions
-γ = -mu^4*c0^2*β2/(32*I1) # derieved from restrictions
+# from restrictions
+δ = (1 - β2*c0*ω) / c0; # should be ~ [0, 0.1]. More -> faster                 | β2 c0    ω
+γ = -mu^4*c0^2*β2/(32*I1) # should be ~ 0.0013                                 | β2 c0 mu    I1
+Δβ = (β2*c0^3*mu^2 + 2*β2*c0*ω^2 + 4*c0*k - 4*ω)/(2*c0); # should be ~ [0, 10] | β2 c0 mu ω     k
+g = 0; # should be ~ [0.01, 0.5]
 
-δ = (1 - β2*c0*ω / c0); # from restrictions
-g = 0; # from restrictions
+δ  = 20
+γ  = 0.13
+Δβ = 5
+println("β2 = $β2, Ω_g = $Ω_g, Δβ = $Δβ, γ = $γ, δ = $δ")
 
 
 # domain
-Tspan = (-10.0, 10.0)
-zspan = (0.0, 5.0)
-dz    = 0.005
+Tspan = (-30.0, 30.0)
+zspan = (0.0, 100.0)
+dz    = 0.01
 N_T   = 512
 
-T, z, u, v = solve_coupled_gl(
-    zspan,
-    Tspan,
-    dz,
-    N_T,
-    u0,
-    v0,
-    Δβ,
-    δ,
-    β2,
-    g,
-    Ω_g,
-    γ
-)
+println("Число Куранта = $(dz/( (Tspan[2]-Tspan[1]) /N_T)^2) << $(0.2/(abs(β2)*pi^2)) ?")
+
+T, z, u, v = solve_coupled_gl(zspan, Tspan, dz, N_T, u0, v0, Δβ, δ, β2, g, Ω_g, γ)
+
 plot_coupled_gl(T, z, u, v; prefix="my_run", cmap=:plasma)
 plot_profiles(T, z, u, v; prefix="my_run")
 plot_error_profiles(T, z, u, v; prefix="my_run")
