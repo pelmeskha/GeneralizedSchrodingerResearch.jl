@@ -2,15 +2,15 @@ using FFTW
 using ProgressMeter
 
 function solve_coupled_gl(
-    zspan::Tuple{Real,Real},      # (zmin, zmax)
-    Tspan::Tuple{Real,Real},      # (Tmin, Tmax)
-    dz::Real,                     # step size in z
-    N_T::Int,                     # number of T‑grid points (even)
-    u0::Function,                 # u(0,T)
-    v0::Function,                 # v(0,T)
-    Δβ::Real, δ::Real, β2::Real,  # dispersion / birefringence
-    g::Real, Ω_g::Real,           # gain parameters
-    γ::Real;                      # nonlinear coefficient
+    zspan::Tuple{Real,Real},     # (zmin, zmax)
+    Tspan::Tuple{Real,Real},     # (Tmin, Tmax)
+    dz::Real,                    # step size in z
+    N_T::Int,                    # number of T‑grid points (even)
+    u0::Function,                # u(0,T)
+    v0::Function,                # v(0,T)
+    Δβ::Real, δ::Real, β2::Real, # dispersion / birefringence
+    g::Real, Ω_g::Real,          # gain parameters
+    γ::Real;                     # nonlinear coefficient
     show_progress = true
 )
     # ---- T grid and frequency grid ----

@@ -39,6 +39,18 @@ function plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis)
     savefig(p2, "$(prefix)_v.png")
 end
 """
+    plot_coupled_gl(T, z, true_u::Function, true_v::Function; kwargs...)
+
+    Evaluate analytical amplitudes on the (T, z) grid and plot their heatmaps.
+    Analytical functions must have signature field(z, T).
+"""
+function plot_coupled_gl(T, z, true_u::Function, true_v::Function; kwargs...)
+    U_true_abs = [abs(true_u(zi, tj)) for tj in T, zi in z]
+    V_true_abs = [abs(true_v(zi, tj)) for tj in T, zi in z]
+
+    return plot_coupled_gl(T, z, U_true_abs, V_true_abs; kwargs...)
+end
+"""
     plot_profiles(T, z, U, V; prefix="profiles", dpi=300)
 
     Plot the amplitude profiles |u(T)| and |v(T)| at the start (z[1]) and end (z[end]).
@@ -139,6 +151,63 @@ function plot_error_profiles(T, z, U, V; prefix="error", dpi=300)
 
     return p_u, p_v
 end
+"""
+    plot_true_errors(T, z, U, V, true_u, true_v; prefix="error plots", dpi=300)
+
+    Plot maximum absolute amplitude error versus z for u and v.
+
+    At each propagation step:
+        error[i] = maximum over T of abs(abs(actual) - abs(analytical))
+
+    Returns:
+        p_u, p_v, error_u, error_v
+"""
+function plot_true_errors(T, z, U, V, true_u, true_v; prefix="error plots", dpi=300)
+    expected_size = (length(T), length(z))
+    size(U) == expected_size ||
+        throw(DimensionMismatch("U must have size $expected_size"))
+    size(V) == expected_size ||
+        throw(DimensionMismatch("V must have size $expected_size"))
+
+    error_u = zeros(Float64, length(z))
+    error_v = zeros(Float64, length(z))
+
+    for i in eachindex(z)
+        for j in eachindex(T)
+            diff_u = abs(abs(U[j, i]) - abs(true_u(z[i], T[j])))
+            diff_v = abs(abs(V[j, i]) - abs(true_v(z[i], T[j])))
+
+            error_u[i] = max(error_u[i], diff_u)
+            error_v[i] = max(error_v[i], diff_v)
+        end
+    end
+
+    p_u = plot(
+        z, error_u;
+        xlabel="z",
+        ylabel="Maximum absolute amplitude error",
+        title="u: max over T of ||u_actual| - |u_true||",
+        linewidth=2,
+        color=:blue,
+        legend=false,
+        dpi=dpi
+    )
+    savefig(p_u, "$(prefix)_u_error_vs_z.png")
+
+    p_v = plot(
+        z, error_v;
+        xlabel="z",
+        ylabel="Maximum absolute amplitude error",
+        title="v: max over T of ||v_actual| - |v_true||",
+        linewidth=2,
+        color=:red,
+        legend=false,
+        dpi=dpi
+    )
+    savefig(p_v, "$(prefix)_v_error_vs_z.png")
+
+    return p_u, p_v, error_u, error_v
+end
 
 # pulse parameters
 k = 12.6
@@ -147,11 +216,11 @@ mu = 0.97
 I1 = 1
 ω = 0
 w0 = 15 # displacement
-u0(T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(0-c0*T-w0)))) * exp(1im * (ω*T))
+u0(T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(0-c0*T-w0)))) * exp(1im * (- ω*T))
 v0(T) = 0 # sin(T) * exp(-(-c0*T-w0)^2) # 
 
-# u0(T) = exp(-(T-15)^2)* exp(1im * (10*T)) 
-# v0(T) = 0
+true_u(z, T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(z-c0*T-w0)))) * exp(1im * (k*z - ω*T))
+true_v(z, T) = 0
 
 # equation parameters. Construct corresponding equation
 β2 = 0.025; # should be ~ 0.025
@@ -163,22 +232,24 @@ v0(T) = 0 # sin(T) * exp(-(-c0*T-w0)^2) #
 Δβ = (β2*c0^3*mu^2 + 2*β2*c0*ω^2 + 4*c0*k - 4*ω)/(2*c0); # should be ~ [0, 10] | β2 c0 mu ω     k
 g = 0; # should be ~ [0.01, 0.5]
 
-δ  = 20
-γ  = 0.13
-Δβ = 5
+# δ  = 20
+# γ  = 0.0013
+# Δβ = 5
 println("β2 = $β2, Ω_g = $Ω_g, Δβ = $Δβ, γ = $γ, δ = $δ")
 
 
 # domain
 Tspan = (-30.0, 30.0)
-zspan = (0.0, 100.0)
-dz    = 0.01
-N_T   = 512
+zspan = (0.0, 500.0)
+dz    = 0.005
+N_T   = 256
 
 println("Число Куранта = $(dz/( (Tspan[2]-Tspan[1]) /N_T)^2) << $(0.2/(abs(β2)*pi^2)) ?")
 
 T, z, u, v = solve_coupled_gl(zspan, Tspan, dz, N_T, u0, v0, Δβ, δ, β2, g, Ω_g, γ)
 
-plot_coupled_gl(T, z, u, v; prefix="my_run", cmap=:plasma)
-plot_profiles(T, z, u, v; prefix="my_run")
-plot_error_profiles(T, z, u, v; prefix="my_run")
+plot_coupled_gl(T, z, u, v; prefix="2D plot actual", cmap=:plasma)
+plot_coupled_gl(T, z, true_u, true_v; prefix="2D plot analytical", cmap=:plasma) # need other function?
+plot_profiles(T, z, u, v; prefix="initial and final solutions")
+plot_error_profiles(T, z, u, v; prefix="initial and final solutions difference")
+plot_true_errors(T, z, u, v, true_u, true_v;prefix="error plots")
