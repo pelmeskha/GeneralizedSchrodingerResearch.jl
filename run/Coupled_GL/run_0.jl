@@ -1,236 +1,219 @@
 using GeneralizedSchrodingerResearch.Solvers: solve_coupled_gl
-using Plots
+include("plotting.jl")
+using .CoupledGLPlotting
+using GeneralizedSchrodingerResearch.AnalyticalSolutions.CoupledGLAnalytical
 
 """
-    plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis)
+    periodic_time(z, T, Tspan, c0, w0)
 
-    Save two heatmaps showing the evolution of |u| and |v| as functions of z and T.
+    Map T to the periodic image closest to the analytical pulse center.
 
-    - `T` : vector of retarded time values (length N_T)
-    - `z` : vector of propagation distances (length N_z)
-    - `U` : complex array of size (N_T, N_z) containing u(z,T)
-    - `V` : complex array of size (N_T, N_z) containing v(z,T)
-    - `prefix` : string prepended to output filenames
-    - `cmap`  : colormap (symbol), e.g., :plasma, :inferno, :turbo
+    The period is the FFT domain length:
+        L_T = Tspan[2] - Tspan[1]
+
+    Requires c0 != 0.
 """
-function plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis)
-    # |u|
-    p1 = heatmap(
-        z,
-        T,
-        abs.(U),
-        xlabel = "z", ylabel = "T",
-        title  = "|u(z,T)|",
-        color  = cmap,
-        dpi    = 300
+function periodic_time(z, T, Tspan, c0, w0)
+    L_T = Tspan[2] - Tspan[1]
+
+    L_T > 0 || throw(ArgumentError("Tspan must have positive length"))
+    c0 != 0 || throw(ArgumentError("c0 must be nonzero"))
+
+    center = (z - w0) / c0
+
+    return center + mod(T - center + L_T/2, L_T) - L_T/2
+end
+"""
+    coupled_gl_residual(
+        u_solution, v_solution, z, t;
+        Δβ, δ, β2, g, Ω_g, γ,
+        hz=1e-3, ht=1e-3
     )
-    savefig(p1, "$(prefix)_u.png")
 
-    # |v|
-    p2 = heatmap(
-        z,
-        T,
-        abs.(V),
-        xlabel = "z", ylabel = "T",
-        title  = "|v(z,T)|",
-        color  = cmap,
-        dpi    = 300
-    )
-    savefig(p2, "$(prefix)_v.png")
-end
-"""
-    plot_coupled_gl(T, z, true_u::Function, true_v::Function; kwargs...)
+    Evaluate the coupled Ginzburg–Landau PDE residuals at (z, t).
 
-    Evaluate analytical amplitudes on the (T, z) grid and plot their heatmaps.
-    Analytical functions must have signature field(z, T).
-"""
-function plot_coupled_gl(T, z, true_u::Function, true_v::Function; kwargs...)
-    U_true_abs = [abs(true_u(zi, tj)) for tj in T, zi in z]
-    V_true_abs = [abs(true_v(zi, tj)) for tj in T, zi in z]
+    Solutions must be callable as:
+        u_solution(z, t)
+        v_solution(z, t)
 
-    return plot_coupled_gl(T, z, U_true_abs, V_true_abs; kwargs...)
-end
-"""
-    plot_profiles(T, z, U, V; prefix="profiles", dpi=300)
-
-    Plot the amplitude profiles |u(T)| and |v(T)| at the start (z[1]) and end (z[end]).
-
-    - `T` : retarded time array (length N_T)
-    - `z` : propagation distances (length N_z)
-    - `U` : complex array (N_T, N_z) for u
-    - `V` : complex array (N_T, N_z) for v
-    - `prefix` : filename prefix for saved figures
-    - `dpi` : resolution
-"""
-function plot_profiles(T, z, U, V; prefix="profiles", dpi=300)
-    # Initial and final indices
-    i_start = 1
-    i_end   = length(z)
-
-    # Extract profiles
-    u_init = abs.(U[:, i_start])
-    u_final = abs.(U[:, i_end])
-    v_init = abs.(V[:, i_start])
-    v_final = abs.(V[:, i_end])
-
-    # ---- u ----
-    p_u = plot(T, u_init,
-               label = "z = $(z[i_start])",
-               linewidth = 2,
-               xlabel = "T",
-               ylabel = "|u|",
-               title  = "u - initial vs final",
-               legend = :best,
-               dpi    = dpi)
-    plot!(p_u, T, u_final,
-          label = "z = $(z[i_end])",
-          linewidth = 2)
-    savefig(p_u, "$(prefix)_u_profiles.png")
-
-    # ---- v ----
-    p_v = plot(T, v_init,
-               label = "z = $(z[i_start])",
-               linewidth = 2,
-               xlabel = "T",
-               ylabel = "|v|",
-               title  = "v - initial vs final",
-               legend = :best,
-               dpi    = dpi)
-    plot!(p_v, T, v_final,
-          label = "z = $(z[i_end])",
-          linewidth = 2)
-    savefig(p_v, "$(prefix)_v_profiles.png")
-
-    return p_u, p_v
-end
-"""
-    plot_error_profiles(T, z, U, V; prefix="error", dpi=300)
-
-    Compute and plot the relative change of |u| and |v| from start to end.
-
-    The relative error is defined as
-        ( |field(T, z_end)| - |field(T, z_start)| ) / max_T |field(T, z_start)|
-    so that the curve shows the change normalised to the initial peak amplitude.
-"""
-function plot_error_profiles(T, z, U, V; prefix="error", dpi=300)
-    # Initial and final columns
-    u_init = abs.(U[:, 1])
-    u_final = abs.(U[:, end])
-    v_init = abs.(V[:, 1])
-    v_final = abs.(V[:, end])
-
-    # Normalization constants (max of initial amplitude)
-    u_scale = maximum(u_init)
-    v_scale = maximum(v_init)
-
-    # Relative error (guard against zero max, though never for physical pulses)
-    u_err = u_scale == 0 ? zero(u_init) : (u_final .- u_init) ./ u_scale
-    v_err = v_scale == 0 ? zero(v_init) : (v_final .- v_init) ./ v_scale
-
-    # ---- u error ----
-    p_u = plot(T, u_err,
-               linewidth = 2,
-               color      = :blue,
-               xlabel     = "T",
-               ylabel     = "Relative error",
-               title      = "|u|: (final - initial) / max(|u₀|)",
-               legend     = false,
-               dpi        = dpi)
-    savefig(p_u, "$(prefix)_u_error.png")
-
-    # ---- v error ----
-    p_v = plot(T, v_err,
-               linewidth = 2,
-               color      = :red,
-               xlabel     = "T",
-               ylabel     = "Relative error",
-               title      = "|v|: (final - initial) / max(|v₀|)",
-               legend     = false,
-               dpi        = dpi)
-    savefig(p_v, "$(prefix)_v_error.png")
-
-    return p_u, p_v
-end
-"""
-    plot_true_errors(T, z, U, V, true_u, true_v; prefix="error plots", dpi=300)
-
-    Plot maximum absolute amplitude error versus z for u and v.
-
-    At each propagation step:
-        error[i] = maximum over T of abs(abs(actual) - abs(analytical))
+    Derivatives use fourth-order centered finite differences.
+    The functions are evaluated at z ± hz, z ± 2hz,
+    and t ± ht, t ± 2ht.
 
     Returns:
-        p_u, p_v, error_u, error_v
+        residual_u, residual_v : complex PDE residuals
+        error_u, error_v       : absolute residual magnitudes
+
+    A smooth exact solution should produce residuals near zero,
+    up to differentiation and floating-point errors.
 """
-function plot_true_errors(T, z, U, V, true_u, true_v; prefix="error plots", dpi=300)
-    expected_size = (length(T), length(z))
-    size(U) == expected_size ||
-        throw(DimensionMismatch("U must have size $expected_size"))
-    size(V) == expected_size ||
-        throw(DimensionMismatch("V must have size $expected_size"))
+function coupled_gl_residual(
+    u_solution, v_solution;
+    z, t, Δβ, δ, β2, g, Ω_g, γ,
+    hz=1e-3,
+    ht=1e-3
+)
+    hz > 0 || throw(ArgumentError("hz must be positive"))
+    ht > 0 || throw(ArgumentError("ht must be positive"))
+    Ω_g != 0 || throw(ArgumentError("Ω_g must be nonzero"))
 
-    error_u = zeros(Float64, length(z))
-    error_v = zeros(Float64, length(z))
+    function field_derivatives(field)
+        f = field(z, t)
 
-    for i in eachindex(z)
-        for j in eachindex(T)
-            diff_u = abs(abs(U[j, i]) - abs(true_u(z[i], T[j])))
-            diff_v = abs(abs(V[j, i]) - abs(true_v(z[i], T[j])))
+        fz_minus2 = field(z - 2*hz, t)
+        fz_minus1 = field(z - hz, t)
+        fz_plus1  = field(z + hz, t)
+        fz_plus2  = field(z + 2*hz, t)
 
-            error_u[i] = max(error_u[i], diff_u)
-            error_v[i] = max(error_v[i], diff_v)
+        ft_minus2 = field(z, t - 2*ht)
+        ft_minus1 = field(z, t - ht)
+        ft_plus1  = field(z, t + ht)
+        ft_plus2  = field(z, t + 2*ht)
+
+        f_z = (
+            fz_minus2 - 8*fz_minus1 +
+            8*fz_plus1 - fz_plus2
+        ) / (12*hz)
+
+        f_t = (
+            ft_minus2 - 8*ft_minus1 +
+            8*ft_plus1 - ft_plus2
+        ) / (12*ht)
+
+        f_tt = (
+            -ft_plus2 + 16*ft_plus1 - 30*f +
+            16*ft_minus1 - ft_minus2
+        ) / (12*ht^2)
+
+        return f, f_z, f_t, f_tt
+    end
+
+    u, u_z, u_t, u_tt = field_derivatives(u_solution)
+    v, v_z, v_t, v_tt = field_derivatives(v_solution)
+
+    residual_u = (
+        u_z
+        - 1im * Δβ/2 * u
+        + δ * u_t
+        + 1im * β2/2 * u_tt
+        - g/2 * u
+        - g/(2*Ω_g^2) * u_tt
+        - 1im * γ * (abs2(u) + (2/3)*abs2(v)) * u
+        - 1im * γ/3 * v^2 * conj(u)
+    )
+
+    residual_v = (
+        v_z
+        - 1im * Δβ/2 * v
+        + δ * v_t
+        + 1im * β2/2 * v_tt
+        - g/2 * v
+        - g/(2*Ω_g^2) * v_tt
+        - 1im * γ * (abs2(v) + (2/3)*abs2(u)) * v
+        - 1im * γ/3 * u^2 * conj(v)
+    )
+
+    return (
+        residual_u=residual_u,
+        residual_v=residual_v,
+        error_u=abs(residual_u),
+        error_v=abs(residual_v)
+    )
+end
+"""
+    Evaluate residual magnitudes on a grid.
+
+    Output matrices have shape:
+        (length(t_values), length(z_values))
+    # Check if equations satisfied
+    parameters = (Δβ=Δβ, δ=δ, β2=β2, g=g, Ω_g=Ω_g, γ=γ)
+
+    check = coupled_gl_residual_grid(
+        true_u,
+        true_v;
+        z_values = range(0.0, 40.0, length=101),
+        t_values = range(Tspan[1], Tspan[2], length=256),
+        parameters...,
+        hz=1e-4,
+        ht=1e-4
+    )
+
+    println("True solution check:")
+    println("Maximum |R_u|: ", check.max_error_u)
+    println("Maximum |R_v|: ", check.max_error_v)
+"""
+function coupled_gl_residual_grid(
+    u_solution, v_solution;
+    z_values, t_values,
+    kwargs...
+)
+    error_u = Matrix{Float64}(
+        undef, length(t_values), length(z_values)
+    )
+    error_v = similar(error_u)
+
+    for (i, zi) in enumerate(z_values)
+        for (j, tj) in enumerate(t_values)
+            result = coupled_gl_residual(
+                u_solution, v_solution;
+                z=zi, t=tj,
+                kwargs...
+            )
+
+            error_u[j, i] = result.error_u
+            error_v[j, i] = result.error_v
         end
     end
 
-    p_u = plot(
-        z, error_u;
-        xlabel="z",
-        ylabel="Maximum absolute amplitude error",
-        title="u: max over T of ||u_actual| - |u_true||",
-        linewidth=2,
-        color=:blue,
-        legend=false,
-        dpi=dpi
+    return (
+        error_u=error_u,
+        error_v=error_v,
+        max_error_u=maximum(error_u),
+        max_error_v=maximum(error_v)
     )
-    savefig(p_u, "$(prefix)_u_error_vs_z.png")
-
-    p_v = plot(
-        z, error_v;
-        xlabel="z",
-        ylabel="Maximum absolute amplitude error",
-        title="v: max over T of ||v_actual| - |v_true||",
-        linewidth=2,
-        color=:red,
-        legend=false,
-        dpi=dpi
-    )
-    savefig(p_v, "$(prefix)_v_error_vs_z.png")
-
-    return p_u, p_v, error_u, error_v
 end
+
+# domain
+Tspan = (-100.0, 100.0)
+L = Tspan[2]-Tspan[1]
+zspan = (0.0, 300.0)
+dz    = 0.025
+N_T   = 256
 
 # pulse parameters
 k = 12.6
 c0 = 1.4
 mu = 0.97
-I1 = 1
+I1 = 0.1
 ω = 0
-w0 = 15 # displacement
-u0(T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(0-c0*T-w0)))) * exp(1im * (- ω*T))
-v0(T) = 0 # sin(T) * exp(-(-c0*T-w0)^2) # 
-
-true_u(z, T) = 2*sqrt(2*I1)/abs(mu) * abs(1-2/(1+ exp(mu*(z-c0*T-w0)))) * exp(1im * (k*z - ω*T))
-true_v(z, T) = 0
+w0 = 0 # displacement
 
 # equation parameters. Construct corresponding equation
 β2 = 0.025; # should be ~ 0.025
 Ω_g = 10.0; # should be ~ [10, 100]
 
 # from restrictions
-δ = (1 - β2*c0*ω) / c0; # should be ~ [0, 0.1]. More -> faster                 | β2 c0    ω
-γ = -mu^4*c0^2*β2/(32*I1) # should be ~ 0.0013                                 | β2 c0 mu    I1
-Δβ = (β2*c0^3*mu^2 + 2*β2*c0*ω^2 + 4*c0*k - 4*ω)/(2*c0); # should be ~ [0, 10] | β2 c0 mu ω     k
-g = 0; # should be ~ [0.01, 0.5]
+δ  = (1 - β2*c0*ω) / c0;                                  # ~ [0, 0.1]. More -> faster | β2 c0    ω
+g  = 0;                                                   # ~ [0.01, 0.5]
+γ  = mu^4 * c0^2 * β2 / (32*I1)                           # ~ 0.0013                   | β2 c0 mu    I1
+Δβ = (-β2*c0^3*mu^2 + 2*β2*c0*ω^2 + 4*c0*k - 4*ω)/(2*c0); # ~ [0, 10]                  | β2 c0 mu ω     k
+
+# helper
+# A = 2 * sqrt(2 * I1) / abs(mu)
+xi = coupled_gl_xi(; Δβ, β2, γ, c0, k, ω)
+sn_pars = sn_parameters(xi.xi1, xi.xi2, c0 * L)
+
+u0(T) = sn_solution(0.0, T, sn_pars; c0, w0, k, ω)
+# u0(T) = A * tanh(mu/2 * (0 - c0*T - w0)) * exp(1im * (- ω*T)) - A * tanh(mu/2 * (0 - c0*T - w0 - c0 * L/2)) * exp(1im * (- ω*T))
+v0(T) = 0 # sin(T) * exp(-(-c0*T-w0)^2) # 
+
+true_u(z, T) = sn_solution(z, T, sn_pars; c0, w0, k, ω)
+# true_u(z, T) = A * tanh(mu * (z - c0*T - w0) / 2) * exp(1im * (k*z - ω*T))
+# true_u(z, T) = A_per * jacobi_sn(kappa_per * (z - c0*T - w0), kp_per) * exp(1im * (k*z - ω*T))
+true_v(z, T) = 0
+# Periodic analytical reference.
+true_u_periodic(z, T) = true_u(z, periodic_time(z, T, Tspan, c0, w0))
+true_v_periodic(z, T) = true_v(z, periodic_time(z, T, Tspan, c0, w0))
 
 # δ  = 20
 # γ  = 0.0013
@@ -238,18 +221,25 @@ g = 0; # should be ~ [0.01, 0.5]
 println("β2 = $β2, Ω_g = $Ω_g, Δβ = $Δβ, γ = $γ, δ = $δ")
 
 
-# domain
-Tspan = (-30.0, 30.0)
-zspan = (0.0, 500.0)
-dz    = 0.005
-N_T   = 256
-
-println("Число Куранта = $(dz/( (Tspan[2]-Tspan[1]) /N_T)^2) << $(0.2/(abs(β2)*pi^2)) ?")
+println("Примерный критерий сходимости: $(dz/( (Tspan[2]-Tspan[1]) /N_T)^2) << $(0.2/(abs(β2)*pi^2)) ?")
 
 T, z, u, v = solve_coupled_gl(zspan, Tspan, dz, N_T, u0, v0, Δβ, δ, β2, g, Ω_g, γ)
 
+u_metrics = field_error(u, T, z, true_u_periodic)
+println(
+    "u vs analytical: max modulus error = ", round(u_metrics.max_modulus_error, sigdigits=3),
+    ", max complex error = ", round(u_metrics.max_complex_error, sigdigits=3),
+    ", max relative error = ", round(u_metrics.max_relative_error_percent, sigdigits=3), " %"
+)
+
 plot_coupled_gl(T, z, u, v; prefix="2D plot actual", cmap=:plasma)
-plot_coupled_gl(T, z, true_u, true_v; prefix="2D plot analytical", cmap=:plasma) # need other function?
-plot_profiles(T, z, u, v; prefix="initial and final solutions")
-plot_error_profiles(T, z, u, v; prefix="initial and final solutions difference")
-plot_true_errors(T, z, u, v, true_u, true_v;prefix="error plots")
+plot_coupled_gl(T, z, true_u_periodic, true_v_periodic; prefix="2D plot analytical", cmap=:plasma) # need other function?
+plot_profiles(
+    T_grid = T,
+    z_grid = z,
+    z_timestamps = [zspan[1], zspan[2]],
+    u_solutions = [u, true_u_periodic],
+    # v_solutions = [v, true_v_periodic], # commented = empty array by default. No plots for v component
+    prefixes=["actual", "analytical"],
+)
+plot_true_errors(T, z, u, v, true_u_periodic, true_v_periodic; prefix="error plots")

@@ -1,0 +1,408 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{subcaption}
+
+\title{coupled GL}
+\author{Viktor Medvedev}
+\date{March 2026}
+
+\begin{document}
+
+\section{Introduction}
+Pulse propagation in erbium-doped fiber (EDF) can be described by the following coupled Ginzburg-Landau equations:
+
+\begin{equation} \label{eq1}
+    \begin{cases}
+        \displaystyle
+        \frac{\partial{u}}{\partial{z}} = \frac{i \Delta \beta}{2}u - \delta \frac{\partial{u}}{\partial{t}} - \frac{i\beta_{2}}{2} \frac{\partial^2 u}{\partial t^2} + \frac{g}{2}u + \frac{g}{2\Omega^2_{g}}\frac{\partial^2 u}{\partial t^2} + i\gamma\left(\left|u\right|^2 + \frac{2}{3} \left|v\right|^2\right)u + \frac{i\gamma}{3}v^2 u^*, \\
+        \displaystyle
+        \frac{\partial{v}}{\partial{z}} = \frac{i \Delta \beta}{2}v - \delta \frac{\partial{v}}{\partial{t}} - \frac{i\beta_{2}}{2} \frac{\partial^2 v}{\partial t^2} + \frac{g}{2}v + \frac{g}{2\Omega^2_{g}}\frac{\partial^2 v}{\partial t^2} + i\gamma\left(\left|v\right|^2 + \frac{2}{3} \left|u\right|^2\right)v + \frac{i\gamma}{3}u^2 v^*,
+    \end{cases}
+\end{equation}
+where \(u\) and \(v\) are slowly varying pulse envelopes.
+
+\section{Analytical analysis}
+Let us consider first equation of Eq. \ref{eq1}, assuming \(v=0\):
+\begin{equation} \label{eq2}
+    \frac{\partial{u}}{\partial{z}} = \frac{i \Delta \beta}{2}u - \delta \frac{\partial{u}}{\partial{t}} - \frac{i\beta_{2}}{2} \frac{\partial^2 u}{\partial t^2} + \frac{g}{2}u + \frac{g}{2\Omega^2_{g}}\frac{\partial^2 u}{\partial t^2} + i\gamma\left|u\right|^2 u.
+\end{equation}
+
+Using traveling wave reduction in the form:
+\begin{equation} \label{eq3}
+    u\left(z, t\right) = y(\mathrm{w}) e^{i\left(k z-\omega t\right)}, \quad \text{where} \quad \mathrm{w} = z - c_{0} t,
+\end{equation}
+and evaluating corresponding derivatives:
+\begin{equation} \label{eq4}
+    \begin{cases}
+        \displaystyle
+        \frac{\partial u}{\partial z} = \left(y_{\mathrm{w}} + i k y\right) e^{i\left(k z-\omega t\right)},\\
+        \displaystyle
+        \frac{\partial u}{\partial t} = \left(-c_{0} y_{\mathrm{w}} - i \omega y\right) e^{i\left(k z-\omega t\right)}, \\
+        \displaystyle
+        \frac{\partial^2 u}{\partial t^2} = \left(c^{2}_{0}y_{\mathrm{ww}} + 2 i\omega c_{0} y_{\mathrm{w}} - \omega^{2}y\right) e^{i\left(k z-\omega t\right)},
+    \end{cases}
+\end{equation}
+we can rewrite Eq. \ref{eq2} as:
+\begin{equation} \label{eq5}
+    \begin{split}
+        &\left[\frac{c^{2}_{0} g}{2 \Omega^2_{g}} -i \left(\frac{c^2_{0}\beta_{2}} {2}\right)\right] \cdot y_{\mathrm{ww}} +
+        \left[\delta c_{0} - 1 + \beta_{2} \omega c_{0} + i \left(\frac{c_{0} g \omega}{\Omega^2_{g}}\right)\right] \cdot y_{\mathrm{w}} +\\
+        & + \left[\frac{g}{2}\left(1-\frac{\omega^{2}}{\Omega^2_{g}}\right) + i \left(\frac{\Delta \beta}{2}+\delta \omega + \frac{\beta_{2}}{2} \omega^{2} -k\right)\right]\cdot y +
+        i \gamma y^{3} = 0.
+    \end{split}
+\end{equation}
+
+Extracting real and imaginary parts of  Eq. \ref{eq5}, we obtain over-defined system of equations in the form:
+\begin{equation} \label{eq6}
+    \begin{cases}
+        \displaystyle \left(\frac{c^{2}_{0} g}{2 \Omega^2_{g}}\right) \cdot y_{\mathrm{ww}} + \left(\delta c_{0} - 1 + \beta_{2} \omega c_{0}\right) \cdot y_{\mathrm{w}} + \left[\frac{g}{2}\left(1-\frac{\omega^{2}}{\Omega^2_{g}}\right)\right] \cdot y = 0,\\
+        \displaystyle \left(-\frac{\beta_{2} c^{2}_{0}}{2}\right) \cdot y_{\mathrm{ww}} + \left(\frac{c_{0} g \omega}{\Omega^2_{g}}\right) \cdot y_{\mathrm{w}} + \left(\frac{\Delta \beta}{2} + \delta \omega + \frac{\beta_{2} \omega^{2}}{2} - k\right) \cdot y + \gamma \cdot y^3 = 0.
+    \end{cases}
+\end{equation}
+
+At parameters:
+\begin{equation} \label{eq7}
+    \begin{cases}
+    \displaystyle \delta = \frac{1-\beta_{2} c_{0} \omega}{c_{0}},\\
+    \displaystyle g = 0,
+    \end{cases}
+\end{equation}
+the equation for real part (first equation from system \ref{eq6}) can be satisfied, while imaginary part equation can be written as:
+\begin{equation} \label{eq8}
+    -\left(\frac{\beta_{2} c_{0}^{2}}{2} \right)y_{\mathrm{ww}} + \left(-\frac{\beta_{2} \omega^{2}}{2}+\frac{\omega}{c_{0}}-k +\frac{\Delta \beta}{2}\right) y + \gamma  y^{3} =0
+\end{equation}
+
+Eq. \ref{eq8} is a second-order nonlinear autonomous differential equation. It can be rewritten in the form:
+\begin{equation} \label{eq9}
+    y_{\mathrm{ww}} + \xi_{1} y + \xi_{2} y^3 = 0,
+\end{equation}
+where
+\begin{equation} \label{eq10}
+    \begin{cases}
+    \displaystyle \xi_{1} = 
+        \frac{\omega^{2}}{c_{0}^{2}}
+        -\frac{2 \omega}{c_{0}^{3} \beta_{2}}
+        +\frac{2 k}{c_{0}^{2} \beta_{2}}
+        -\frac{\Delta \beta}{c_{0}^{2} \beta_{2}},\\
+    \displaystyle \xi_{2} = -\frac{2 \gamma}{c_{0}^{2} \beta_{2}}.
+    \end{cases}
+\end{equation}
+
+The general solution of Eq. \ref{eq9} has pole of 1st order since two leading terms have orders \(p-2\) and \(3p\). After multiplying Eq. \ref{eq9} on \(y_{\mathrm{w}}\) and calculating integral, we obtain the equation:
+\begin{equation} \label{eq11}
+    \frac{y^2_{\mathrm{w}}}{2} + \frac{\xi_{1}}{2} y^2 + \frac{\xi_{2}}{4} y^4 = I_{1}.
+\end{equation}
+
+\subsection{Elliptic Legendre integral solution}
+From Eq. \ref{eq11} we can obtain the wave envelope first derivative in form:
+\begin{equation} \label{eq12}
+    y_{\mathrm{w}} = \pm \sqrt{2I_{1} - \xi_{1}y^2-\frac{\xi_{2}}{2}y^4},
+\end{equation}
+or
+\begin{equation} \label{eq13}
+    \pm \left(\mathrm{w} - \mathrm{w}_{0}\right) = \int \frac{dy}{ \sqrt{2I_{1} - \xi_{1}y^2-\frac{\xi_{2}}{2}y^4}}.
+\end{equation}
+
+At following parameter restrictions:
+\begin{equation} \label{eq13_1}
+    2 \xi_{1} + \xi_{2} = 4I_{1},
+\end{equation}
+Integral \ref{eq13} takes the form:
+\begin{equation} \label{eq13_2}
+    \pm \left(\mathrm{w} - \mathrm{w}_{0}\right) = \sqrt{2I_{1}}\int_{0}^{y} \frac{dp}{ \sqrt{\left(1 - p^2\right)\left(1 - d^2 p^2\right)}},
+\end{equation}
+where \(d^2 = \frac{\xi_{1}}{2I_{1}} -1 =-\frac{\xi_{2}}{4I_{1}}\).
+
+The integral in Eq. \ref{eq13_2} is a normal elliptic Legendre integral of the first kind in Jacobi form. Hence, the expression Eq. \ref{eq13}, taking into account Eq. \ref{eq13_1} lead to the following:
+\begin{equation} \label{eq13_3}
+    \pm \left(\mathrm{w} - \mathrm{w}_{0}\right) = \sqrt{2I_{1}} \cdot F \left(y, \sqrt{- \frac{\xi_{2}}{4I_{1}}} \right),
+\end{equation}
+and the integral cannot be computed analytically.
+
+\subsection{Dark soliton solution}
+In order to find exact solution of Eq. \ref{eq11}, we introduce new variable \(y\left(\mathrm{w}\right) = \sqrt{Y\left(\mathrm{w}\right)}\), and rewrite equation with lower nonlinearity degree:
+\begin{equation} \label{eq14}
+    Y^2_{\mathrm{w}} + 2\xi_{2}Y^3 + 4\xi_{1}Y^2 -8 I_{1} Y = 0.
+\end{equation}
+
+Next, we apply the Kudryashov Method [cite] to Eq. \ref{eq14}.
+First, we define the pole order of the general solution by substituting \(Y\left(\mathrm{w}\right) = \mathrm{w}^{p}\). Leading terms have powers \(2p-2\) and \(3p\). The solution have the pole of second order.
+Therefore we will be looking for \(Y\left(\mathrm{w}\right)\) in form:
+\begin{equation} \label{eq15}
+    Y\left(\mathrm{w}\right) = M_{0} + M_{1}Q\left(\mathrm{w}\right) + M_{2}Q^2\left(\mathrm{w}\right),
+\end{equation}
+where \(Q\left(\mathrm{w}\right)\) is the solution of Riccati equation:
+\begin{equation}\label{eq16}
+    Q_{\mathrm{w}} = \mu\,(Q^{2}-Q),
+\end{equation}
+of the form:
+\begin{equation}\label{eq17}
+    Q(\mathrm{w}) = \frac{1}{1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)}.
+\end{equation}
+
+Using \ref{eq15} and \ref{eq16}, Eq. \ref{eq14} can be written as:
+\begin{equation}\label{eq18}
+    \begin{split}
+        &\left(4 \mu^{2} M_{2}^{2}+2 M_{2}^{3} \xi_{2}\right) Q^{6}+\\
+        &+\left(4 \mu^{2} M_{1} M_{2}-8 \mu^{2} M_{2}^{2}+6 M_{1} M_{2}^{2} \xi_{2}\right) Q^{5}+\\
+        &+\left(\mu^{2} M_{1}^{2}-8 \mu^{2} M_{1} M_{2}+4 \mu^{2} M_{2}^{2}+6 M_{0} M_{2}^{2} \xi_{2}+6 M_{1}^{2} M_{2} \xi_{2}+4 M_{2}^{2} \xi_{1}\right) Q^{4}+\\
+        &+\left(-2 \mu^{2} M_{1}^{2}+4 \mu^{2} M_{1} M_{2}+12 M_{0} M_{1} M_{2} \xi_{2}+2 M_{1}^{3} \xi_{2}+8 M_{1} M_{2} \xi_{1}\right) Q^{3}+\\
+        &+\left(\mu^{2} M_{1}^{2}+6 M_{0}^{2} M_{2} \xi_{2}+6 M_{0} M_{1}^{2} \xi_{2}+8 M_{0} M_{2} \xi_{1}+4 M_{1}^{2} \xi_{1}-8 \mathrm{I}_{1} M_{2}\right) Q^{2}+\\
+        &+\left(6 M_{0}^{2} M_{1} \xi_{2}+8 M_{0} M_{1} \xi_{1}-8 \mathrm{I}_{1} M_{1}\right) Q+\\
+        &+\left(2 \xi_{2} M_{0}^{3}+4 \xi_{1} M_{0}^{2}-8 \mathrm{I}_{1} M_{0}\right)=0.
+    \end{split}
+\end{equation}
+
+Since \(Q(\mathrm{w}) \neq 0\), every coefficient of Eq. \ref{eq18} must equal zero. This lead to the following restrictions:
+\begin{equation} \label{eq19}
+    \begin{cases}
+        \displaystyle M_{0} = \frac{8 \mathrm{I}_{1}}{\mu^{2}}\\
+        \displaystyle M_{1} = -\frac{32 \mathrm{I}_{1}}{\mu^{2}}\\
+        \displaystyle M_{2} = \frac{32 \mathrm{I}_{1}}{\mu^{2}}\\
+        \displaystyle \xi_{1} = \frac{\mu^{2}}{2}\\
+        \displaystyle \xi_{2} = -\frac{\mu^{4}}{16 \mathrm{I}_{1}}.
+    \end{cases}
+\end{equation}
+
+Now the solution of an Eq. \ref{eq14} can be written as:
+\begin{equation} \label{eq20}
+    Y(\mathrm{w}) = \frac{8 \mathrm{I}_{1}}{\mu^{2}} - \frac{32 \mathrm{I}_{1}}{\mu^{2}} \cdot \frac{1}{1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)} + \frac{32 \mathrm{I}_{1}}{\mu^{2}} \cdot \frac{1}{\left(1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)\right)^{2}},
+\end{equation}
+or
+\begin{equation} \label{eq21}
+    Y(\mathrm{w}) = \frac{8\mathrm{I}_{1}}{\mu^2} \cdot \tanh^{2}\left(\frac{\mu\left(\mathrm{w}-\mathrm{w}_{0}\right)}{2}\right)
+\end{equation}
+
+The analytical solution of Eq. \ref{eq2} takes the form:
+\begin{equation} \label{eq22}
+    u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \left|\tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right)\right| \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
+\end{equation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{fig1.png}
+    \caption{Dark soliton (\ref{eq22}) at parameters \(I_{1} = 5.3\), \(\mu = 1.2\), \(c_{0} = 5.5\), \(t = 0\), \(\mathrm{w}_{0} = 3\)}
+    \label{fig1}
+\end{figure}
+\subsection{Jacobi hyperbolic sine solution}
+Let us consider another exact solution of Eq. \ref{eq9}, which is periodic in \(\mathrm{w}\) and is expressed through the Jacobi elliptic function \(\mathrm{sn}\). Let \(\mathrm{sn}(\cdot\,|\,m)\) be the Jacobi sine amplitude with parameter \(m \in (0,1)\). It satisfies:
+\begin{equation} \label{eq11_1}
+    \mathrm{sn}'^{\,2} = \left(1-\mathrm{sn}^{2}\right)\left(1-m\,\mathrm{sn}^{2}\right), \qquad \mathrm{sn}'' = -(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3}.
+\end{equation}
+
+We look for the solution in form:
+\begin{equation} \label{eq11_2}
+    y\left(\mathrm{w}\right) = A\,\mathrm{sn}\left(\kappa\,\mathrm{w}\,|\,m\right).
+\end{equation}
+Then \(y_{\mathrm{ww}} = A\kappa^{2}\left(-(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3}\right)\). Substituting into Eq. \ref{eq9} and collecting the coefficients of \(\mathrm{sn}\) and \(\mathrm{sn}^{3}\), we obtain:
+\begin{equation} \label{eq11_3}
+    \begin{cases}
+        \displaystyle -\kappa^{2}\left(1+m\right) + \xi_{1} = 0,\\
+        \displaystyle 2m\kappa^{2} + \xi_{2}A^{2} = 0.
+    \end{cases}
+\end{equation}
+Hence
+\begin{equation} \label{eq11_4}
+    \kappa^{2} = \frac{\xi_{1}}{1+m}, \qquad A^{2} = \frac{2m\,\xi_{1}}{\left(1+m\right)\left|\xi_{2}\right|}.
+\end{equation}
+
+The period of \(\mathrm{sn}\left(\kappa\,\mathrm{w}\right)\) in \(\mathrm{w}\) is \(4K(m)/\kappa\), where \(K(m)\) is the complete elliptic integral of the first kind. The time window has length \(L\), so at fixed \(z\) the shift \(T \to T+L\) moves \(\mathrm{w}\) by \(c_{0}L\). The solution is periodic in \(T\) when
+\begin{equation} \label{eq11_5}
+    \frac{4K(m)}{\kappa} = c_{0}L.
+\end{equation}
+Since \(\kappa\) depends on \(m\) through Eq. \ref{eq11_4}, Eq. \ref{eq11_5} determines \(m\). The left side equals \(2\pi/\sqrt{\xi_{1}}\) at \(m=0\) and grows to infinity as \(m \to 1\), so a solution exists for \(c_{0}L > 2\pi/\sqrt{\xi_{1}}\).
+
+For large \(c_{0}L\) the modulus is extremely close to 1, so \(1-m\) cannot be stored in floating point. We use the complementary modulus \(k'=\sqrt{1-m}\) instead. For the parameters of the numerical example (\texttt{run\_0.jl}) \(k' \approx 7\cdot 10^{-15}\).
+
+The arithmetic-geometric mean (AGM) gives \(K\) and \(\mathrm{sn}\):
+\begin{equation} \label{eq11_6}
+    a_{0}=1,\quad b_{0}=k',\quad \tilde{c}_{0}=\sqrt{m},\qquad a_{n+1}=\frac{a_{n}+b_{n}}{2},\quad b_{n+1}=\sqrt{a_{n}b_{n}},\quad \tilde{c}_{n+1}=\frac{a_{n}-b_{n}}{2}.
+\end{equation}
+The iteration is continued until \(\tilde{c}_{N} \approx 0\), and then
+\begin{equation} \label{eq11_7}
+    K(m) = \frac{\pi}{2a_{N}}.
+\end{equation}
+To evaluate \(\mathrm{sn}\), we set \(\varphi_{N} = 2^{N}a_{N}u\) and iterate downward:
+\begin{equation} \label{eq11_8}
+    \varphi_{n-1} = \frac{1}{2}\left(\varphi_{n} + \arcsin\left(\frac{\tilde{c}_{n}}{a_{n}}\sin\varphi_{n}\right)\right), \qquad n = N,\dots,1,
+\end{equation}
+so that \(\mathrm{sn}(u\,|\,m) = \sin\varphi_{0}\). The modulus is found by bisection on \(\log k'\) so that Eq. \ref{eq11_5} holds.
+
+Finally, the solution of Eq. \ref{eq2} takes the form:
+\begin{equation} \label{eq11_9}
+    u(z,t) = A\,\mathrm{sn}\left(\kappa\left(z - c_{0}t - \mathrm{w}_{0}\right)\,|\,m\right)\mathrm{e}^{i\left(kz-\omega t\right)}.
+\end{equation}
+The zeros of \(\mathrm{sn}\) are at \(\mathrm{w}=0\) and \(\mathrm{w}=2K/\kappa\). Each zero is a dark soliton with a \(\pi\) phase jump, and neighbouring zeros have opposite polarity. Within one window there are two such solitons, half a window apart.
+
+For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}\) and \(A \to \sqrt{\xi_{1}/\left|\xi_{2}\right|}\). With \(\xi_{1} = \mu^{2}/2\) and \(\xi_{2} = -\mu^{4}/(16 I_{1})\) from Eq. \ref{eq19}, this gives \(\kappa = \mu/2\) and \(A = 2\sqrt{2I_{1}}/|\mu|\). These are the parameters of the single dark soliton Eq. \ref{eq22}, which is not periodic.
+
+\section{Numerical Analysis}
+    To build a numerical scheme for numerical analysis, we rewrite original system (\ref{eq1}) in the form:
+    \begin{equation}
+        \frac{\partial}{\partial z}\begin{pmatrix}u\\v\end{pmatrix}
+        = \bigl(\hat L + \hat N\bigr)\begin{pmatrix}u\\v\end{pmatrix},
+    \end{equation}
+    where
+    \begin{equation}
+        \hat L =
+            \left(\frac{i\Delta\beta}{2}+\frac{g}{2}\right)
+            - \delta\frac{\partial}{\partial t}
+            + \left(\frac{g}{2\Omega_{g}^2}-\frac{i\beta_{2}}{2}\right)\frac{\partial^2}{\partial t^2}
+    \end{equation}
+    contains all linear terms (dispersion, birefringence, and frequency‑dependent gain) and
+    \begin{equation}\label{eq:nonlin_ode}
+        \hat N\begin{pmatrix}u\\v\end{pmatrix} =
+            i\gamma \cdot \begin{pmatrix}
+            \Bigl[\bigl(|u|^2+\tfrac{2}{3}|v|^2\bigr)u + \tfrac{1}{3}v^2 u^*\Bigr]\\[4pt]
+            \Bigl[\bigl(|v|^2+\tfrac{2}{3}|u|^2\bigr)v + \tfrac{1}{3}u^2 v^*\Bigr]
+            \end{pmatrix}
+    \end{equation}
+    is the nonlinear term.
+
+    We employ a split‑step Fourier method with symmetric (Strang) splitting and formulate initial-boundary problem with periodic boundary conditions:
+    \begin{equation} 
+        \begin{cases}
+            \displaystyle u\left(z, -\frac{L_{t}}{2}\right) = u\left(z, \frac{L_{t}}{2}\right),\\
+            \displaystyle v\left(z, -\frac{L_{t}}{2}\right) = v\left(z, \frac{L_{t}}{2}\right),\\
+            \displaystyle \frac{\partial u}{\partial t}\left(z, -\frac{L_{t}}{2}\right) = \cfrac{\partial u}{\partial t}\left(z, \frac{L_{t}}{2}\right),\\
+            \displaystyle \frac{\partial v}{\partial t}\left(z, -\frac{L_{t}}{2}\right) = \cfrac{\partial v}{\partial t}\left(z, \frac{L_{t}}{2}\right).
+        \end{cases}
+    \end{equation}
+    The propagation is performed on a periodic time window $t\in[\frac{-L_{t}}{2},\frac{L_{t}}{2}]$ sampled by $N_t$ equally spaced points $\Delta t = L_t/N_t$.
+
+    The solution over a step $\Delta z$ is approximated by the symmetric splitting
+    \begin{equation}
+        \begin{pmatrix} u\\v \end{pmatrix}_{z+\Delta z} \approx
+        e^{\frac{\Delta z}{2}\hat L} \cdot
+        e^{\Delta z\hat N} \cdot
+        e^{\frac{\Delta z}{2}\hat L}
+        \begin{pmatrix}u\\v\end{pmatrix}_{z}.
+    \end{equation}
+    The linear exponential $e^{\frac{\Delta z}{2}\hat L}$ is applied in the Fourier domain,
+    while the nonlinear exponential $e^{\Delta z\hat N}$ is integrated with a fourth‑order Runge–Kutta (RK4) scheme.
+    
+    \subsection{Linear sub‑step}
+    In the Fourier domain the linear operator becomes a multiplicative factor. With the convention $\partial/\partial t \leftrightarrow i\omega_{f}$,
+    the Fourier transform of $\hat L$ acting on a single field $u$ (or $v$) is the following:
+    \begin{equation}
+        \widetilde L(\omega_{f})
+        = \frac{g}{2} - \frac{g}{2\Omega_g^2}\omega_{f}^2
+        + i\Bigl(\frac{\Delta\beta}{2} - \delta\omega_{f} + \frac{\beta_2}{2}\omega_{f}^2\Bigr).
+    \end{equation}
+    Both fields $u$ and $v$ experience the same linear response because the linear part
+    of Eq. \ref{eq1} is diagonal and identical for the two polarisations.
+    Hence a half‑step of the linear operator is applied in the frequency domain as
+    \begin{equation}
+        \left[
+        \begin{array}{ll}
+            \tilde u\left(\omega_f\right) \Big| _{z+\frac{\Delta z}{2}} =
+            \exp\!\Bigl[\widetilde L(\omega_f)\frac{\Delta z}{2}\Bigr] \tilde u\left(\omega_f\right) \Big| _{z},\\
+            \tilde v\left(\omega_f\right) \Big| _{z+\frac{\Delta z}{2}} =
+            \exp\!\Bigl[\widetilde L(\omega_f)\frac{\Delta z}{2}\Bigr] \tilde v\left(\omega_f\right) \Big| _{z},
+        \end{array}
+        \right.
+    \end{equation}
+    where $\tilde u = \mathcal{F}[u]$ and $\tilde v = \mathcal{F}[v]$ are obtained by the fast Fourier transform (FFT).
+    
+    After the nonlinear full-step, the linear half-step applied again. Then, the fields are transformed back to the time domain with the inverse FFT.
+    The FFT routines assume periodic boundary conditions, consistent with the finite sampling window.
+    
+    \subsection{Nonlinear sub‑step}
+    The nonlinear sub‑step advances the ordinary differential equation
+    \begin{equation} \label{nonlinear_eq}
+        \frac{\partial}{\partial z}\begin{pmatrix}u\\v\end{pmatrix}
+        = \hat N\begin{pmatrix}u\\v\end{pmatrix},
+    \end{equation}
+    over a full step $\Delta z$.  We solve \eqref{nonlinear_eq} with the classical fourth‑order Runge–Kutta method.
+    For given nonlinear term, the integration can be performed independently
+    at each grid point using vectorized operations since there is no derivatives and neighbor-dependencies. We use classic RK4 in the form:
+    \begin{align}
+        &\mathbf{k}_1 = \hat N(\mathbf{w}), \nonumber\\
+        &\mathbf{k}_2 = \hat N(\mathbf{w} + \tfrac{\Delta z}{2}\mathbf{k}_1), \nonumber\\
+        &\mathbf{k}_3 = \hat N(\mathbf{w} + \tfrac{\Delta z}{2}\mathbf{k}_2), \nonumber\\
+        &\mathbf{k}_4 = \hat N(\mathbf{w} + \Delta z\,\mathbf{k}_3), \nonumber\\
+        &\mathbf{w}\Big| _{z+\Delta z} = \mathbf{w}\Big| _{z} + \frac{\Delta z}{6}\bigl(\mathbf{k}_1+2\mathbf{k}_2+2\mathbf{k}_3+\mathbf{k}_4\bigr), \nonumber
+    \end{align}
+    where $\mathbf{w}=(u,v)^T$. The approximation order RK4 ensures that the overall splitting error remains the dominant source of numerical inaccuracy.
+    
+    \subsection{Symmetric split‑step scheme}
+    Combining the two half‑steps, one complete step from $z$ to $z+\Delta z$ proceeds as follows:
+    \begin{enumerate}
+        \item \textbf{First linear half-step.} Compute $\tilde u = \mathcal{F}[u]$, $\tilde v = \mathcal{F}[v]$, by FFT.
+        Multiply by $\exp[\widetilde L(\omega)\frac{\Delta z}{2}]$, and transform back:
+        $u \leftarrow \mathcal{F}^{-1}[\tilde u]$, $v \leftarrow \mathcal{F}^{-1}[\tilde v]$.
+        \item \textbf{Full nonlinear step.} Advance $(u,v)$ by $\Delta z$ using the RK4 integration of \eqref{eq:nonlin_ode}.
+        \item \textbf{Second linear half-step.} Repeat step~1.
+    \end{enumerate}
+    
+\section{Modeling Results}
+    We consider dark soliton of the form (\ref{eq21}) as initial conditions for initial-boundary problem for system (\ref{eq1}). We take \(v(z,t) \equiv 0\). Fig. \ref{fig2} illustrates the pulse behavior under certain model parameters. The soliton propagates steadily.
+    \begin{figure}
+        \centering
+            \begin{subfigure}[t]{0.49\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig2.png}
+                \subcaption{Numerical solution \(u\) profile at \(z=0\) and \(z=100\).}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[t]{0.49\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig3.png}
+                \subcaption{\(\left|u(z,t)\right|\)}
+            \end{subfigure}
+        \caption{
+            \\Pulse parameters:
+            \(k = 12.6\),
+            \(c_{0} = 1.4\),
+            \(\mu = 0.97\),
+            \(I_{1} = 1\),
+            \(\omega = 0\),
+            \(\mathrm{w}_{0} = 15\).\\
+            Model parameters:
+            \(\beta_{2} = 0.025\),
+            \(\Omega_{g} = 10\),
+            \(\delta = 20\),
+            \(\gamma = 0.0013\),
+            \(g = 0\),
+            \(\Delta \beta = 5\).
+        }
+        \label{fig2}
+    \end{figure}
+
+    By increasing the coupling coefficient \(\gamma\) and perturbing initial condition \(v(z=0, t) = \sin(t)\cdot\exp\left(-(c_{0}t-w_{0})\right)\), we can observe pulse decay, as depicted on Fig. \ref{fig3}.
+    \begin{figure}
+        \centering
+            \begin{subfigure}[t]{0.49\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig4.png}
+                \subcaption{\(\left|u(z,t)\right|\)}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[t]{0.49\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig5.png}
+                \subcaption{\(\left|v(z,t)\right|\)}
+            \end{subfigure}
+        \caption{
+            Numerical solution for disturbed \(v(z=0, t)\). \\
+            Model parameters:
+            \(\beta_{2} = 0.025\),
+            \(\Omega_{g} = 10\),
+            \(\delta = 20\),
+            \(\gamma = 0.13\),
+            \(g = 0\),
+            \(\Delta \beta = 5\).
+        }
+        \label{fig3}
+    \end{figure}
+
+    From numerical analysis, the following conclusions are made:
+    \begin{enumerate}
+        \item Dark soliton, found by Kudryashov method, propagate steadily;
+        \item Model parameter \(\delta\) is a linear-transfer coefficient;
+        \item Model parameter \(\gamma\) is a coupling parameter;
+        \item Model parameter \(g\) is a linear amplification parameter;
+    \end{enumerate}
+\end{document}
+

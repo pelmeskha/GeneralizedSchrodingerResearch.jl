@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb}
+
+\title{Periodic analytical solution through the Jacobi function $\mathrm{sn}$}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Reduced equation}
+Substitute the traveling-wave ansatz $u(z,t)=y(\mathrm{w})\,e^{i(kz-\omega t)}$, $\mathrm{w}=z-c_0 t$, with $v=0$ and $g=0$ into the first equation of the system. The imaginary part of the result gives
+\begin{equation}\label{eq:ode}
+    y_{\mathrm{ww}} + \xi_1 y + \xi_2 y^3 = 0,
+\end{equation}
+with
+\begin{equation}\label{eq:xi}
+    \xi_1 = \frac{-\Delta\beta - 2\omega/c_0 + \beta_2\omega^2 + 2k}{\beta_2 c_0^2},
+    \qquad
+    \xi_2 = -\frac{2\gamma}{\beta_2 c_0^2}.
+\end{equation}
+In the case considered here $\xi_1>0$ and $\xi_2<0$.
+
+\section{First integral}
+Multiply \eqref{eq:ode} by $y_{\mathrm{w}}$ and integrate:
+\begin{equation}\label{eq:first}
+    y_{\mathrm{w}}^2 = 2I - \xi_1 y^2 - \frac{\xi_2}{2}y^4,
+\end{equation}
+where $I$ is the integration constant.
+
+\section{Ansatz}
+Let $\mathrm{sn}(\cdot\,|\,m)$ be the Jacobi sine amplitude with parameter $m\in(0,1)$. It satisfies
+\begin{equation}\label{eq:sn_props}
+    \mathrm{sn}'^2 = (1-\mathrm{sn}^2)(1-m\,\mathrm{sn}^2),
+    \qquad
+    \mathrm{sn}'' = -(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^3 .
+\end{equation}
+Set
+\begin{equation}\label{eq:ansatz}
+    y(\mathrm{w}) = A\,\mathrm{sn}(\kappa\,\mathrm{w}\,|\,m).
+\end{equation}
+Then $y_{\mathrm{ww}} = A\kappa^2\bigl[-(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^3\bigr]$. Substituting into \eqref{eq:ode} and collecting the coefficients of $\mathrm{sn}$ and $\mathrm{sn}^3$ gives two conditions:
+\begin{align}
+    -\kappa^2(1+m) + \xi_1 &= 0, \label{eq:c1}\\
+    \frac{2m\kappa^2}{A^2} + \xi_2 &= 0. \label{eq:c2}
+\end{align}
+Hence
+\begin{equation}\label{eq:params}
+    \kappa^2 = \frac{\xi_1}{1+m},
+    \qquad
+    A^2 = \frac{2m\,\xi_1}{(1+m)\,|\xi_2|}.
+\end{equation}
+
+\section{Periodicity}
+The time window is $T\in[-L/2,\,L/2)$ with $L = L_T$. At fixed $z$, $T\mapsto T+L$ shifts $\mathrm{w}$ by $c_0L$. The solution is periodic in $T$ if $\mathrm{sn}$ has period $c_0 L$ in $\mathrm{w}$. The period of $\mathrm{sn}(\kappa\,\mathrm{w})$ is $4K(m)/\kappa$, where $K$ is the complete elliptic integral of the first kind. So the window condition is
+\begin{equation}\label{eq:period}
+    \frac{4K(m)}{\kappa} = c_0 L.
+\end{equation}
+Because $\kappa$ depends on $m$ through \eqref{eq:params}, \eqref{eq:period} is one equation for $m$. It has a solution for any $L$ above the value at $m=0$.
+
+\section{Numerical evaluation}
+For large $c_0L$ the modulus $m$ is extremely close to $1$, so $1-m$ cannot be stored directly. Use the complementary modulus $k'=\sqrt{1-m}$ instead; for the parameters of \texttt{run\_0.jl} $k'\approx 7\cdot 10^{-15}$.
+
+The arithmetic-geometric mean (AGM) gives $K$ and $\mathrm{sn}$. Define
+\begin{equation}\label{eq:agm}
+    a_0 = 1,\quad b_0 = k',\quad \tilde c_0 = \sqrt{m},
+    \qquad
+    a_{n+1} = \frac{a_n+b_n}{2},\quad
+    b_{n+1} = \sqrt{a_n b_n},\quad
+    \tilde c_{n+1} = \frac{a_n-b_n}{2},
+\end{equation}
+until $\tilde c_N\approx 0$. Then
+\begin{equation}\label{eq:K}
+    K(m) = \frac{\pi}{2a_N}.
+\end{equation}
+For $\mathrm{sn}$, set $\varphi_N = 2^N a_N u$ and iterate downward:
+\begin{equation}\label{eq:phi}
+    \varphi_{n-1} = \frac{1}{2}\left(\varphi_n + \arcsin\!\left(\frac{\tilde c_n}{a_n}\sin\varphi_n\right)\right),
+    \qquad n = N,\dots,1,
+\end{equation}
+so that $\mathrm{sn}(u\,|\,m) = \sin\varphi_0$.
+
+The modulus is found by bisection on $\log k'$ so that \eqref{eq:period} holds.
+
+\section{Solution and properties}
+The solution of the PDE is
+\begin{equation}\label{eq:solution}
+    u(z,t) = A\,\mathrm{sn}\bigl(\kappa\,(z-c_0 t-w_0)\,\big|\,m\bigr)\,e^{i(kz-\omega t)}.
+\end{equation}
+The zeros of $\mathrm{sn}$ are at $\mathrm{w}=0$ and $\mathrm{w}=2K/\kappa$. Each zero is a dark soliton with a $\pi$ phase jump, and the two have opposite polarity. Within one window there are two such solitons, separated by half the window.
+
+\paragraph{Limit $m\to 1$.} Here $\mathrm{sn}\to\tanh$, $\kappa\to\sqrt{\xi_1/2}$ and $A\to\sqrt{\xi_1/|\xi_2|}$. With the tanh-soliton parameters $\xi_1=\mu^2/2$ and $\xi_2=-\mu^4/(16I_1)$, this gives $\kappa=\mu/2$ and $A=2\sqrt{2I_1}/|\mu|$. These are the parameters of the single dark soliton \eqref{eq:solution} without periodicity.
+
+\end{document}

@@ -1,5 +1,6 @@
 using FFTW
 using ProgressMeter
+using LinearAlgebra: mul!
 
 function solve_coupled_gl(
     zspan::Tuple{Real,Real},     # (zmin, zmax)
@@ -16,8 +17,8 @@ function solve_coupled_gl(
     # ---- T grid and frequency grid ----
     L_T = Tspan[2] - Tspan[1]
     dT  = L_T / N_T
-    T   = collect(range(Tspan[1], step=dT, length=N_T))   # periodic grid
-    ω   = 2π .* fftfreq(N_T, dT)                          # FFTW frequency ordering
+    T   = collect(range(Tspan[1], step=dT, length=N_T)) # periodic grid
+    ω   = ω = 2π .* fftfreq(N_T, 1 / dT)                # FFTW frequency ordering
 
     # ---- z grid ----
     N_z = round(Int, (zspan[2] - zspan[1]) / dz) + 1
