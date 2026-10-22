@@ -11,6 +11,29 @@ The user compiles with MiKTeX 22.10 (pdfTeX) on Windows, through TeXworks. There
 /mnt/c/Users/vikto/AppData/Local/Programs/MiKTeX/miktex/bin/x64/pdflatex.exe
 ```
 
+### Julia
+
+Julia 1.12.6 (installed on Windows through juliaup). Run it from WSL with the juliaup shim:
+
+```
+/mnt/c/Users/vikto/AppData/Local/Microsoft/WindowsApps/julia.exe
+```
+
+Run scripts with the repo project using a Windows-style path:
+
+```
+"/mnt/c/Users/vikto/AppData/Local/Microsoft/WindowsApps/julia.exe" --project=C:/Users/vikto/Desktop/Projects/GeneralizedSchrodingerResearch.jl run/Coupled_GL/run_0.jl
+```
+
+Do not use `/mnt/c/Users/vikto/AppData/Local/Programs/Julia-1.9.3`, which is an older install.
+
+Do not run scripts from a WSL path such as `/home/...` as `--project`. Windows Julia does not resolve it. Use `C:/...` paths for `--project`, and relative paths for `include`.
+
+Test simulations in a temporary copy of the repo under `/mnt/c/Users/vikto/AppData/Local/Temp/`, not in `results/`.
+
+### Python env sandbox
+conda env: coupled_GL. Sympy installed.
+
 ### How to compile
 
 1. Do not run `pdflatex.exe` from a WSL path (`/home/...`) or a `\\wsl.localhost\...` path. It fails with a fatal error. Build inside a Windows-side folder under `/mnt/c/`, such as `/mnt/c/Users/vikto/AppData/Local/Temp/<name>`.

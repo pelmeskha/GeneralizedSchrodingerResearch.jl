@@ -1,8 +1,3 @@
-coupled_gl_xi(; Δβ, β2, γ, c0, k, ω) = (
-    xi1 = (-Δβ - 2*ω/c0 + β2*ω^2 + 2*k) / (β2*c0^2),
-    xi2 = -2*γ / (β2*c0^2),
-)
-
 function agm_sequences(kp)
     a = [1.0]
     b = [kp]
@@ -49,6 +44,19 @@ function sn_parameters(xi1, xi2, period)
     return (A = amplitude, kappa = kappa, kp = kp)
 end
 
-function sn_solution(z, t, pars; c0, w0, k, ω)
-    return pars.A * jacobi_sn(pars.kappa * (z - c0*t - w0), pars.kp) * exp(1im * (k*z - ω*t))
+"""
+    construct_dependent_args_for_sn(indep)
+
+Required independent keys: `c0, k, ω, β2, Ω_g, w0, Δβ, γ, Tspan`.
+Derived: `A, kappa, kp` (from ξ₁, ξ₂ and the period c₀·(Tspan[2] − Tspan[1])); `δ, g` from the common restrictions.
+"""
+function construct_dependent_args_for_sn(indep)
+    (; c0, k, ω, β2, Δβ, γ, Tspan) = indep
+    xi = coupled_gl_xi(; Δβ, β2, γ, c0, k, ω)
+    pars = sn_parameters(xi.xi1, xi.xi2, c0 * (Tspan[2] - Tspan[1]))
+    return merge(common_dependent_args(indep), pars)
+end
+
+function sn_solution(z, t, args::ModelingArgs)
+    return args.A * jacobi_sn(args.kappa * (z - args.c0*t - args.w0), args.kp) * exp(1im * (args.k*z - args.ω*t))
 end

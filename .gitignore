@@ -2,3 +2,4 @@ useful.jl
 /run/results/
 /run/plots/
 *.png
+results/

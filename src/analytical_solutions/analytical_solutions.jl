@@ -16,4 +16,8 @@ include("coupled_gl/CoupledGLAnalytical.jl")
 using .CoupledGLAnalytical
 export CoupledGLAnalytical
 
+include("coupled_gl/CoupledGLResiduals.jl")
+using .CoupledGLResiduals
+export CoupledGLResiduals
+
 end

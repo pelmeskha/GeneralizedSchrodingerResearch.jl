@@ -81,7 +81,7 @@ function sample_profile(solution::AbstractMatrix, T_grid, z_grid, z_value)
 end
 
 """
-    plot_profiles(; T_grid, z_grid, z_timestamps, u_solutions=[], v_solutions=[],
+    plot_profiles(; T_grid, z_grid, z_timestamps, u_solutions=nothing, v_solutions=nothing,
                   prefixes=nothing, prefix="profiles", dpi=300, outdir=RESULTS_DIR)
 
     Plot |u(T)| and |v(T)| profiles at every z in `z_timestamps`, one figure per z and component.
@@ -92,7 +92,8 @@ end
     - `z_timestamps` : z values at which profiles are plotted; each must lie on `z_grid`
     - `u_solutions` : solutions for u. Each element is a complex matrix (N_T, N_z)
       or a callable `field(z, T)`
-    - `v_solutions` : solutions for v in the same format. Empty by default, so no v plots
+    - `v_solutions` : solutions for v in the same format. `nothing` by default, so no v plots.
+      If both `u_solutions` and `v_solutions` are `nothing`, nothing is plotted
     - `prefixes` : one name per solution, used in legends as "u, <name>, at z=..."
       (defaults to "solution 1", "solution 2", ...)
     - `prefix` : filename prefix for saved figures
@@ -103,17 +104,19 @@ end
 """
 function plot_profiles(;
     T_grid, z_grid, z_timestamps,
-    u_solutions=[], v_solutions=[],
+    u_solutions=nothing, v_solutions=nothing,
     prefixes=nothing,
     prefix="profiles", dpi=300, outdir=RESULTS_DIR
 )
-    n_solutions = max(length(u_solutions), length(v_solutions))
+    u_list = isnothing(u_solutions) ? [] : u_solutions
+    v_list = isnothing(v_solutions) ? [] : v_solutions
+    n_solutions = max(length(u_list), length(v_list))
     names = isnothing(prefixes) ? ["solution $i" for i in 1:n_solutions] : prefixes
     length(names) >= n_solutions ||
         throw(ArgumentError("prefixes must contain at least $n_solutions names"))
 
     plots = []
-    for (component, solutions) in (("u", u_solutions), ("v", v_solutions))
+    for (component, solutions) in (("u", u_list), ("v", v_list))
         isempty(solutions) && continue
         for z_value in z_timestamps
             z_label = format_z(z_value)
@@ -189,62 +192,67 @@ function plot_error_profiles(T, z, U, V; prefix="error", dpi=300, outdir=RESULTS
 
     return p_u, p_v
 end
+evaluate_field(field::Function, T_grid, z_grid) = [field(zi, tj) for tj in T_grid, zi in z_grid]
+
+function evaluate_field(field::AbstractMatrix, T_grid, z_grid)
+    size(field) == (length(T_grid), length(z_grid)) ||
+        throw(DimensionMismatch("field must have size $((length(T_grid), length(z_grid)))"))
+    return field
+end
+
+function max_percentage_error_over_z(actual, reference, T_grid, z_grid)
+    A = evaluate_field(actual, T_grid, z_grid)
+    R = evaluate_field(reference, T_grid, z_grid)
+    scale = maximum(abs, R)
+    scale > 0 || throw(ArgumentError("reference is identically zero, percentage error is undefined"))
+    return [100 * maximum(abs.(abs.(A[:, i]) .- abs.(R[:, i]))) / scale for i in eachindex(z_grid)]
+end
+
 """
-    plot_true_errors(T, z, U, V, true_u, true_v; prefix="error plots", dpi=300, outdir=RESULTS_DIR)
+    plot_true_errors(; T_grid, z_grid, actual_u=nothing, reference_u=nothing,
+                     actual_v=nothing, reference_v=nothing,
+                     prefix="error plots", dpi=300, outdir=RESULTS_DIR)
 
-    Plot maximum absolute amplitude error versus z for u and v.
+    Plot the maximum percentage error over T versus z, for each component with a pair.
 
-    At each propagation step:
-        error[i] = maximum over T of abs(abs(actual) - abs(analytical))
+    At each z:
+        error[i] = 100 * max over T of abs(abs(actual) - abs(reference)) / max over (T, z) of abs(reference)
 
-    Returns:
-        p_u, p_v, error_u, error_v
+    - `T_grid` : retarded time array (length N_T)
+    - `z_grid` : propagation distances (length N_z)
+    - `actual_u`, `reference_u` : u solution and its reference. Each is a complex matrix (N_T, N_z)
+      or a callable `field(z, T)`. A component is plotted only when both of its entries are given
+    - `actual_v`, `reference_v` : same for v
+
+    If no pair is given, nothing is plotted. Returns the vector of plots.
 """
-function plot_true_errors(T, z, U, V, true_u, true_v; prefix="error plots", dpi=300, outdir=RESULTS_DIR)
-    expected_size = (length(T), length(z))
-    size(U) == expected_size ||
-        throw(DimensionMismatch("U must have size $expected_size"))
-    size(V) == expected_size ||
-        throw(DimensionMismatch("V must have size $expected_size"))
-
-    error_u = zeros(Float64, length(z))
-    error_v = zeros(Float64, length(z))
-
-    for i in eachindex(z)
-        for j in eachindex(T)
-            diff_u = abs(abs(U[j, i]) - abs(true_u(z[i], T[j])))
-            diff_v = abs(abs(V[j, i]) - abs(true_v(z[i], T[j])))
-
-            error_u[i] = max(error_u[i], diff_u)
-            error_v[i] = max(error_v[i], diff_v)
-        end
+function plot_true_errors(;
+    T_grid, z_grid,
+    actual_u=nothing, reference_u=nothing,
+    actual_v=nothing, reference_v=nothing,
+    prefix="error plots", dpi=300, outdir=RESULTS_DIR
+)
+    plots = []
+    for (component, actual, reference, color) in (
+        ("u", actual_u, reference_u, :blue),
+        ("v", actual_v, reference_v, :red),
+    )
+        (isnothing(actual) || isnothing(reference)) && continue
+        err = max_percentage_error_over_z(actual, reference, T_grid, z_grid)
+        p = plot(
+            z_grid, err;
+            xlabel = "z",
+            ylabel = "relative error, %",
+            title  = "Max percentage error over z",
+            linewidth = 2,
+            color  = color,
+            legend = false,
+            dpi    = dpi
+        )
+        save_plot(p, prefix, "_$(component)_error_vs_z.png", outdir)
+        push!(plots, p)
     end
-
-    p_u = plot(
-        z, error_u;
-        xlabel="z",
-        ylabel="Maximum absolute amplitude error",
-        title="u: max over T of ||u_actual| - |u_true||",
-        linewidth=2,
-        color=:blue,
-        legend=false,
-        dpi=dpi
-    )
-    save_plot(p_u, prefix, "_u_error_vs_z.png", outdir)
-
-    p_v = plot(
-        z, error_v;
-        xlabel="z",
-        ylabel="Maximum absolute amplitude error",
-        title="v: max over T of ||v_actual| - |v_true||",
-        linewidth=2,
-        color=:red,
-        legend=false,
-        dpi=dpi
-    )
-    save_plot(p_v, prefix, "_v_error_vs_z.png", outdir)
-
-    return p_u, p_v, error_u, error_v
+    return plots
 end
 
 end # module

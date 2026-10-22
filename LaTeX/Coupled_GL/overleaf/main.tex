@@ -105,137 +105,178 @@ or
 \end{equation}
 
 At following parameter restrictions:
-\begin{equation} \label{eq13_1}
+\begin{equation} \label{eq14}
     2 \xi_{1} + \xi_{2} = 4I_{1},
 \end{equation}
 Integral \ref{eq13} takes the form:
-\begin{equation} \label{eq13_2}
+\begin{equation} \label{eq15}
     \pm \left(\mathrm{w} - \mathrm{w}_{0}\right) = \sqrt{2I_{1}}\int_{0}^{y} \frac{dp}{ \sqrt{\left(1 - p^2\right)\left(1 - d^2 p^2\right)}},
 \end{equation}
 where \(d^2 = \frac{\xi_{1}}{2I_{1}} -1 =-\frac{\xi_{2}}{4I_{1}}\).
 
-The integral in Eq. \ref{eq13_2} is a normal elliptic Legendre integral of the first kind in Jacobi form. Hence, the expression Eq. \ref{eq13}, taking into account Eq. \ref{eq13_1} lead to the following:
-\begin{equation} \label{eq13_3}
+The integral in Eq. \ref{eq15} is a normal elliptic Legendre integral of the first kind in Jacobi form. Hence, the expression Eq. \ref{eq13}, taking into account Eq. \ref{eq14} lead to the following:
+\begin{equation} \label{eq16}
     \pm \left(\mathrm{w} - \mathrm{w}_{0}\right) = \sqrt{2I_{1}} \cdot F \left(y, \sqrt{- \frac{\xi_{2}}{4I_{1}}} \right),
 \end{equation}
 and the integral cannot be computed analytically.
 
 \subsection{Dark soliton solution}
-In order to find exact solution of Eq. \ref{eq11}, we introduce new variable \(y\left(\mathrm{w}\right) = \sqrt{Y\left(\mathrm{w}\right)}\), and rewrite equation with lower nonlinearity degree:
-\begin{equation} \label{eq14}
-    Y^2_{\mathrm{w}} + 2\xi_{2}Y^3 + 4\xi_{1}Y^2 -8 I_{1} Y = 0.
-\end{equation}
+\subsubsection{Tanh solution}
+    In order to find exact solution of Eq. \ref{eq11}, we introduce new variable \(y\left(\mathrm{w}\right) = \sqrt{Y\left(\mathrm{w}\right)}\), and rewrite equation with lower nonlinearity degree:
+    \begin{equation} \label{eq17}
+        Y^2_{\mathrm{w}} + 2\xi_{2}Y^3 + 4\xi_{1}Y^2 -8 I_{1} Y = 0.
+    \end{equation}
 
-Next, we apply the Kudryashov Method [cite] to Eq. \ref{eq14}.
-First, we define the pole order of the general solution by substituting \(Y\left(\mathrm{w}\right) = \mathrm{w}^{p}\). Leading terms have powers \(2p-2\) and \(3p\). The solution have the pole of second order.
-Therefore we will be looking for \(Y\left(\mathrm{w}\right)\) in form:
-\begin{equation} \label{eq15}
-    Y\left(\mathrm{w}\right) = M_{0} + M_{1}Q\left(\mathrm{w}\right) + M_{2}Q^2\left(\mathrm{w}\right),
-\end{equation}
-where \(Q\left(\mathrm{w}\right)\) is the solution of Riccati equation:
-\begin{equation}\label{eq16}
-    Q_{\mathrm{w}} = \mu\,(Q^{2}-Q),
-\end{equation}
-of the form:
-\begin{equation}\label{eq17}
-    Q(\mathrm{w}) = \frac{1}{1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)}.
-\end{equation}
+    Next, we apply the Kudryashov Method [cite] to Eq. \ref{eq17}.
+    First, we define the pole order of the general solution by substituting \(Y\left(\mathrm{w}\right) = \mathrm{w}^{p}\). Leading terms have powers \(2p-2\) and \(3p\). The solution have the pole of second order.
+    Therefore we will be looking for \(Y\left(\mathrm{w}\right)\) in form:
+    \begin{equation} \label{eq18}
+        Y\left(\mathrm{w}\right) = M_{0} + M_{1}Q\left(\mathrm{w}\right) + M_{2}Q^2\left(\mathrm{w}\right),
+    \end{equation}
+    where \(Q\left(\mathrm{w}\right)\) is the solution of Riccati equation:
+    \begin{equation}\label{eq19}
+        Q_{\mathrm{w}} = \mu\,(Q^{2}-Q),
+    \end{equation}
+    of the form:
+    \begin{equation}\label{eq20}
+        Q(\mathrm{w}) = \frac{1}{1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)}.
+    \end{equation}
 
-Using \ref{eq15} and \ref{eq16}, Eq. \ref{eq14} can be written as:
-\begin{equation}\label{eq18}
-    \begin{split}
-        &\left(4 \mu^{2} M_{2}^{2}+2 M_{2}^{3} \xi_{2}\right) Q^{6}+\\
-        &+\left(4 \mu^{2} M_{1} M_{2}-8 \mu^{2} M_{2}^{2}+6 M_{1} M_{2}^{2} \xi_{2}\right) Q^{5}+\\
-        &+\left(\mu^{2} M_{1}^{2}-8 \mu^{2} M_{1} M_{2}+4 \mu^{2} M_{2}^{2}+6 M_{0} M_{2}^{2} \xi_{2}+6 M_{1}^{2} M_{2} \xi_{2}+4 M_{2}^{2} \xi_{1}\right) Q^{4}+\\
-        &+\left(-2 \mu^{2} M_{1}^{2}+4 \mu^{2} M_{1} M_{2}+12 M_{0} M_{1} M_{2} \xi_{2}+2 M_{1}^{3} \xi_{2}+8 M_{1} M_{2} \xi_{1}\right) Q^{3}+\\
-        &+\left(\mu^{2} M_{1}^{2}+6 M_{0}^{2} M_{2} \xi_{2}+6 M_{0} M_{1}^{2} \xi_{2}+8 M_{0} M_{2} \xi_{1}+4 M_{1}^{2} \xi_{1}-8 \mathrm{I}_{1} M_{2}\right) Q^{2}+\\
-        &+\left(6 M_{0}^{2} M_{1} \xi_{2}+8 M_{0} M_{1} \xi_{1}-8 \mathrm{I}_{1} M_{1}\right) Q+\\
-        &+\left(2 \xi_{2} M_{0}^{3}+4 \xi_{1} M_{0}^{2}-8 \mathrm{I}_{1} M_{0}\right)=0.
-    \end{split}
-\end{equation}
+    Using \ref{eq18} and \ref{eq19}, Eq. \ref{eq17} can be written as:
+    \begin{equation}\label{eq21}
+        \begin{split}
+            &\left(4 \mu^{2} M_{2}^{2}+2 M_{2}^{3} \xi_{2}\right) Q^{6}+\\
+            &+\left(4 \mu^{2} M_{1} M_{2}-8 \mu^{2} M_{2}^{2}+6 M_{1} M_{2}^{2} \xi_{2}\right) Q^{5}+\\
+            &+\left(\mu^{2} M_{1}^{2}-8 \mu^{2} M_{1} M_{2}+4 \mu^{2} M_{2}^{2}+6 M_{0} M_{2}^{2} \xi_{2}+6 M_{1}^{2} M_{2} \xi_{2}+4 M_{2}^{2} \xi_{1}\right) Q^{4}+\\
+            &+\left(-2 \mu^{2} M_{1}^{2}+4 \mu^{2} M_{1} M_{2}+12 M_{0} M_{1} M_{2} \xi_{2}+2 M_{1}^{3} \xi_{2}+8 M_{1} M_{2} \xi_{1}\right) Q^{3}+\\
+            &+\left(\mu^{2} M_{1}^{2}+6 M_{0}^{2} M_{2} \xi_{2}+6 M_{0} M_{1}^{2} \xi_{2}+8 M_{0} M_{2} \xi_{1}+4 M_{1}^{2} \xi_{1}-8 \mathrm{I}_{1} M_{2}\right) Q^{2}+\\
+            &+\left(6 M_{0}^{2} M_{1} \xi_{2}+8 M_{0} M_{1} \xi_{1}-8 \mathrm{I}_{1} M_{1}\right) Q+\\
+            &+\left(2 \xi_{2} M_{0}^{3}+4 \xi_{1} M_{0}^{2}-8 \mathrm{I}_{1} M_{0}\right)=0.
+        \end{split}
+    \end{equation}
 
-Since \(Q(\mathrm{w}) \neq 0\), every coefficient of Eq. \ref{eq18} must equal zero. This lead to the following restrictions:
-\begin{equation} \label{eq19}
-    \begin{cases}
-        \displaystyle M_{0} = \frac{8 \mathrm{I}_{1}}{\mu^{2}}\\
-        \displaystyle M_{1} = -\frac{32 \mathrm{I}_{1}}{\mu^{2}}\\
-        \displaystyle M_{2} = \frac{32 \mathrm{I}_{1}}{\mu^{2}}\\
-        \displaystyle \xi_{1} = \frac{\mu^{2}}{2}\\
-        \displaystyle \xi_{2} = -\frac{\mu^{4}}{16 \mathrm{I}_{1}}.
-    \end{cases}
-\end{equation}
+    Since \(Q(\mathrm{w}) \neq 0\), every coefficient of Eq. \ref{eq21} must equal zero. This lead to the following restrictions:
+    \begin{equation} \label{eq22}
+        \begin{cases}
+            \displaystyle M_{0} = \frac{8 \mathrm{I}_{1}}{\mu^{2}}\\
+            \displaystyle M_{1} = -\frac{32 \mathrm{I}_{1}}{\mu^{2}}\\
+            \displaystyle M_{2} = \frac{32 \mathrm{I}_{1}}{\mu^{2}}\\
+            \displaystyle \xi_{1} = \frac{\mu^{2}}{2}\\
+            \displaystyle \xi_{2} = -\frac{\mu^{4}}{16 \mathrm{I}_{1}}.
+        \end{cases}
+    \end{equation}
 
-Now the solution of an Eq. \ref{eq14} can be written as:
-\begin{equation} \label{eq20}
-    Y(\mathrm{w}) = \frac{8 \mathrm{I}_{1}}{\mu^{2}} - \frac{32 \mathrm{I}_{1}}{\mu^{2}} \cdot \frac{1}{1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)} + \frac{32 \mathrm{I}_{1}}{\mu^{2}} \cdot \frac{1}{\left(1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)\right)^{2}},
-\end{equation}
-or
-\begin{equation} \label{eq21}
-    Y(\mathrm{w}) = \frac{8\mathrm{I}_{1}}{\mu^2} \cdot \tanh^{2}\left(\frac{\mu\left(\mathrm{w}-\mathrm{w}_{0}\right)}{2}\right)
-\end{equation}
+    Now the solution of an Eq. \ref{eq17} can be written as:
+    \begin{equation} \label{eq23}
+        Y(\mathrm{w}) = \frac{8 \mathrm{I}_{1}}{\mu^{2}} - \frac{32 \mathrm{I}_{1}}{\mu^{2}} \cdot \frac{1}{1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)} + \frac{32 \mathrm{I}_{1}}{\mu^{2}} \cdot \frac{1}{\left(1 + \exp\left(\mu(\mathrm{w}-\mathrm{w}_{0})\right)\right)^{2}},
+    \end{equation}
+    or
+    \begin{equation} \label{eq24}
+        Y(\mathrm{w}) = \frac{8\mathrm{I}_{1}}{\mu^2} \cdot \tanh^{2}\left(\frac{\mu\left(\mathrm{w}-\mathrm{w}_{0}\right)}{2}\right)
+    \end{equation}
 
-The analytical solution of Eq. \ref{eq2} takes the form:
-\begin{equation} \label{eq22}
-    u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \left|\tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right)\right| \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
-\end{equation}
+    The analytical solution of Eq. \ref{eq2} takes the form:
+    \begin{equation} \label{eq25}
+        u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \left|\tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right)\right| \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
+    \end{equation}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\linewidth]{fig1.png}
-    \caption{Dark soliton (\ref{eq22}) at parameters \(I_{1} = 5.3\), \(\mu = 1.2\), \(c_{0} = 5.5\), \(t = 0\), \(\mathrm{w}_{0} = 3\)}
-    \label{fig1}
-\end{figure}
-\subsection{Jacobi hyperbolic sine solution}
-Let us consider another exact solution of Eq. \ref{eq9}, which is periodic in \(\mathrm{w}\) and is expressed through the Jacobi elliptic function \(\mathrm{sn}\). Let \(\mathrm{sn}(\cdot\,|\,m)\) be the Jacobi sine amplitude with parameter \(m \in (0,1)\). It satisfies:
-\begin{equation} \label{eq11_1}
-    \mathrm{sn}'^{\,2} = \left(1-\mathrm{sn}^{2}\right)\left(1-m\,\mathrm{sn}^{2}\right), \qquad \mathrm{sn}'' = -(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3}.
-\end{equation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\linewidth]{fig1.png}
+        \caption{Dark soliton (\ref{eq25}) at parameters \(I_{1} = 5.3\), \(\mu = 1.2\), \(c_{0} = 5.5\), \(t = 0\), \(\mathrm{w}_{0} = 3\)}
+        \label{fig1}
+    \end{figure}
 
-We look for the solution in form:
-\begin{equation} \label{eq11_2}
-    y\left(\mathrm{w}\right) = A\,\mathrm{sn}\left(\kappa\,\mathrm{w}\,|\,m\right).
-\end{equation}
-Then \(y_{\mathrm{ww}} = A\kappa^{2}\left(-(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3}\right)\). Substituting into Eq. \ref{eq9} and collecting the coefficients of \(\mathrm{sn}\) and \(\mathrm{sn}^{3}\), we obtain:
-\begin{equation} \label{eq11_3}
-    \begin{cases}
-        \displaystyle -\kappa^{2}\left(1+m\right) + \xi_{1} = 0,\\
-        \displaystyle 2m\kappa^{2} + \xi_{2}A^{2} = 0.
-    \end{cases}
-\end{equation}
-Hence
-\begin{equation} \label{eq11_4}
-    \kappa^{2} = \frac{\xi_{1}}{1+m}, \qquad A^{2} = \frac{2m\,\xi_{1}}{\left(1+m\right)\left|\xi_{2}\right|}.
-\end{equation}
 
-The period of \(\mathrm{sn}\left(\kappa\,\mathrm{w}\right)\) in \(\mathrm{w}\) is \(4K(m)/\kappa\), where \(K(m)\) is the complete elliptic integral of the first kind. The time window has length \(L\), so at fixed \(z\) the shift \(T \to T+L\) moves \(\mathrm{w}\) by \(c_{0}L\). The solution is periodic in \(T\) when
-\begin{equation} \label{eq11_5}
-    \frac{4K(m)}{\kappa} = c_{0}L.
-\end{equation}
-Since \(\kappa\) depends on \(m\) through Eq. \ref{eq11_4}, Eq. \ref{eq11_5} determines \(m\). The left side equals \(2\pi/\sqrt{\xi_{1}}\) at \(m=0\) and grows to infinity as \(m \to 1\), so a solution exists for \(c_{0}L > 2\pi/\sqrt{\xi_{1}}\).
+\subsubsection{Elliptic Jacobi function solution}
+    Let us consider another exact solution of Eq. \ref{eq9}, which is periodic in \(\mathrm{w}\) and is expressed through the Jacobi elliptic function.
+    Let \(\mathrm{sn}(\cdot\,|\,m)\) be the Jacobi sine amplitude with parameter \(m \in (0,1)\). It satisfies:
+    \begin{equation} \label{eq26}
+        \begin{cases}
+            \mathrm{sn}'^{\,2} = \left(1-\mathrm{sn}^{2}\right)\left(1-m\,\mathrm{sn}^{2}\right),\\
+            \mathrm{sn}'' = -(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3}.
+        \end{cases}
+    \end{equation}
 
-For large \(c_{0}L\) the modulus is extremely close to 1, so \(1-m\) cannot be stored in floating point. We use the complementary modulus \(k'=\sqrt{1-m}\) instead. For the parameters of the numerical example (\texttt{run\_0.jl}) \(k' \approx 7\cdot 10^{-15}\).
+    Eq. \ref{eq26} comes from the definition of \(\mathrm{sn}\) as the inverse of the elliptic integral of the first kind:
+    \begin{equation} \label{eq27}
+        u = \int_{0}^{\mathrm{sn}(u|m)} \frac{dt}{\sqrt{\left(1-t^{2}\right)\left(1-m\,t^{2}\right)}}.
+    \end{equation}
+    Differentiating Eq. \ref{eq27} with respect to \(u\) gives
+    \begin{equation}
+        1 = \mathrm{sn}'\big/\sqrt{\left(1-\mathrm{sn}^{2}\right)\left(1-m\,\mathrm{sn}^{2}\right)},
+    \end{equation}
+    which is the first identity of Eq. \ref{eq26}.
+    Denote
+    \begin{equation}
+        f(s) = \left(1-s^{2}\right)\left(1-m\,s^{2}\right) = 1-(1+m)\,s^{2}+m\,s^{4},
+    \end{equation}
+    so that \(\mathrm{sn}'^{2} = f(\mathrm{sn})\). Differentiating once more gives
+    \begin{equation}
+        2\,\mathrm{sn}'\,\mathrm{sn}'' = f'(\mathrm{sn})\,\mathrm{sn}'.
+    \end{equation}
+    Dividing by \(2\,\mathrm{sn}'\) (where \(\mathrm{sn}'\neq 0\)) gives
+    \begin{equation}
+        \mathrm{sn}'' = \frac{1}{2}f'(\mathrm{sn}) = -(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3},
+    \end{equation}
+    which is the second identity of Eq. \ref{eq26}.
 
-The arithmetic-geometric mean (AGM) gives \(K\) and \(\mathrm{sn}\):
-\begin{equation} \label{eq11_6}
-    a_{0}=1,\quad b_{0}=k',\quad \tilde{c}_{0}=\sqrt{m},\qquad a_{n+1}=\frac{a_{n}+b_{n}}{2},\quad b_{n+1}=\sqrt{a_{n}b_{n}},\quad \tilde{c}_{n+1}=\frac{a_{n}-b_{n}}{2}.
-\end{equation}
-The iteration is continued until \(\tilde{c}_{N} \approx 0\), and then
-\begin{equation} \label{eq11_7}
-    K(m) = \frac{\pi}{2a_{N}}.
-\end{equation}
-To evaluate \(\mathrm{sn}\), we set \(\varphi_{N} = 2^{N}a_{N}u\) and iterate downward:
-\begin{equation} \label{eq11_8}
-    \varphi_{n-1} = \frac{1}{2}\left(\varphi_{n} + \arcsin\left(\frac{\tilde{c}_{n}}{a_{n}}\sin\varphi_{n}\right)\right), \qquad n = N,\dots,1,
-\end{equation}
-so that \(\mathrm{sn}(u\,|\,m) = \sin\varphi_{0}\). The modulus is found by bisection on \(\log k'\) so that Eq. \ref{eq11_5} holds.
+    We look for the solution in form:
+    \begin{equation} \label{eq32}
+        y\left(\mathrm{w}\right) = A\,\mathrm{sn}\left(\kappa\,\mathrm{w}\,|\,m\right).
+    \end{equation}
+    Then \(y_{\mathrm{ww}} = A\kappa^{2}\left(-(1+m)\,\mathrm{sn} + 2m\,\mathrm{sn}^{3}\right)\). Substituting into Eq. \ref{eq9} and collecting the coefficients of \(\mathrm{sn}\) and \(\mathrm{sn}^{3}\), we obtain:
+    \begin{equation} \label{eq33}
+        \begin{cases}
+            \displaystyle -\kappa^{2}\left(1+m\right) + \xi_{1} = 0,\\
+            \displaystyle 2m\kappa^{2} + \xi_{2}A^{2} = 0.
+        \end{cases}
+    \end{equation}
+    Hence
+    \begin{equation} \label{eq34}
+        \kappa^{2} = \frac{\xi_{1}}{1+m}, \qquad A^{2} = \frac{2m\,\xi_{1}}{\left(1+m\right)\left|\xi_{2}\right|}.
+    \end{equation}
 
-Finally, the solution of Eq. \ref{eq2} takes the form:
-\begin{equation} \label{eq11_9}
-    u(z,t) = A\,\mathrm{sn}\left(\kappa\left(z - c_{0}t - \mathrm{w}_{0}\right)\,|\,m\right)\mathrm{e}^{i\left(kz-\omega t\right)}.
-\end{equation}
-The zeros of \(\mathrm{sn}\) are at \(\mathrm{w}=0\) and \(\mathrm{w}=2K/\kappa\). Each zero is a dark soliton with a \(\pi\) phase jump, and neighbouring zeros have opposite polarity. Within one window there are two such solitons, half a window apart.
+    The period of \(\mathrm{sn}\left(\kappa\,\mathrm{w}\right)\) in \(\mathrm{w}\) is \(4K(m)/\kappa\), where \(K(m)\) is the complete elliptic integral of the first kind. The time window has length \(L\), so at fixed \(z\) the shift \(T \to T+L\) moves \(\mathrm{w}\) by \(c_{0}L\). The solution is periodic in \(T\) when
+    \begin{equation} \label{eq35}
+        \frac{4K(m)}{\kappa} = c_{0}L.
+    \end{equation}
+    Since \(\kappa\) depends on \(m\) through Eq. \ref{eq34}, Eq. \ref{eq35} determines \(m\). The left side equals \(2\pi/\sqrt{\xi_{1}}\) at \(m=0\) and grows to infinity as \(m \to 1\), so a solution exists for \(c_{0}L > 2\pi/\sqrt{\xi_{1}}\).
 
-For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}\) and \(A \to \sqrt{\xi_{1}/\left|\xi_{2}\right|}\). With \(\xi_{1} = \mu^{2}/2\) and \(\xi_{2} = -\mu^{4}/(16 I_{1})\) from Eq. \ref{eq19}, this gives \(\kappa = \mu/2\) and \(A = 2\sqrt{2I_{1}}/|\mu|\). These are the parameters of the single dark soliton Eq. \ref{eq22}, which is not periodic.
+    Finally, the solution of Eq. \ref{eq2} takes the form:
+    \begin{equation} \label{eq36}
+        u(z,t) = A\,\mathrm{sn}\left(\kappa\left(z - c_{0}t - \mathrm{w}_{0}\right)\,|\,m\right)\mathrm{e}^{i\left(kz-\omega t\right)}.
+    \end{equation}
+    The zeros of \(\mathrm{sn}\) are at \(\mathrm{w}=0\) and \(\mathrm{w}=2K/\kappa\). Each zero is a dark soliton with a \(\pi\) phase jump, and neighbouring zeros have opposite polarity. Within one window there are two such solitons, half a window apart.
+
+    For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}\) and \(A \to \sqrt{\xi_{1}/\left|\xi_{2}\right|}\). With \(\xi_{1} = \mu^{2}/2\) and \(\xi_{2} = -\mu^{4}/(16 I_{1})\) from Eq. \ref{eq22}, this gives \(\kappa = \mu/2\) and \(A = 2\sqrt{2I_{1}}/|\mu|\). These are the parameters of the single dark soliton Eq. \ref{eq25}, which is not periodic.
+
+\subsection{Bright soliton solution}
+    We will look for bright soliton solution in the following form:
+    \begin{equation} \label{eq37}
+        y\left(\mathrm{w}\right) = A\,\mathrm{sech}\left(\eta\left(\mathrm{w}-\mathrm{w}_{0}\right)\right).
+    \end{equation}
+    The derivative takes the form \(y_{\mathrm{ww}} = A\eta^{2}\left(\mathrm{sech} - 2\,\mathrm{sech}^{3}\right)\). Substituting into Eq. \ref{eq9} and collecting the terms by \(\mathrm{sech}\) gives
+    \begin{equation} \label{eq38}
+        \mathrm{sech}\left[A\left(\eta^{2}+\xi_{1}\right)\right] + \mathrm{sech}^{3}\left[A\left(\xi_{2}A^{2}-2\eta^{2}\right)\right] = 0.
+    \end{equation}
+    The Eq. \ref{eq37} satisfied at restrictions:
+    \begin{equation} \label{eq39}
+        \begin{cases}
+            \displaystyle \eta^{2} = -\xi_{1},\\
+            \displaystyle A^{2} = \frac{2\eta^{2}}{\xi_{2}} = -\frac{2\xi_{1}}{\xi_{2}}.
+        \end{cases}
+    \end{equation}
+
+    Therefore the bright soliton is
+    \begin{equation} \label{eq40}
+        u(z,t) = A\,\mathrm{sech}\left(\eta\left(z - c_{0}t - \mathrm{w}_{0}\right)\right)\mathrm{e}^{i\left(kz-\omega t\right)},
+    \end{equation}
+    with \(\eta\) and \(A\) from Eq. \ref{eq39}, under the restrictions Eq. \ref{eq7} and
+    \begin{equation} \label{eq41}
+        \xi_{1} < 0, \qquad \xi_{2} > 0.
+    \end{equation}
+    Since \(\xi_{2} = -\frac{2\gamma}{\beta_{2}c_{0}^{2}}\), the condition \(\xi_{2} > 0\) is equivalent to \(\beta_{2}\gamma < 0\). For \(\beta_{2} > 0\) this requires \(\gamma < 0\) (defocusing nonlinearity). For the parameters with \(\beta_{2} > 0\) and \(\gamma > 0\) no bright soliton of this form exists.
 
 \section{Numerical Analysis}
     To build a numerical scheme for numerical analysis, we rewrite original system (\ref{eq1}) in the form:
@@ -251,7 +292,7 @@ For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}
             + \left(\frac{g}{2\Omega_{g}^2}-\frac{i\beta_{2}}{2}\right)\frac{\partial^2}{\partial t^2}
     \end{equation}
     contains all linear terms (dispersion, birefringence, and frequency‑dependent gain) and
-    \begin{equation}\label{eq:nonlin_ode}
+    \begin{equation}\label{eq44}
         \hat N\begin{pmatrix}u\\v\end{pmatrix} =
             i\gamma \cdot \begin{pmatrix}
             \Bigl[\bigl(|u|^2+\tfrac{2}{3}|v|^2\bigr)u + \tfrac{1}{3}v^2 u^*\Bigr]\\[4pt]
@@ -310,11 +351,11 @@ For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}
     
     \subsection{Nonlinear sub‑step}
     The nonlinear sub‑step advances the ordinary differential equation
-    \begin{equation} \label{nonlinear_eq}
+    \begin{equation} \label{eq49}
         \frac{\partial}{\partial z}\begin{pmatrix}u\\v\end{pmatrix}
         = \hat N\begin{pmatrix}u\\v\end{pmatrix},
     \end{equation}
-    over a full step $\Delta z$.  We solve \eqref{nonlinear_eq} with the classical fourth‑order Runge–Kutta method.
+    over a full step $\Delta z$.  We solve \eqref{eq49} with the classical fourth‑order Runge–Kutta method.
     For given nonlinear term, the integration can be performed independently
     at each grid point using vectorized operations since there is no derivatives and neighbor-dependencies. We use classic RK4 in the form:
     \begin{align}
@@ -332,12 +373,12 @@ For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}
         \item \textbf{First linear half-step.} Compute $\tilde u = \mathcal{F}[u]$, $\tilde v = \mathcal{F}[v]$, by FFT.
         Multiply by $\exp[\widetilde L(\omega)\frac{\Delta z}{2}]$, and transform back:
         $u \leftarrow \mathcal{F}^{-1}[\tilde u]$, $v \leftarrow \mathcal{F}^{-1}[\tilde v]$.
-        \item \textbf{Full nonlinear step.} Advance $(u,v)$ by $\Delta z$ using the RK4 integration of \eqref{eq:nonlin_ode}.
+        \item \textbf{Full nonlinear step.} Advance $(u,v)$ by $\Delta z$ using the RK4 integration of \eqref{eq44}.
         \item \textbf{Second linear half-step.} Repeat step~1.
     \end{enumerate}
     
 \section{Modeling Results}
-    We consider dark soliton of the form (\ref{eq21}) as initial conditions for initial-boundary problem for system (\ref{eq1}). We take \(v(z,t) \equiv 0\). Fig. \ref{fig2} illustrates the pulse behavior under certain model parameters. The soliton propagates steadily.
+    We consider dark soliton of the form (\ref{eq24}) as initial conditions for initial-boundary problem for system (\ref{eq1}). We take \(v(z,t) \equiv 0\). Fig. \ref{fig2} illustrates the pulse behavior under certain model parameters. The soliton propagates steadily.
     \begin{figure}
         \centering
             \begin{subfigure}[t]{0.49\linewidth}

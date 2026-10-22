@@ -7,4 +7,7 @@ using GeneralizedSchrodingerResearch.BaseUtilities: M0_M1_to_ε2_ε3, find_thres
 include("construct_approximate_solutions.jl")
 export construct_approximate_NSE_3_5_solution, construct_approximate_NSE_3_5_7_solution, construct_best_approximate_NSE_3_5_7_solution
 
+include("periodic_time.jl")
+export periodic_time
+
 end
