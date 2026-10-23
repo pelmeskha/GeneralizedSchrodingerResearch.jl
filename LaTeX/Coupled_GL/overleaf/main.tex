@@ -2,6 +2,7 @@
 \usepackage{graphicx} % Required for inserting images
 \usepackage{amsmath}
 \usepackage{subcaption}
+\usepackage{float}
 
 \title{coupled GL}
 \author{Viktor Medvedev}
@@ -23,6 +24,7 @@ Pulse propagation in erbium-doped fiber (EDF) can be described by the following 
 where \(u\) and \(v\) are slowly varying pulse envelopes.
 
 \section{Analytical analysis}
+\label{sec:analytical}
 Let us consider first equation of Eq. \ref{eq1}, assuming \(v=0\):
 \begin{equation} \label{eq2}
     \frac{\partial{u}}{\partial{z}} = \frac{i \Delta \beta}{2}u - \delta \frac{\partial{u}}{\partial{t}} - \frac{i\beta_{2}}{2} \frac{\partial^2 u}{\partial t^2} + \frac{g}{2}u + \frac{g}{2\Omega^2_{g}}\frac{\partial^2 u}{\partial t^2} + i\gamma\left|u\right|^2 u.
@@ -179,12 +181,14 @@ and the integral cannot be computed analytically.
     \begin{equation} \label{eq25}
         u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \left|\tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right)\right| \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
     \end{equation}
-
-    \begin{figure}
+    The pulse envelope of Eq. \ref{eq25} is illustrated in Fig. \ref{fig15}.
+    \begin{figure}[H]
         \centering
-        \includegraphics[width=0.7\linewidth]{fig1.png}
-        \caption{Dark soliton (\ref{eq25}) at parameters \(I_{1} = 5.3\), \(\mu = 1.2\), \(c_{0} = 5.5\), \(t = 0\), \(\mathrm{w}_{0} = 3\)}
-        \label{fig1}
+        \includegraphics[width=0.5\linewidth]{profile_tanh.png}
+        \caption{
+            \(|u(0,t)|\) (Eq. \ref{eq25}), \(t\in[-10,10]\), \(k = 13\), \(c_{0} = 1.4\), \(\mu = 0.97\), \(I_{1} = 0.10\), \(\omega = 0\), \(\mathrm{w}_{0} = 0\).
+        }
+        \label{fig15}
     \end{figure}
 
 
@@ -247,6 +251,15 @@ and the integral cannot be computed analytically.
     \begin{equation} \label{eq36}
         u(z,t) = A\,\mathrm{sn}\left(\kappa\left(z - c_{0}t - \mathrm{w}_{0}\right)\,|\,m\right)\mathrm{e}^{i\left(kz-\omega t\right)}.
     \end{equation}
+    The pulse envelope of Eq. \ref{eq36} is illustrated in Fig. \ref{fig16}.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{profile_sn.png}
+        \caption{
+            \(|u(0,t)|\) (Eq. \ref{eq36}), \(t\in[-10,10]\), \(k = 13\), \(c_{0} = 1.4\), \(\mu = 1.3\), \(I_{1} = 0.10\), \(\omega = 0\), \(\mathrm{w}_{0} = -7\), \(\kappa = 0.65\), \(m = 0.0018\).
+        }
+        \label{fig16}
+    \end{figure}
     The zeros of \(\mathrm{sn}\) are at \(\mathrm{w}=0\) and \(\mathrm{w}=2K/\kappa\). Each zero is a dark soliton with a \(\pi\) phase jump, and neighbouring zeros have opposite polarity. Within one window there are two such solitons, half a window apart.
 
     For \(m \to 1\) we have \(\mathrm{sn} \to \tanh\), \(\kappa \to \sqrt{\xi_{1}/2}\) and \(A \to \sqrt{\xi_{1}/\left|\xi_{2}\right|}\). With \(\xi_{1} = \mu^{2}/2\) and \(\xi_{2} = -\mu^{4}/(16 I_{1})\) from Eq. \ref{eq22}, this gives \(\kappa = \mu/2\) and \(A = 2\sqrt{2I_{1}}/|\mu|\). These are the parameters of the single dark soliton Eq. \ref{eq25}, which is not periodic.
@@ -272,6 +285,15 @@ and the integral cannot be computed analytically.
     \begin{equation} \label{eq40}
         u(z,t) = A\,\mathrm{sech}\left(\eta\left(z - c_{0}t - \mathrm{w}_{0}\right)\right)\mathrm{e}^{i\left(kz-\omega t\right)},
     \end{equation}
+    The pulse envelope of Eq. \ref{eq40} is illustrated in Fig. \ref{fig17}.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{profile_bright.png}
+        \caption{
+            \(|u(0,t)|\) (Eq. \ref{eq40}), \(t\in[-10,10]\), \(k = 13\), \(c_{0} = 1.4\), \(\omega = 5\), \(\mathrm{w}_{0} = 0\).
+        }
+        \label{fig17}
+    \end{figure}
     with \(\eta\) and \(A\) from Eq. \ref{eq39}, under the restrictions Eq. \ref{eq7} and
     \begin{equation} \label{eq41}
         \xi_{1} < 0, \qquad \xi_{2} > 0.
@@ -301,6 +323,9 @@ and the integral cannot be computed analytically.
     \end{equation}
     is the nonlinear term.
 
+    Several numerical schemes can be used to integrate system (\ref{eq1}). One of them, a split-step Fourier scheme, is described below.
+
+    \subsection{Split-Step Fourier Scheme with Strang Splitting}
     We employ a split‑step Fourier method with symmetric (Strang) splitting and formulate initial-boundary problem with periodic boundary conditions:
     \begin{equation} 
         \begin{cases}
@@ -323,7 +348,7 @@ and the integral cannot be computed analytically.
     The linear exponential $e^{\frac{\Delta z}{2}\hat L}$ is applied in the Fourier domain,
     while the nonlinear exponential $e^{\Delta z\hat N}$ is integrated with a fourth‑order Runge–Kutta (RK4) scheme.
     
-    \subsection{Linear sub‑step}
+    \subsubsection{Linear sub‑step}
     In the Fourier domain the linear operator becomes a multiplicative factor. With the convention $\partial/\partial t \leftrightarrow i\omega_{f}$,
     the Fourier transform of $\hat L$ acting on a single field $u$ (or $v$) is the following:
     \begin{equation}
@@ -349,7 +374,7 @@ and the integral cannot be computed analytically.
     After the nonlinear full-step, the linear half-step applied again. Then, the fields are transformed back to the time domain with the inverse FFT.
     The FFT routines assume periodic boundary conditions, consistent with the finite sampling window.
     
-    \subsection{Nonlinear sub‑step}
+    \subsubsection{Nonlinear sub‑step}
     The nonlinear sub‑step advances the ordinary differential equation
     \begin{equation} \label{eq49}
         \frac{\partial}{\partial z}\begin{pmatrix}u\\v\end{pmatrix}
@@ -367,7 +392,7 @@ and the integral cannot be computed analytically.
     \end{align}
     where $\mathbf{w}=(u,v)^T$. The approximation order RK4 ensures that the overall splitting error remains the dominant source of numerical inaccuracy.
     
-    \subsection{Symmetric split‑step scheme}
+    \subsubsection{Symmetric split‑step scheme}
     Combining the two half‑steps, one complete step from $z$ to $z+\Delta z$ proceeds as follows:
     \begin{enumerate}
         \item \textbf{First linear half-step.} Compute $\tilde u = \mathcal{F}[u]$, $\tilde v = \mathcal{F}[v]$, by FFT.
@@ -376,74 +401,189 @@ and the integral cannot be computed analytically.
         \item \textbf{Full nonlinear step.} Advance $(u,v)$ by $\Delta z$ using the RK4 integration of \eqref{eq44}.
         \item \textbf{Second linear half-step.} Repeat step~1.
     \end{enumerate}
-    
-\section{Modeling Results}
-    We consider dark soliton of the form (\ref{eq24}) as initial conditions for initial-boundary problem for system (\ref{eq1}). We take \(v(z,t) \equiv 0\). Fig. \ref{fig2} illustrates the pulse behavior under certain model parameters. The soliton propagates steadily.
-    \begin{figure}
+
+    \subsubsection{Scheme approximation order study}
+    We study the approximation order of the scheme on the bright soliton, Eq. \ref{eq40}, with the parameters of Fig. \ref{fig6}. The error is measured in two one-factor series. In the first, \(\Delta t = 0.005\) is fixed and \(\Delta z\) is halved from 0.02 to 0.00125. In the second, \(\Delta z = 10^{-4}\) is fixed and \(\Delta t\) is varied from 0.04 to 0.005. For each run the error is the maximum over \(t\) and \(z\) of \(|u_{\mathrm{num}} - u_{\mathrm{an}}|\), divided by \(\max|u_{\mathrm{an}}|\), in percent. The \(z\) grid is checked every 0.01 along the propagation. Fig. \ref{fig18} shows both series, and Table \ref{tab1} lists the values.
+    \begin{figure}[H]
         \centering
-            \begin{subfigure}[t]{0.49\linewidth}
+            \begin{subfigure}[t]{0.45\linewidth}
                 \centering
-                \includegraphics[width=\linewidth]{fig2.png}
-                \subcaption{Numerical solution \(u\) profile at \(z=0\) and \(z=100\).}
+                \includegraphics[width=\linewidth]{fig18.png}
+                \subcaption{Series in \(\Delta z\) at fixed \(\Delta t = 0.005\).}
             \end{subfigure}
             \hfill
-            \begin{subfigure}[t]{0.49\linewidth}
+            \begin{subfigure}[t]{0.45\linewidth}
                 \centering
-                \includegraphics[width=\linewidth]{fig3.png}
-                \subcaption{\(\left|u(z,t)\right|\)}
+                \includegraphics[width=\linewidth]{fig19.png}
+                \subcaption{Series in \(\Delta t\) at fixed \(\Delta z = 10^{-4}\).}
             \end{subfigure}
         \caption{
-            \\Pulse parameters:
-            \(k = 12.6\),
+            Maximum relative error of the bright soliton. Dots: measurements. Dotted line in (a): linear fit in log-log scale.
+        }
+        \label{fig18}
+    \end{figure}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{l c c c c c}
+            \hline
+            Varied & Value & Fixed & \(N_z\) & \(N_T\) & Max relative error, \% \\
+            \hline
+            \(\Delta z\) & 0.02 & \(\Delta t = 0.005\) & 2501 & 4000 & 47.96 \\
+            \(\Delta z\) & 0.01 & \(\Delta t = 0.005\) & 5001 & 4000 & 12.16 \\
+            \(\Delta z\) & 0.005 & \(\Delta t = 0.005\) & 10001 & 4000 & 3.04 \\
+            \(\Delta z\) & 0.0025 & \(\Delta t = 0.005\) & 20001 & 4000 & 0.761 \\
+            \(\Delta z\) & 0.00125 & \(\Delta t = 0.005\) & 40001 & 4000 & 0.190 \\
+            \hline
+            \(\Delta t\) & 0.04 & \(\Delta z = 10^{-4}\) & 500001 & 500 & 10.7 \\
+            \(\Delta t\) & 0.02 & \(\Delta z = 10^{-4}\) & 500001 & 1000 & 0.00130 \\
+            \(\Delta t\) & 0.01 & \(\Delta z = 10^{-4}\) & 500001 & 2000 & 0.00122 \\
+            \(\Delta t\) & 0.005 & \(\Delta z = 10^{-4}\) & 500001 & 4000 & 0.00122 \\
+            \hline
+        \end{tabular}
+        \caption{
+            Results of the two series. \(N_z\) and \(N_T\) are the numbers of grid points in \(z\) and \(t\).
+        }
+        \label{tab1}
+    \end{table}
+
+    The error decreases by a factor of about 4 each time \(\Delta z\) is halved, and the fitted slope in Fig. \ref{fig18}(a) is \(k = 2.00\). This is the second order in \(\Delta z\) of the Strang splitting, and it is the only power-law dependence found.
+
+    The error does not follow a power law in \(\Delta t\). It drops by a factor of about 8000 between \(\Delta t = 0.04\) and \(\Delta t = 0.02\). For \(\Delta t \leq 0.02\) it stays at about \(1.2\cdot10^{-3}\,\%\), which is the level set by \(\Delta z = 10^{-4}\). In this range the time discretisation contributes less than the \(z\) discretisation.
+
+    The Fourier method differentiates in \(t\) spectrally. For a smooth periodic function the error falls faster than any power of the number of grid points \(N_T = L_t/\Delta t\). For analytic functions it is typically exponential, \(\sim C\,e^{-\alpha N_T}\), where \(\alpha\) depends on the width of the strip around the real axis in which the solution is analytic. So the spectral order is not an integer: it appears as a sharp drop once the pulse is resolved, followed by no further change under refinement. The large error at \(\Delta t = 0.04\) is consistent with the grid being too coarse for the pulse. This was not verified by a separate spectral analysis.
+
+    In summary, the scheme is second order in \(\Delta z\) and spectral in \(\Delta t\). We performed same analysis for sn solution. The conclusions on the approximation order agree in both cases.
+
+\section{Modeling Results}
+    \subsection{Scheme validation}
+    We validate the scheme, using every analytical solution found in section \ref{sec:analytical} as the initial condition at \(z=0\). We compare the numerical solution with the analytical one, showing error over \(z\) dependency and proving grid convergence.
+    \subsubsection{Tanh solution (dark soliton)}
+    \begin{figure}[H]
+        \centering
+            \begin{subfigure}[t]{0.45\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig9.png}
+                \subcaption{Numerical \(|u(z,t)|\).}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[t]{0.45\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig10.png}
+                \subcaption{Maximum percentage error over \(t\) at each \(z\).}
+            \end{subfigure}
+        \caption{
+            Tanh solution as initial condition, compared with the analytical solution. \\
+            Parameters: to be filled.
+        }
+        \label{fig9}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+            \includegraphics[width=0.45\linewidth]{fig11.png}
+        \caption{
+            Grid convergence for the tanh solution. Parameters: to be filled.
+        }
+        \label{fig11}
+    \end{figure}
+
+    \subsubsection{Elliptic Jacobi function solution (dark soliton)}
+    Using Elliptic Jacobi function solution Eq. \ref{eq36}, we get the results, illustrated in Fig. \ref{fig12}. The period of the solution in \(t\) equals the length of the time window, so the initial condition is periodic.
+    \begin{figure}[H]
+        \centering
+            \begin{subfigure}[t]{0.45\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig12.png}
+                \subcaption{Numerical \(|u(z,t)|\).}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[t]{0.45\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig13.png}
+                \subcaption{Maximum percentage error over \(t\) at each \(z\).}
+            \end{subfigure}
+        \caption{
+            Elliptic Jacobi function solution as initial condition, compared with the analytical solution. \\
+            Pulse parameters:
+            \(k = 13\),
             \(c_{0} = 1.4\),
             \(\mu = 0.97\),
-            \(I_{1} = 1\),
+            \(I_{1} = 0.1\),
             \(\omega = 0\),
-            \(\mathrm{w}_{0} = 15\).\\
+            \(\mathrm{w}_{0} = 0\).\\
             Model parameters:
-            \(\beta_{2} = 0.025\),
-            \(\Omega_{g} = 10\),
-            \(\delta = 20\),
-            \(\gamma = 0.0013\),
+            \(\beta_{2} = 0.027\),
+            \(\Omega_{g} = 66\),
+            \(\delta = 0.71\),
+            \(\gamma = 0.015\),
             \(g = 0\),
-            \(\Delta \beta = 5\).
+            \(\Delta \beta = 25\).\\
+            Grid parameters:
+            \(t \in [-10, 10]\), \(\Delta t = 0.021\),
+            \(z \in [0, 50]\), \(\Delta z = 0.0022\).
         }
-        \label{fig2}
+        \label{fig12}
     \end{figure}
-
-    By increasing the coupling coefficient \(\gamma\) and perturbing initial condition \(v(z=0, t) = \sin(t)\cdot\exp\left(-(c_{0}t-w_{0})\right)\), we can observe pulse decay, as depicted on Fig. \ref{fig3}.
-    \begin{figure}
+    \begin{figure}[H]
         \centering
-            \begin{subfigure}[t]{0.49\linewidth}
+            \includegraphics[width=0.45\linewidth]{fig14.png}
+        \caption{
+            Grid convergence on solution \ref{eq36}, with the parameters of Fig. \ref{fig12}. Log-log error plot (\(\Delta z = h^{2}\), \(\Delta t = h\), \(h \in [0.2, 0.1, 0.05]\)).
+        }
+        \label{fig14}
+    \end{figure}
+    Convergence on Elliptic Jacobi function solution achieved. Linear coefficients : \(k = 3.99\), \(c = -3.18\).
+
+    \subsubsection{Bright soliton solution}
+    Using bright soliton solution Eq. \ref{eq40}, we get the results, illustrated in Fig. \ref{fig6}.
+    \begin{figure}[H]
+        \centering
+            \begin{subfigure}[t]{0.45\linewidth}
                 \centering
-                \includegraphics[width=\linewidth]{fig4.png}
-                \subcaption{\(\left|u(z,t)\right|\)}
+                \includegraphics[width=\linewidth]{fig6.png}
+                \subcaption{Numerical \(|u(z,t)|\).}
             \end{subfigure}
             \hfill
-            \begin{subfigure}[t]{0.49\linewidth}
+            \begin{subfigure}[t]{0.45\linewidth}
                 \centering
-                \includegraphics[width=\linewidth]{fig5.png}
-                \subcaption{\(\left|v(z,t)\right|\)}
+                \includegraphics[width=\linewidth]{fig7.png}
+                \subcaption{Maximum percentage error over \(t\) at each \(z\).}
             \end{subfigure}
         \caption{
-            Numerical solution for disturbed \(v(z=0, t)\). \\
+            Bright soliton as initial condition, compared with the analytical solution. \\
+            Pulse parameters:
+            \(k = 13\),
+            \(c_{0} = 1.4\),
+            \(\omega = 5\),
+            \(\mathrm{w}_{0} = 0\).\\
             Model parameters:
             \(\beta_{2} = 0.025\),
             \(\Omega_{g} = 10\),
-            \(\delta = 20\),
-            \(\gamma = 0.13\),
+            \(\delta = 0.59\),
+            \(\gamma = -0.014\),
             \(g = 0\),
-            \(\Delta \beta = 5\).
+            \(\Delta \beta = 25\).\\
+            Grid parameters:
+            \(t \in [-10, 10]\), \(\Delta t = 0.021\),
+            \(z \in [0, 50]\), \(\Delta z = 0.0022\).
         }
-        \label{fig3}
+        \label{fig6}
     \end{figure}
+    \begin{figure}[H]
+        \centering
+            \includegraphics[width=0.45\linewidth]{fig8.png}
+        \caption{
+            Grid convergence for the bright soliton \ref{eq40}. Log-log error plot (\(\Delta z = h^{2}\), \(\Delta t = h\), \(h \in [0.02, 0.01, 0.005]\)).
+        }
+        \label{fig8}
+    \end{figure}
+    Convergence on bright soliton solution achieved. Linear coefficients : \(k = 4.06\), \(c = 5.19\).
 
-    From numerical analysis, the following conclusions are made:
+    \section{Conclusions}
     \begin{enumerate}
-        \item Dark soliton, found by Kudryashov method, propagate steadily;
-        \item Model parameter \(\delta\) is a linear-transfer coefficient;
-        \item Model parameter \(\gamma\) is a coupling parameter;
-        \item Model parameter \(g\) is a linear amplification parameter;
+        \item Exact analytical solutions of the initial system were found in Section~\ref{sec:analytical} in three forms: a dark soliton (tanh), a dark elliptic (Jacobi sn) solution, and a bright soliton.
+        \item The numerical scheme, based on the Fourier method, Strang splitting, and the fourth-order Runge–Kutta method for the nonlinear step, was proposed and implemented.
+        \item The approximation order of the scheme was studied on the bright soliton and the elliptic solution. The scheme is second order in \(\Delta z\) and spectral in \(\Delta t\).
+        \item The bright and elliptic solutions were used to validate the numerical scheme, and grid convergence was achieved for both. Validation for the tanh solution has not been carried out yet.
     \end{enumerate}
 \end{document}
 

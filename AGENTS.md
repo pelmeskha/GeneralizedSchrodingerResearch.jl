@@ -52,6 +52,9 @@ Run each command with the build folder as `cwd`.
 
 - Build in a temporary folder, not in the document folder. The user's `disser.pdf`, `disser.aux`, `disser.log` and `disser.toc` are the user's own build output. Do not overwrite them unless the user asks.
 - Do not change the encoding of `disser.tex`. Verify edits with `iconv -f CP1251 -t UTF-8 disser.tex`.
+- Do not remove or change imports in `.tex` files (`\usepackage` lines and similar) without asking the user first. Some packages are needed even when no visible command uses them, such as `float`.
+- Place every figure with the `[H]` flag, as `\begin{figure}[H]`. This needs the `float` package.
+- Do not repeat in the body text what a figure caption already states (parameters, grid, fit values). Refer to the figure instead.
 - Verify a change by compiling it and checking the log for `^!` errors before reporting it done.
 - Do not install TeX packages or run `sudo` without asking the user.
 - No PDF renderer was found for this setup (Ghostscript was not located), so the PDF's visual layout cannot be inspected directly. Use the `.aux`/`.toc`/`.log` files for checks.

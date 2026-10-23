@@ -8,8 +8,8 @@ include("../../src/utilities/periodic_time.jl")
 # domain
 Tspan = (-10.0, 10.0)
 zspan = (0.0, 50.0)
-dz    = 0.00222 # must be lower than dt. Scheme is 2 order on z
-dt    = 0.021
+dz    = 0.0022231407344530316 # must be lower than dt. Scheme is 2 order on z
+dt    = 20.0 / 950
 N_T   = round(Int, (Tspan[2]-Tspan[1]) / dt)
 
 # pulse parameters
@@ -17,28 +17,38 @@ k = 12.6
 c0 = 1.4
 mu = 0.97
 I1 = 0.1
-ω = 5
+ω = 0 # sn needs ω·(Tspan length) ∈ 2πℤ for a periodic carrier; bright used ω = 5
 w0 = 0 # displacement
 
 # equation parameters. Construct corresponding equation
-β2 = 0.025; # should be ~ 0.025
-Ω_g = 10.0; # should be ~ [10, 100]
+β2 = 0.027168436376788473; # should be ~ 0.025
+Ω_g = 66.08752874553595; # should be ~ [10, 100]
 
-# Δβ and γ are independent for sn and bright solutions; tanh derives them from mu, I1.
-# For bright solution choose Δβ > 2k + β2 ω² − 2ω/c0 and γ < 0 instead (ξ₁ < 0, ξ₂ > 0).
-Δβ = 25.17694795
-γ  = -0.013556046153124997
+# sn (dark) solution: Δβ and γ follow from the tanh restrictions ξ₁ = μ²/2, ξ₂ = −μ⁴/(16 I₁).
+Δβ = (-β2*c0^3*mu^2 + 2*β2*c0*ω^2 + 4*c0*k - 4*ω) / (2*c0)
+γ  = mu^4 * c0^2 * β2 / (32*I1)
 
 args = ModelingArgs(
     (c0=c0, k=k, ω=ω, β2=β2, Ω_g=Ω_g, w0=w0, Tspan=Tspan, Δβ=Δβ, γ=γ),
-    construct_dependent_args_for_bright,
+    construct_dependent_args_for_sn,
 )
 
-u0(T) = bright_solution(0.0, T, args)
-v0(T) = 0 # sin(T) * exp(-(-c0*T-w0)^2)
+u0(T) = sn_solution(0.0, T, args)
+v0(T) = 0
 
-true_u(z, T) = bright_solution(z, T, args)
+true_u(z, T) = sn_solution(z, T, args)
 true_v(z, T) = 0
+
+# Bright soliton (previous setup, with ω = 5):
+# Δβ = 19.327449097454128
+# γ  = -0.013160409145296585
+# args = ModelingArgs(
+#     (c0=c0, k=k, ω=ω, β2=β2, Ω_g=Ω_g, w0=w0, Tspan=Tspan, Δβ=Δβ, γ=γ),
+#     construct_dependent_args_for_bright,
+# )
+# u0(T) = bright_solution(0.0, T, args)
+# true_u(z, T) = bright_solution(z, T, args)
+# true_v(z, T) = 0
 
 # Periodic analytical reference.
 true_u_periodic(z, T) = true_u(z, periodic_time(z, T, Tspan, c0, w0))

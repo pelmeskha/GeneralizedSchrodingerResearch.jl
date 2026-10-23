@@ -12,7 +12,9 @@ function solve_coupled_gl(
     Δβ::Real, δ::Real, β2::Real, # dispersion / birefringence
     g::Real, Ω_g::Real,          # gain parameters
     γ::Real;                     # nonlinear coefficient
-    show_progress = true
+    show_progress = true,
+    store = true,                # false: do not keep the full (N_T, N_z) fields
+    on_step = nothing            # called as on_step(k, z[k], u, v) after every z step
 )
     # ---- T grid and frequency grid ----
     L_T = Tspan[2] - Tspan[1]
@@ -34,10 +36,13 @@ function solve_coupled_gl(
     v = ComplexF64.(v0.(T))
 
     # ---- output arrays ----
-    U_out = zeros(ComplexF64, N_T, N_z)
-    V_out = zeros(ComplexF64, N_T, N_z)
-    U_out[:,1] .= u
-    V_out[:,1] .= v
+    U_out = store ? zeros(ComplexF64, N_T, N_z) : nothing
+    V_out = store ? zeros(ComplexF64, N_T, N_z) : nothing
+    if store
+        U_out[:,1] .= u
+        V_out[:,1] .= v
+    end
+    isnothing(on_step) || on_step(1, z[1], u, v)
 
     # ---- FFT plans (create proper plans for in-place and out-of-place transforms) ----
     # For in-place transformation of u and v separately.
@@ -112,9 +117,11 @@ function solve_coupled_gl(
         v .*= Lin_half
         mul!(v, Pinv_v, v) # v = ifft(v)
 
-        # store
-        U_out[:,k] .= u
-        V_out[:,k] .= v
+        if store
+            U_out[:,k] .= u
+            V_out[:,k] .= v
+        end
+        isnothing(on_step) || on_step(k, z[k], u, v)
 
         show_progress && next!(p)
     end

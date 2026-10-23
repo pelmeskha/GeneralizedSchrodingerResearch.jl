@@ -2,7 +2,7 @@ module CoupledGLPlotting
 
 using Plots
 
-export plot_coupled_gl, plot_profiles, plot_error_profiles, plot_true_errors
+export plot_coupled_gl, plot_profiles, plot_error_profiles, plot_true_errors, plot_convergence, fit_order
 
 const RESULTS_DIR = normpath(joinpath(@__DIR__, "../..", "results", "Coupled_GL"))
 
@@ -32,24 +32,22 @@ function plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis, outdir=
         z,
         T,
         abs.(U),
-        xlabel = "z", ylabel = "T",
-        title  = "|u(z,T)|",
+        xlabel = "z", ylabel = "t",
         color  = cmap,
         dpi    = 300
     )
-    save_plot(p1, prefix, "_u.png", outdir)
+    save_plot(p1, prefix, "_abs_u.png", outdir)
 
     # |v|
     p2 = heatmap(
         z,
         T,
         abs.(V),
-        xlabel = "z", ylabel = "T",
-        title  = "|v(z,T)|",
+        xlabel = "z", ylabel = "t",
         color  = cmap,
         dpi    = 300
     )
-    save_plot(p2, prefix, "_v.png", outdir)
+    save_plot(p2, prefix, "_abs_v.png", outdir)
 end
 """
     plot_coupled_gl(T, z, true_u::Function, true_v::Function; kwargs...)
@@ -96,6 +94,10 @@ end
       If both `u_solutions` and `v_solutions` are `nothing`, nothing is plotted
     - `prefixes` : one name per solution, used in legends as "u, <name>, at z=..."
       (defaults to "solution 1", "solution 2", ...)
+    - `colors`, `linewidths`, `linestyles` : one value per solution. Default: the palette
+      `PROFILE_COLORS`, width 1.5 for the first solution and 3.5 for the others, `:solid` for the
+      first and `:dot` for the others
+    - `legend` : `false` removes the legend
     - `prefix` : filename prefix for saved figures
     - `dpi` : resolution
     - `outdir` : directory for saved figures (created if missing)
@@ -106,6 +108,7 @@ function plot_profiles(;
     T_grid, z_grid, z_timestamps,
     u_solutions=nothing, v_solutions=nothing,
     prefixes=nothing,
+    colors=nothing, linewidths=nothing, linestyles=nothing, legend=true,
     prefix="profiles", dpi=300, outdir=RESULTS_DIR
 )
     u_list = isnothing(u_solutions) ? [] : u_solutions
@@ -121,10 +124,9 @@ function plot_profiles(;
         for z_value in z_timestamps
             z_label = format_z(z_value)
             p = plot(
-                xlabel = "T",
+                xlabel = "t",
                 ylabel = "|$component|",
-                title  = "$component at z=$z_label",
-                legend = :best,
+                legend = legend ? :best : false,
                 dpi    = dpi
             )
             for (i, solution) in enumerate(solutions)
@@ -132,9 +134,9 @@ function plot_profiles(;
                 plot!(
                     p, T_grid, profile;
                     label = "$component, $(names[i]), at z=$z_label",
-                    linewidth = i == 1 ? 1.5 : 3.5,
-                    linestyle = i == 1 ? :solid : :dot,
-                    color = PROFILE_COLORS[mod1(i, length(PROFILE_COLORS))]
+                    linewidth = isnothing(linewidths) ? (i == 1 ? 1.5 : 3.5) : linewidths[i],
+                    linestyle = isnothing(linestyles) ? (i == 1 ? :solid : :dot) : linestyles[i],
+                    color = isnothing(colors) ? PROFILE_COLORS[mod1(i, length(PROFILE_COLORS))] : colors[i]
                 )
             end
             save_plot(p, prefix, "_$(component)_z=$z_label.png", outdir)
@@ -174,10 +176,9 @@ function plot_error_profiles(T, z, U, V; prefix="error", dpi=300, outdir=RESULTS
                color      = :blue,
                xlabel     = "T",
                ylabel     = "Relative error",
-               title      = "|u|: (final - initial) / max(|u₀|)",
                legend     = false,
                dpi        = dpi)
-    save_plot(p_u, prefix, "_u_error.png", outdir)
+    save_plot(p_u, prefix, "_u_change.png", outdir)
 
     # ---- v error ----
     p_v = plot(T, v_err,
@@ -185,10 +186,9 @@ function plot_error_profiles(T, z, U, V; prefix="error", dpi=300, outdir=RESULTS
                color      = :red,
                xlabel     = "T",
                ylabel     = "Relative error",
-               title      = "|v|: (final - initial) / max(|v₀|)",
                legend     = false,
                dpi        = dpi)
-    save_plot(p_v, prefix, "_v_error.png", outdir)
+    save_plot(p_v, prefix, "_v_change.png", outdir)
 
     return p_u, p_v
 end
@@ -243,7 +243,6 @@ function plot_true_errors(;
             z_grid, err;
             xlabel = "z",
             ylabel = "relative error, %",
-            title  = "Max percentage error over z",
             linewidth = 2,
             color  = color,
             legend = false,
@@ -253,6 +252,69 @@ function plot_true_errors(;
         push!(plots, p)
     end
     return plots
+end
+
+"""
+    fit_order(h, err)
+
+Least-squares slope of `log10(err)` versus `log10(h)`. For an order-p scheme `err ∝ h^p`, so the slope is p.
+"""
+function fit_order(h, err)
+    A = [ones(length(h)) log10.(h)]
+    coef = A \ log10.(err)
+    return coef[2]
+end
+
+function sci_label(x)
+    e = floor(Int, log10(x))
+    m = round(x / 10.0^e, digits=2)
+    mantissa = m == round(m) ? string(Int(round(m))) : string(m)
+    return "$(mantissa)e$(e)"
+end
+
+"""
+    plot_convergence(h, err; prefix="validation_convergence", dpi=300, outdir=RESULTS_DIR)
+
+    Log-log plot of the error against the step parameter `h`. The measurements are black
+    triangles, and the least-squares line `log10(err) = k*log10(h) + c` is a black dotted line.
+    The x ticks are the measured `h` values.
+
+    - `h` : step parameters
+    - `err` : errors for each `h`
+
+    Returns the plot and the fitted slope `k`.
+"""
+function plot_convergence(h, err; xlabel="h", show_fit=true, prefix="validation_convergence", dpi=300, outdir=RESULTS_DIR)
+    order = fit_order(h, err)
+    intercept = sum(log10.(err) .- order .* log10.(h)) / length(h)
+    p = plot(
+        h, err;
+        seriestype = :scatter,
+        marker = :utriangle,
+        markersize = 7,
+        markercolor = :black,
+        markerstrokecolor = :black,
+        label = "measurements",
+        xscale = :log10,
+        yscale = :log10,
+        xticks = (h, sci_label.(h)),
+        xlabel = xlabel,
+        ylabel = "max relative error, %",
+        legend = :topleft,
+        dpi    = dpi
+    )
+    if show_fit
+        h_line = range(minimum(h), maximum(h), length=100)
+        plot!(
+            p, h_line, 10 .^(intercept .+ order .* log10.(h_line));
+            label = "linear fit (k=$(round(order, digits=2)), c=$(round(intercept, digits=2)))",
+            linestyle = :dot,
+            linewidth = 2,
+            color = :black,
+        )
+    end
+    save_plot(p, prefix, ".png", outdir)
+    return p, order
 end
 
 end # module
