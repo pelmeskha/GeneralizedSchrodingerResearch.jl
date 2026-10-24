@@ -1,6 +1,6 @@
 module BaseUtilities
 
-using CUDA, Statistics, Plots
+using Statistics, Plots
 
 include("integrals.jl")
 export integral_1, integral_2
@@ -17,12 +17,6 @@ export relative_error_to_amplitude
 include("parameter_transform.jl")
 export M0_M1_to_ε2_ε3, ε2_ε3_to_M0_M1
 
-include("cuda_integrals.jl")
-export cuda_integral_1, cuda_integral_2
-
-include("cuda_filtration.jl")
-export cuda_filtration
-
 include("parse_to_vector.jl")
 export parse_to_vector
 
@@ -34,5 +28,11 @@ export shift_pulse_to_center, find_threshold
 
 include("smooth_vector.jl")
 export smooth_vector
+
+# Implemented in the CUDA package extension (ext/); available after `using CUDA`.
+function cuda_integral_1 end
+function cuda_integral_2 end
+function cuda_filtration end
+export cuda_integral_1, cuda_integral_2, cuda_filtration
 
 end

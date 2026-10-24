@@ -1,3 +1,3 @@
-[submodule "LaTeX/Coupled_GL/PHD"]
-	path = LaTeX/Coupled_GL/PHD
+[submodule "Coupled_GL/LaTeX/PHD"]
+	path = Coupled_GL/LaTeX/PHD
 	url = git@github.com:pelmeskha/PHD.git

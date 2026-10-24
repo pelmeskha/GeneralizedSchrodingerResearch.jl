@@ -1,5 +1,5 @@
 useful.jl
-/run/results/
-/run/plots/
+/GNSE_3_5_7/results/
 *.png
 results/
+Notes.md

@@ -22,8 +22,16 @@ Julia 1.12.6 (installed on Windows through juliaup). Run it from WSL with the ju
 Run scripts with the repo project using a Windows-style path:
 
 ```
-"/mnt/c/Users/vikto/AppData/Local/Microsoft/WindowsApps/julia.exe" --project=C:/Users/vikto/Desktop/Projects/GeneralizedSchrodingerResearch.jl run/Coupled_GL/run_0.jl
+"/mnt/c/Users/vikto/AppData/Local/Microsoft/WindowsApps/julia.exe" --project=C:/Users/vikto/Desktop/Projects/GeneralizedSchrodingerResearch.jl Coupled_GL/run/run_0_main.jl
 ```
+
+Repository layout for Julia code:
+- `src/` is the shared package `GeneralizedSchrodingerResearch`. Its entry `src/GeneralizedSchrodingerResearch.jl` loads the shared modules `BaseUtilities` (`src/base_utilities/`), `Utilities` (`src/utilities/`: `periodic_time`, `field_error`) and `Plotting` (`src/plotting/`), plus the two submodules below.
+- `Coupled_GL/src/CoupledGL.jl` is submodule `GeneralizedSchrodingerResearch.CoupledGL`: analytical solutions, residuals, the coupled solver, `sn_reference()` and convergence helpers. `Coupled_GL/run/` holds its runnable scripts named `run_N_<name>.jl`. Their outputs go to `Coupled_GL/results/` (`RESULTS_DIR`).
+- `Coupled_GL/LaTeX/` holds the Coupled GL documents, including the PHD git submodule.
+- `GNSE_3_5_7/src/GNSE_3_5_7.jl` is submodule `GeneralizedSchrodingerResearch.GNSE_3_5_7`: NSE solutions, `solve.jl`, construct helpers, and stubs for `cuda_solve` and `live_plot_record`. `GNSE_3_5_7/run/` holds its runnable scripts; their outputs go to a flat `GNSE_3_5_7/results/` folder.
+- `gpu/` is a separate package `GeneralizedSchrodingerResearchGPU` (`gpu/Project.toml`, `gpu/Manifest.toml`, `gpu/src/`). It depends on CUDA and GLMakie and implements the GPU solver `cuda_solve` and the live plot `live_plot_record`. Its manifest is the only one that records CUDA and GLMakie, because Julia 1.12 does not record weak dependencies. Scripts that call `cuda_solve` need `using GeneralizedSchrodingerResearchGPU` and must run with `--project=C:/Users/vikto/Desktop/Projects/GeneralizedSchrodingerResearch.jl/gpu`. The main project must not use CUDA.
+- Scripts never `include` other code. They use `using GeneralizedSchrodingerResearch...` only. Run scripts from the repo root, using `Coupled_GL/run/...` as the script path.
 
 Do not use `/mnt/c/Users/vikto/AppData/Local/Programs/Julia-1.9.3`, which is an older install.
 
