@@ -1,4 +1,5 @@
-using GeneralizedSchrodingerResearch.CoupledGL: sn_reference, max_relative_error_over_run, save_convergence_csv, RESULTS_DIR
+using GeneralizedSchrodingerResearch.CoupledGL: max_relative_error_over_run, save_convergence_csv, RESULTS_DIR
+include(joinpath(@__DIR__, "case_setup.jl"))
 using GeneralizedSchrodingerResearch.Plotting: plot_convergence
 using Printf
 
@@ -11,7 +12,7 @@ dz_of(h) = h^2
 dt_of(h) = h
 const EXPECTED_ORDER = 4
 
-setup = sn_reference()
+setup = reference()
 CSV_PATH = joinpath(RESULTS_DIR, "validation_convergence_$(setup.tag).csv")
 
 function run_convergence(setup, h_list)

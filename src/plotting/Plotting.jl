@@ -2,7 +2,7 @@ module Plotting
 
 using Plots
 
-export plot_coupled_gl, plot_profiles, plot_error_profiles, plot_true_errors, plot_convergence, fit_order
+export plot_coupled_gl, plot_profiles, plot_error_profiles, plot_true_errors, plot_convergence, fit_order, plot_energy_exchange
 
 
 function save_plot(p, prefix, suffix, outdir)
@@ -24,13 +24,18 @@ end
     - `prefix` : string prepended to output filenames
     - `outdir` : directory for saved figures (created if missing)
     - `cmap`  : colormap (symbol), e.g., :plasma, :inferno, :turbo
+    - `max_z_points` : at most this many z-columns are drawn (every n-th column is taken);
+      the saved figure cannot show more columns than its pixel width
 """
-function plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis, outdir="results")
+function plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis, outdir="results", max_z_points=2000)
+    cols = 1:cld(length(z), max_z_points):length(z)
+    z_plot = z[cols]
+
     # |u|
     p1 = heatmap(
-        z,
+        z_plot,
         T,
-        abs.(U),
+        abs.(U[:, cols]),
         xlabel = "z", ylabel = "t",
         color  = cmap,
         dpi    = 300
@@ -39,9 +44,9 @@ function plot_coupled_gl(T, z, U, V; prefix="coupled_gl", cmap=:viridis, outdir=
 
     # |v|
     p2 = heatmap(
-        z,
+        z_plot,
         T,
-        abs.(V),
+        abs.(V[:, cols]),
         xlabel = "z", ylabel = "t",
         color  = cmap,
         dpi    = 300
@@ -314,6 +319,38 @@ function plot_convergence(h, err; xlabel="h", show_fit=true, prefix="validation_
     end
     save_plot(p, prefix, ".png", outdir)
     return p, order
+end
+
+"""
+    plot_energy_exchange(runs; prefix="energy_exchange", dpi=300, outdir="results")
+
+    Plot the energies `E_u(z)` and `E_v(z)` of each run in a grid of panels, one panel per run.
+
+    - `runs` : vector of named tuples `(label, z, E_u, E_v)`
+"""
+function plot_energy_exchange(runs; prefix="energy_exchange", dpi=300, outdir="results")
+    panels = [
+        begin
+            p = plot(
+                run.z, run.E_u;
+                label = "E_u",
+                xlabel = "z",
+                ylabel = "energy",
+                title = run.label,
+                linewidth = 2,
+                color = :blue,
+                legend = :best,
+            )
+            plot!(p, run.z, run.E_v; label = "E_v", linewidth = 2, color = :red)
+            p
+        end
+        for run in runs
+    ]
+    ncols = min(length(panels), 2)
+    nrows = cld(length(panels), ncols)
+    p = plot(panels...; layout = (nrows, ncols), size = (900, 400 * nrows), dpi = dpi)
+    save_plot(p, prefix, ".png", outdir)
+    return p
 end
 
 end # module

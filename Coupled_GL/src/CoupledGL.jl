@@ -15,9 +15,6 @@ export CoupledGLResiduals
 include("solvers/solve_coupled.jl")
 export solve_coupled_gl
 
-include("reference.jl")
-export sn_reference
-
 include("convergence.jl")
 export max_relative_error_over_run, save_convergence_csv
 

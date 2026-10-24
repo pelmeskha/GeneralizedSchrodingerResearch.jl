@@ -300,6 +300,190 @@ and the integral cannot be computed analytically.
     \end{equation}
     Since \(\xi_{2} = -\frac{2\gamma}{\beta_{2}c_{0}^{2}}\), the condition \(\xi_{2} > 0\) is equivalent to \(\beta_{2}\gamma < 0\). For \(\beta_{2} > 0\) this requires \(\gamma < 0\) (defocusing nonlinearity). For the parameters with \(\beta_{2} > 0\) and \(\gamma > 0\) no bright soliton of this form exists.
 
+\subsection{Vector bright soliton solution}
+
+\begin{equation} \label{vsys}
+    \begin{cases}
+        \displaystyle
+        \frac{\partial{u}}{\partial{z}} = \frac{i \Delta \beta}{2}u - \delta \frac{\partial{u}}{\partial{t}} - \frac{i\beta_{2}}{2} \frac{\partial^2 u}{\partial t^2} + \frac{g}{2}u + \frac{g}{2\Omega^2_{g}}\frac{\partial^2 u}{\partial t^2} + i\gamma\left(\left|u\right|^2 + \frac{2}{3} \left|v\right|^2\right)u + \frac{i\gamma}{3}v^2 u^*, \\
+        \displaystyle
+        \frac{\partial{v}}{\partial{z}} = \frac{i \Delta \beta}{2}v - \delta \frac{\partial{v}}{\partial{t}} - \frac{i\beta_{2}}{2} \frac{\partial^2 v}{\partial t^2} + \frac{g}{2}v + \frac{g}{2\Omega^2_{g}}\frac{\partial^2 v}{\partial t^2} + i\gamma\left(\left|v\right|^2 + \frac{2}{3} \left|u\right|^2\right)v + \frac{i\gamma}{3}u^2 v^*.
+    \end{cases}
+\end{equation}
+
+We will assume both components share one carrier, so that $v^2u^*$ has the same phase factor as $u$:
+\begin{equation} \label{vred}
+    u = Y\left(\mathrm{w}\right) e^{i\left(kz-\omega t\right)}, \qquad v = Q\left(\mathrm{w}\right) e^{i\left(kz-\omega t\right)}, \qquad \mathrm{w} = z - c_{0} t.
+\end{equation}
+Substituting Eq. \ref{vred} into Eq. \ref{vsys} gives
+\begin{equation} \label{vode}
+    \begin{cases}
+        \displaystyle
+        a_2 Y'' + a_1 Y' + a_0 Y + i\gamma\left[\left(\left|Y\right|^2+\frac{2}{3}\left|Q\right|^2\right)Y + \frac{1}{3}Q^2\bar Y\right] = 0, \\
+        \displaystyle
+        a_2 Q'' + a_1 Q' + a_0 Q + i\gamma\left[\left(\left|Q\right|^2+\frac{2}{3}\left|Y\right|^2\right)Q + \frac{1}{3}Y^2\bar Q\right] = 0,
+    \end{cases}
+\end{equation}
+where
+\begin{equation} \label{vcoef}
+    \begin{cases}
+        \displaystyle a_2 = -\frac{i\beta_{2}c_0^2}{2} + \frac{g c_0^2}{2\Omega_g^2}, \\
+        \displaystyle a_1 = \delta c_0 + \beta_2\omega c_0 - 1 + \frac{i g\omega c_0}{\Omega_g^2}, \\
+        \displaystyle a_0 = \frac{i\Delta\beta}{2} + \frac{g}{2} + i\delta\omega + \frac{i\beta_2\omega^2}{2} - \frac{g\omega^2}{2\Omega_g^2} - ik.
+    \end{cases}
+\end{equation}
+
+We use Sech-type ansatz. Assuming $\eta$ is real we define
+\begin{equation} \label{vsech}
+    \begin{cases}
+        \displaystyle S = \mathrm{sech}\left(\eta\mathrm{w}\right), \\
+        \displaystyle T = \tanh\left(\eta\mathrm{w}\right),
+    \end{cases}
+    \qquad Y = A\,S, \qquad Q = B\,S.
+\end{equation}
+This leads to
+\begin{equation} \label{vderiv}
+    \begin{cases}
+        \displaystyle S' = -\eta ST, \\
+        \displaystyle S'' = \eta^2\left(S-2S^3\right), \\
+        \displaystyle T^2 = 1-S^2,
+    \end{cases}
+\end{equation}
+
+After substituting Eq. \ref{vsech} and \ref{vderiv} into Eq. \ref{vode}, it's splits by monomials:
+\begin{equation} \label{vbal}
+    \begin{cases}
+        \displaystyle ST:\quad a_1 = 0, \\
+        \displaystyle S:\quad a_2\eta^2 + a_0 = 0, \\
+        \displaystyle S^3:\quad -2a_2\eta^2 A + i\gamma\left[\left(\left|A\right|^2+\frac{2}{3}\left|B\right|^2\right)A + \frac{1}{3}B^2\bar A\right] = 0, \\
+        \displaystyle S^3:\quad -2a_2\eta^2 B + i\gamma\left[\left(\left|B\right|^2+\frac{2}{3}\left|A\right|^2\right)B + \frac{1}{3}A^2\bar B\right] = 0.
+    \end{cases}
+\end{equation}
+Next we prove that there no dissipative solution in the sech class.
+
+
+\textbf{Theorem.} Let $g\neq0$, $\Omega_g\neq0$, $c_0\neq0$, and let $\eta\neq0$ be real. Then the ansatz Eq. \ref{vsech} has no nontrivial solution of Eq. \ref{vode}. Equivalently, every sech-type solution has $g=0$.
+
+\textbf{Proof.} Assume $(A,B)\neq(0,0)$.
+\begin{enumerate}
+    \item The $ST$ condition in Eq. \ref{vbal} requires $a_1 = 0$. Its imaginary part is $\dfrac{g\omega c_0}{\Omega_g^2}=0$. Since $g\neq0$ and $c_0\neq0$, this gives $\omega=0$. The real part then gives $\delta = 1/c_0$.
+    \item Choose a nonzero amplitude, say $A\neq0$ (otherwise use $B$). The $S$ condition gives $a_2\eta^2 + a_0 = 0$. With $\omega=0$, $\mathrm{Re}\,a_2 = \dfrac{gc_0^2}{2\Omega_g^2}$ and $\mathrm{Re}\,a_0 = \dfrac{g}{2}$. Since $\eta^2$ is real,
+    \begin{equation} \label{vnogain}
+        0 = \mathrm{Re}\left(a_2\eta^2 + a_0\right) = \frac{g}{2}\left(1 + \frac{c_0^2\eta^2}{\Omega_g^2}\right) = \frac{g\left(\Omega_g^2 + c_0^2\eta^2\right)}{2\Omega_g^2}.
+    \end{equation}
+    \item The bracket in Eq. \ref{vnogain} is strictly positive, so $g=0$. This contradicts $g\neq0$. \hfill(end of proof)
+\end{enumerate}
+
+Next we will consider conservative vector solitons.
+For $g=0$, Eq. \ref{vbal} reduces to
+\begin{equation} \label{vxi}
+    \begin{cases}
+        \displaystyle \eta^2 = -\xi_1, \\
+        \displaystyle \xi_1 = \frac{\beta_2\omega^2 - 2\omega/c_0 + 2k - \Delta\beta}{\beta_2c_0^2}, \\
+        \displaystyle \delta = \frac{1-\beta_2\omega c_0}{c_0}.
+    \end{cases}
+\end{equation}
+Write the complex amplitudes in polar form,
+\begin{equation} \label{vpolar}
+    \begin{cases}
+        \displaystyle A = a\,e^{i\alpha}, \\
+        \displaystyle B = b\,e^{i\beta}, \\
+        \displaystyle \varphi = 2\left(\beta-\alpha\right).
+    \end{cases}
+\end{equation}
+The $S^3$ conditions then require $\mathrm{Im}\!\left[a^2+\tfrac23 b^2+\tfrac13 b^2 e^{i\varphi}\right]=0$, that is
+\begin{equation} \label{vphase}
+    \frac{1}{3}\,b^2\sin\varphi = 0 \quad\Rightarrow\quad \varphi\in\{0,\pi\}.
+\end{equation}
+Two families remain:
+\begin{equation} \label{vfam}
+    \begin{cases}
+        \displaystyle \varphi = 0: \qquad a^2+b^2 = \frac{\beta_2c_0^2\xi_1}{\gamma}, \\
+        \displaystyle \varphi = \pi: \qquad a = b, \qquad a^2 = \frac{3\beta_2c_0^2\xi_1}{4\gamma}.
+    \end{cases}
+\end{equation}
+The phase difference $\beta-\alpha$ sets the polarization state. Two options are possible:
+\begin{itemize}
+    \item $\varphi=0$ ($\beta-\alpha=0$ or $\pi$): The linear polarization family. the components are in phase, so the field is linearly polarized. Writing $a=\sqrt{\beta_2c_0^2\xi_1/\gamma}\,\cos\theta$ and $b=\sqrt{\beta_2c_0^2\xi_1/\gamma}\,\sin\theta$ gives the Jones vector $(\cos\theta,\sin\theta)$, the polarization angle $\theta$ measured from the $u$ axis. The angle is free because the nonlinearity depend only on $|u|^2+|v|^2$. In this family $|v|/|u| = \tan\theta$.
+    \item $\varphi=\pi$ ($\beta-\alpha=\pm\pi/2$): The circular polarization family. the components are in quadrature with equal amplitudes, which is circular polarization. Both handedness signs are allowed. In this family $|u|=|v|$.
+\end{itemize}
+
+As the result, two vector analytical solution families found in the form of bright solitons.
+
+Linear polarization, with angle $\theta$:
+\begin{equation} \label{vlin}
+    \begin{cases}
+        \displaystyle u = \sqrt{\frac{\beta_2c_0^2\xi_1}{\gamma}}\,\cos\theta\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}, \\
+        \displaystyle v = \sqrt{\frac{\beta_2c_0^2\xi_1}{\gamma}}\,\sin\theta\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}.
+    \end{cases}
+\end{equation}
+
+Circular polarization, $v=iu$:
+\begin{equation} \label{vcirc}
+    \begin{cases}
+        \displaystyle u = \sqrt{\frac{3\beta_2c_0^2\xi_1}{4\gamma}}\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}, \\
+        \displaystyle v = i\sqrt{\frac{3\beta_2c_0^2\xi_1}{4\gamma}}\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}.
+    \end{cases}
+\end{equation}
+Both families need $\beta_2\gamma<0$ and $\xi_1<0$.
+
+Within each family, $|u|$ and $|v|$ share the same sech envelope. The solutions illustrated in Figs. \ref{fig:vsol}.
+
+ \begin{figure}[H]                                                                                                                        
+     \centering                                                                                                                           
+     \begin{subfigure}[t]{0.3\linewidth}                                                                                                  
+         \centering                                                                                                                       
+         \includegraphics[width=\linewidth]{linpol_abs_u.png}                                                                             
+         \subcaption{$|u(z,t)|$}                                                                                                  
+     \end{subfigure}                                                                                                                      
+     \hfill                                                                                                                               
+     \begin{subfigure}[t]{0.3\linewidth}                                                                                                  
+         \centering                                                                                                                       
+         \includegraphics[width=\linewidth]{linpol_abs_v.png}                                                                             
+         \subcaption{$|v(z,t)|$}                                                                                                  
+     \end{subfigure}                                                                                                                      
+     \hfill                                                                                                                               
+     \begin{subfigure}[t]{0.3\linewidth}                                                                                                  
+         \centering                                                                                                                       
+         \includegraphics[width=\linewidth]{linpol_pol.png}                                                                               
+         \subcaption{Polarization snapshot, $z=0$, $t=0$, $\theta=\pi/8$}                                                                    
+     \end{subfigure}                                                                                                                      
+     \\[1em]                                                                                                                              
+     \begin{subfigure}[t]{0.3\linewidth}                                                                                                  
+         \centering                                                                                                                       
+         \includegraphics[width=\linewidth]{circular_abs_u.png}                                                                           
+         \subcaption{$|u(z,t)|$}                                                                                                
+     \end{subfigure}                                                                                                                      
+     \hfill                                                                                                                               
+     \begin{subfigure}[t]{0.3\linewidth}                                                                                                  
+         \centering                                                                                                                       
+         \includegraphics[width=\linewidth]{circular_abs_v.png}                                                                           
+         \subcaption{$|v(z,t)|$}                                                                                                
+     \end{subfigure}                                                                                                                      
+     \hfill                                                                                                                               
+     \begin{subfigure}[t]{0.3\linewidth}                                                                                                  
+         \centering                                                                                                                       
+         \includegraphics[width=\linewidth]{circular_pol.png}                                                                             
+         \subcaption{Polarization snapshot, $z=0$, $t=0$}                                                                                  
+     \end{subfigure}                                                                                                                      
+     \caption{                                                                                                                            
+         Linear Eq. \ref{vlin} (top) and circular Eq. \ref{vcirc} (bottom) -polarized solitons.\\                                                                    
+         Parameters: $\beta_2 = 0.027$, $\gamma = -0.07$, $\Delta\beta = 25$, $\Omega_g = 66$, $c_0 = 1.4$, $\eta = 0.8$, $\omega = 1.5$, 
+$k=13.52$, $\delta=0.674$, $g=0$.                                                                                                          
+     }                                                                                                                                    
+     \label{fig:vsol}                                                                                                                     
+ \end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{abs_profile.png}
+    \caption{
+        Pulse envelopes.\\
+        Parameters correspond to Fig. \ref{fig:vsol}.
+    }
+    \label{fig:vabs}
+\end{figure}
+
 \section{Numerical Analysis}
     To build a numerical scheme for numerical analysis, we rewrite original system (\ref{eq1}) in the form:
     \begin{equation}
@@ -357,7 +541,7 @@ and the integral cannot be computed analytically.
         + i\Bigl(\frac{\Delta\beta}{2} - \delta\omega_{f} + \frac{\beta_2}{2}\omega_{f}^2\Bigr).
     \end{equation}
     Both fields $u$ and $v$ experience the same linear response because the linear part
-    of Eq. \ref{eq1} is diagonal and identical for the two polarisations.
+    of Eq. \ref{eq1} is diagonal and identical for the two polarizations.
     Hence a half‑step of the linear operator is applied in the frequency domain as
     \begin{equation}
         \left[

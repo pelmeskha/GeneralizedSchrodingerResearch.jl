@@ -1,12 +1,13 @@
-using GeneralizedSchrodingerResearch.CoupledGL: solve_coupled_gl, sn_reference, RESULTS_DIR
+using GeneralizedSchrodingerResearch.CoupledGL: solve_coupled_gl, RESULTS_DIR
+include(joinpath(@__DIR__, "case_setup.jl"))
 using GeneralizedSchrodingerResearch.Utilities: field_error
 using GeneralizedSchrodingerResearch.Plotting: plot_coupled_gl, plot_profiles, plot_true_errors
 
-setup = sn_reference()
+setup = reference()
 (; Tspan, zspan, args, u0, v0, true_u_periodic, true_v_periodic) = setup
 
-dz    = 0.0022231407344530316 # must be lower than dt. Scheme is 2 order on z
-dt    = 20.0 / 950
+dz    = 0.0022 # must be lower than dt. Scheme is 2 order on z
+dt    = 0.021
 N_T   = round(Int, (Tspan[2]-Tspan[1]) / dt)
 
 # Bright soliton (previous setup, with ω = 5):
@@ -25,7 +26,10 @@ println("Примерный критерий сходимости: $(dz/( (Tspan
 
 T, z, u, v = solve_coupled_gl(zspan, Tspan, dz, N_T, u0, v0, args.Δβ, args.δ, args.β2, args.g, args.Ω_g, args.γ)
 
-u_metrics = field_error(u, T, z, true_u_periodic)
+true_u_filed = [true_u_periodic(zi, tj) for tj in T, zi in z]
+true_v_filed = [true_v_periodic(zi, tj) for tj in T, zi in z]
+
+u_metrics = field_error(u, T, z, true_u_filed)
 println(
     "u vs analytical: max modulus error = ", round(u_metrics.max_modulus_error, sigdigits=3),
     ", max complex error = ", round(u_metrics.max_complex_error, sigdigits=3),
@@ -34,12 +38,12 @@ println(
 
 # Plotting is slow; uncomment only to inspect a run by eye.
 plot_coupled_gl(T, z, u, v; prefix="2D plot actual", cmap=:plasma, outdir=RESULTS_DIR)
-plot_coupled_gl(T, z, true_u_periodic, true_v_periodic; prefix="2D plot analytical", cmap=:plasma, outdir=RESULTS_DIR)
+plot_coupled_gl(T, z, true_u_filed, true_v_filed; prefix="2D plot analytical", cmap=:plasma, outdir=RESULTS_DIR)
 plot_profiles(
     T_grid = T,
     z_grid = z,
     z_timestamps = [zspan[1], zspan[2]],
-    u_solutions = [u, true_u_periodic],
+    u_solutions = [u, true_u_filed],
     # v_solutions = [v, true_v_periodic], # commented = empty array by default. No plots for v component
     prefixes=["actual", "analytical"],
     outdir=RESULTS_DIR,
@@ -49,7 +53,7 @@ plot_true_errors(
     z_grid = z,
     actual_u = u,
     # actual_v = v,
-    reference_u = true_u_periodic,
+    reference_u = true_u_filed,
     # reference_v = true_v_periodic;
     prefix="error",
     outdir=RESULTS_DIR,

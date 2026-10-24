@@ -1,8 +1,9 @@
-using GeneralizedSchrodingerResearch.CoupledGL: sn_reference, max_relative_error_over_run, save_convergence_csv, RESULTS_DIR
+using GeneralizedSchrodingerResearch.CoupledGL: max_relative_error_over_run, save_convergence_csv, RESULTS_DIR
+include(joinpath(@__DIR__, "case_setup.jl"))
 using GeneralizedSchrodingerResearch.Plotting: plot_convergence
 using Printf
 
-setup = sn_reference()
+setup = reference()
 
 # Study 1: dt fixed and well resolved, dz varied. Expected: error ~ dz^2.
 const DT_FIXED = 0.05

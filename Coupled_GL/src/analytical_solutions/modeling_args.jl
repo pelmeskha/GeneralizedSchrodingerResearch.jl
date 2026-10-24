@@ -16,14 +16,14 @@ Parameters of one analytical solution. `independent` holds the values chosen by
 the user, `dependent` holds the values derived from them. Fields are read with
 `args.name` from either part.
 """
-struct ModelingArgs
-    independent::NamedTuple
-    dependent::NamedTuple
+struct ModelingArgs{I<:NamedTuple, D<:NamedTuple}
+    independent::I
+    dependent::D
 
-    function ModelingArgs(independent::NamedTuple, dependent::NamedTuple)
+    function ModelingArgs(independent::I, dependent::D) where {I<:NamedTuple, D<:NamedTuple}
         clashes = intersect(keys(independent), keys(dependent))
         isempty(clashes) || throw(ArgumentError("independent and dependent args share keys: $clashes"))
-        return new(independent, dependent)
+        return new{I,D}(independent, dependent)
     end
 end
 

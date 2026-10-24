@@ -1,4 +1,5 @@
-using GeneralizedSchrodingerResearch.CoupledGL: solve_coupled_gl, sn_reference, RESULTS_DIR
+using GeneralizedSchrodingerResearch.CoupledGL: solve_coupled_gl, RESULTS_DIR
+include(joinpath(@__DIR__, "case_setup.jl"))
 using GeneralizedSchrodingerResearch.Utilities: field_error
 using Random
 
@@ -7,7 +8,7 @@ const DZ_RANGE = (0.002, 0.02)
 const DT_RANGE = (0.02, 0.075)
 const CSV_PATH = joinpath(RESULTS_DIR, "grid_search.csv")
 
-setup = sn_reference()
+setup = reference()
 (; Tspan, zspan, args, u0, v0, true_u_periodic) = setup
 
 function grid_search()

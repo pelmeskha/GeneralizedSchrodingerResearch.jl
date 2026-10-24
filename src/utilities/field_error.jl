@@ -2,7 +2,8 @@
     field_error(U, T, z, true_field)
 
 Compare a numerical field `U` (size `(length(T), length(z))`) with an analytical
-`true_field(z, T)` on the same grid.
+reference on the same grid. The reference is either a callable `true_field(z, T)`
+or a matrix of size `(length(T), length(z))`.
 
 Returns a named tuple:
 - `max_modulus_error`: max over z, T of `| |U| - |true| |`;
@@ -10,8 +11,11 @@ Returns a named tuple:
 - `max_relative_error_percent`: `max_complex_error` as a percentage of `max |true|`
   (`NaN` when the reference is identically zero).
 """
-function field_error(U, T, z, true_field)
-    ref = [true_field(zi, tj) for tj in T, zi in z]
+function field_error(U, T, z, true_field::Function)
+    return field_error(U, T, z, [true_field(zi, tj) for tj in T, zi in z])
+end
+
+function field_error(U, T, z, ref::AbstractMatrix)
     scale = maximum(abs, ref)
     max_modulus_error = maximum(abs.(abs.(U) .- abs.(ref)))
     max_complex_error = maximum(abs.(U .- ref))
