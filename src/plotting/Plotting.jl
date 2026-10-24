@@ -2,7 +2,7 @@ module Plotting
 
 using Plots
 
-export plot_coupled_gl, plot_profiles, plot_error_profiles, plot_true_errors, plot_convergence, fit_order, plot_energy_exchange
+export plot_coupled_gl, plot_profiles, plot_error_profiles, plot_true_errors, plot_convergence, fit_order, plot_energy_exchange, plot_energy_evolution, plot_energy_total, envelope_clip_recorder, plot_gamma_grid
 
 
 function save_plot(p, prefix, suffix, outdir)
@@ -349,6 +349,110 @@ function plot_energy_exchange(runs; prefix="energy_exchange", dpi=300, outdir="r
     ncols = min(length(panels), 2)
     nrows = cld(length(panels), ncols)
     p = plot(panels...; layout = (nrows, ncols), size = (900, 400 * nrows), dpi = dpi)
+    save_plot(p, prefix, ".png", outdir)
+    return p
+end
+
+"""
+    plot_energy_evolution(T, z, U, V; prefix="energy_evolution", dpi=300, outdir="results")
+
+    Plot the energies `E_u(z) = ∫|u|² dt` and `E_v(z) = ∫|v|² dt` of the solution matrices
+    `U`, `V` of size `(length(T), length(z))`.
+"""
+function plot_energy_evolution(T, z, U, V; prefix="energy_evolution", dpi=300, outdir="results")
+    dT = T[2] - T[1]
+    E_u = vec(dT .* sum(abs2, U; dims=1))
+    E_v = vec(dT .* sum(abs2, V; dims=1))
+    return plot_energy_exchange([(label = "u and v", z = z, E_u = E_u, E_v = E_v)]; prefix, dpi, outdir)
+end
+
+"""
+    plot_energy_total(T, z, U, V; prefix="energy_total", dpi=300, outdir="results")
+
+    Plot the total energy `E_u(z) + E_v(z)` of the solution matrices `U`, `V` of size
+    `(length(T), length(z))`.
+"""
+function plot_energy_total(T, z, U, V; prefix="energy_total", dpi=300, outdir="results")
+    dT = T[2] - T[1]
+    E = vec(dT .* sum(abs2, U; dims=1)) .+ vec(dT .* sum(abs2, V; dims=1))
+    p = plot(
+        z, E;
+        xlabel = "z",
+        ylabel = "energy",
+        title = "total energy, u and v",
+        linewidth = 2,
+        color = :black,
+        legend = false,
+        dpi = dpi,
+    )
+    save_plot(p, prefix, ".png", outdir)
+    return p
+end
+
+fixed_ylims(::Nothing) = nothing
+fixed_ylims(top::Real) = (0.0, float(top))
+fixed_ylims(lims) = (float(lims[1]), float(lims[2]))
+
+"""
+    envelope_clip_recorder(Tspan, N_T; every=100, fps=20, dpi=100, ylims=nothing)
+
+    Record the envelopes `|u(t)|` and `|v(t)|` during `solve_coupled_gl`. Returns a named tuple:
+    - `on_step` : callback for the solver's `on_step` keyword. Every `every` steps it adds a frame.
+    - `save`    : `save(path)` writes the recorded frames as an animation (e.g. `"envelope.gif"`).
+    The time grid is the one of the solver. The y-axis is fixed for the whole clip: `ylims` if given,
+    otherwise `(0, 1.2 × max)` of the first recorded frame.
+"""
+function envelope_clip_recorder(Tspan, N_T; every=100, fps=20, dpi=100, ylims=nothing)
+    dT = (Tspan[2] - Tspan[1]) / N_T
+    T = range(Tspan[1], step=dT, length=N_T)
+    anim = Animation()
+    y = Ref{Any}(fixed_ylims(ylims))
+    function on_step(k, z_k, u, v)
+        (k - 1) % every == 0 || return
+        isnothing(y[]) && (y[] = (0.0, 1.2 * max(maximum(abs, u), maximum(abs, v))))
+        p = plot(
+            T, abs.(u);
+            label = "|u|",
+            xlabel = "t",
+            ylabel = "envelope",
+            title = "z = $(round(z_k, digits=2))",
+            ylims = y[],
+            linewidth = 2,
+            color = :blue,
+            dpi = dpi,
+        )
+        plot!(p, T, abs.(v); label = "|v|", linewidth = 2, color = :red)
+        frame(anim, p)
+    end
+    save(path) = gif(anim, path; fps=fps, show_msg=false)
+    return (; on_step, save)
+end
+
+"""
+    plot_gamma_grid(runs; prefix="gamma_grid", cmap=:plasma, dpi=300, outdir="results", max_z_points=2000)
+
+    Grid of panels with one row per run and three columns: the energies `E_u(z)`, `E_v(z)`
+    (left), `|u(z,t)|` (middle) and `|v(z,t)|` (right).
+
+    - `runs` : vector of named tuples `(label, T, z, E_u, E_v, U, V)`, with `U`, `V` of size
+      `(length(T), length(z))`
+"""
+function plot_gamma_grid(runs; prefix="gamma_grid", cmap=:plasma, dpi=300, outdir="results", max_z_points=2000)
+    panels = []
+    for run in runs
+        cols = 1:cld(length(run.z), max_z_points):length(run.z)
+        z_plot = run.z[cols]
+        pe = plot(
+            run.z, run.E_u;
+            label = "E_u", color = :blue, linewidth = 2,
+            xlabel = "z", ylabel = "energy", title = run.label, legend = :best,
+        )
+        plot!(pe, run.z, run.E_v; label = "E_v", color = :red, linewidth = 2)
+        pu = heatmap(z_plot, run.T, abs.(run.U[:, cols]); color = cmap, xlabel = "z", ylabel = "t", title = "|u|")
+        pv = heatmap(z_plot, run.T, abs.(run.V[:, cols]); color = cmap, xlabel = "z", ylabel = "t", title = "|v|")
+        append!(panels, [pe, pu, pv])
+    end
+    p = plot(panels...; layout = (length(runs), 3), size = (1500, 350 * length(runs)), dpi = dpi)
     save_plot(p, prefix, ".png", outdir)
     return p
 end

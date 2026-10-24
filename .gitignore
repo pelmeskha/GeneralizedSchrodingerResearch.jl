@@ -3,3 +3,7 @@ useful.jl
 *.png
 results/
 Notes.md
+*.log
+*.synctex.gz
+*.aux
+*.pdf

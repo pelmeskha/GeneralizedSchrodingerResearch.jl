@@ -10,6 +10,7 @@ function construct_dependent_args_for_bright(indep)
     xi = coupled_gl_xi(; Δβ, β2, γ, c0, k, ω)
     xi.xi1 < 0 || throw(ArgumentError("bright soliton requires ξ1 < 0, got ξ1 = $(xi.xi1)"))
     xi.xi2 > 0 || throw(ArgumentError("bright soliton requires ξ2 > 0, got ξ2 = $(xi.xi2)"))
+    println("ξ1 = $(xi.xi1), ξ2 = $(xi.xi2)")
     return merge(common_dependent_args(indep), (eta=sqrt(-xi.xi1), A=sqrt(-2*xi.xi1/xi.xi2)))
 end
 

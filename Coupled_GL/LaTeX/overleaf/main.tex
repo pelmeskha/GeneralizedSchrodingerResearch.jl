@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{subcaption}
 \usepackage{float}
+\usepackage{amssymb}
 
 \title{coupled GL}
 \author{Viktor Medvedev}
@@ -180,13 +181,13 @@
                 \begin{equation} \label{eq25}
                     u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \left|\tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right)\right| \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
                 \end{equation}
-                The pulse envelope of Eq. \ref{eq25} is illustrated in Fig. \ref{fig15}.
+                The pulse envelope of Eq. \ref{eq25} is illustrated in Fig. \ref{fig1}.
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.5\linewidth]{profile_tanh.png}
+                    \includegraphics[width=0.5\linewidth]{fig1.png}
                     \caption{
                     \(|u(0,t)|\) (Eq. \ref{eq25}), \(t\in[-10,10]\), \(k = 13\), \(c_{0} = 1.4\), \(\mu = 0.97\), \(I_{1} = 0.10\), \(\omega = 0\), \(\mathrm{w}_{0} = 0\).
-                    } \label{fig15}
+                    } \label{fig1}
                 \end{figure}
 
             \subsubsection{Elliptic Jacobi function solution}
@@ -248,13 +249,13 @@
                 \begin{equation} \label{eq36}
                     u(z,t) = A\,\mathrm{sn}\left(\kappa\left(z - c_{0}t - \mathrm{w}_{0}\right)\,|\,m\right)\mathrm{e}^{i\left(kz-\omega t\right)}.
                 \end{equation}
-                The pulse envelope of Eq. \ref{eq36} is illustrated in Fig. \ref{fig16}.
+                The pulse envelope of Eq. \ref{eq36} is illustrated in Fig. \ref{fig2}.
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.5\linewidth]{profile_sn.png}
+                    \includegraphics[width=0.5\linewidth]{fig2.png}
                     \caption{
                     \(|u(0,t)|\) (Eq. \ref{eq36}), \(t\in[-10,10]\), \(k = 13\), \(c_{0} = 1.4\), \(\mu = 1.3\), \(I_{1} = 0.10\), \(\omega = 0\), \(\mathrm{w}_{0} = -7\), \(\kappa = 0.65\), \(m = 0.0018\).
-                    } \label{fig16}
+                    } \label{fig2}
                 \end{figure}
                 The zeros of \(\mathrm{sn}\) are at \(\mathrm{w}=0\) and \(\mathrm{w}=2K/\kappa\). Each zero is a dark soliton with a \(\pi\) phase jump, and neighbouring zeros have opposite polarity. Within one window there are two such solitons, half a window apart.
 
@@ -281,13 +282,13 @@
             \begin{equation} \label{eq40}
                 u(z,t) = A\,\mathrm{sech}\left(\eta\left(z - c_{0}t - \mathrm{w}_{0}\right)\right)\mathrm{e}^{i\left(kz-\omega t\right)},
             \end{equation}
-            The pulse envelope of Eq. \ref{eq40} is illustrated in Fig. \ref{fig17}.
+            The pulse envelope of Eq. \ref{eq40} is illustrated in Fig. \ref{fig3}.
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.5\linewidth]{profile_bright.png}
+                \includegraphics[width=0.5\linewidth]{fig3.png}
                 \caption{
                 \(|u(0,t)|\) (Eq. \ref{eq40}), \(t\in[-10,10]\), \(k = 13\), \(c_{0} = 1.4\), \(\omega = 5\), \(\mathrm{w}_{0} = 0\).
-                } \label{fig17}
+                } \label{fig3}
             \end{figure}
             with \(\eta\) and \(A\) from Eq. \ref{eq39}, under the restrictions Eq. \ref{eq7} and
             \begin{equation} \label{eq41}
@@ -297,21 +298,23 @@
 
         \subsection{Vector bright soliton solution}
 
-            We will assume both components share one carrier, so that $v^2u^*$ has the same phase factor as $u$:
-            \begin{equation} \label{vred}
-                u = Y\left(\mathrm{w}\right) e^{i\left(kz-\omega t\right)}, \qquad v = Q\left(\mathrm{w}\right) e^{i\left(kz-\omega t\right)}, \qquad \mathrm{w} = z - c_{0} t.
+            We assume both components share one carrier, with a constant relative phase $\psi_{0}$:
+            \begin{equation} \label{eq42}
+                u = Y\left(\mathrm{w}\right) e^{i\left(kz-\omega t\right)}, \qquad
+                v = Q\left(\mathrm{w}\right) e^{i\left(kz-\omega t + \psi_{0}\right)}, \qquad
+                \mathrm{w} = z - c_{0} t.
             \end{equation}
-            Substituting Eq. \ref{vred} into the initial system Eq. \ref{eq1} gives
-            \begin{equation} \label{vode}
+            Substituting Eq. \ref{eq42} into the initial system Eq. \ref{eq1} gives
+            \begin{equation} \label{eq43}
                 \begin{cases}
                     \displaystyle
-                    a_2 Y'' + a_1 Y' + a_0 Y + i\gamma\left[\left(\left|Y\right|^2+\frac{2}{3}\left|Q\right|^2\right)Y + \frac{1}{3}Q^2\bar Y\right] = 0, \\
+                    a_2 Y'' + a_1 Y' + a_0 Y + i\gamma\left[\left(\left|Y\right|^2+\frac{2}{3}\left|Q\right|^2\right)Y + \frac{1}{3}e^{2i\psi_{0}}Q^2\bar Y\right] = 0, \\
                     \displaystyle
-                    a_2 Q'' + a_1 Q' + a_0 Q + i\gamma\left[\left(\left|Q\right|^2+\frac{2}{3}\left|Y\right|^2\right)Q + \frac{1}{3}Y^2\bar Q\right] = 0,
+                    a_2 Q'' + a_1 Q' + a_0 Q + i\gamma\left[\left(\left|Q\right|^2+\frac{2}{3}\left|Y\right|^2\right)Q + \frac{1}{3}e^{-2i\psi_{0}}Y^2\bar Q\right] = 0,
                 \end{cases}
             \end{equation}
             where
-            \begin{equation} \label{vcoef}
+            \begin{equation} \label{eq44}
                 \begin{cases}
                     \displaystyle a_2 = -\frac{i\beta_{2}c_0^2}{2} + \frac{g c_0^2}{2\Omega_g^2}, \\
                     \displaystyle a_1 = \delta c_0 + \beta_2\omega c_0 - 1 + \frac{i g\omega c_0}{\Omega_g^2}, \\
@@ -320,7 +323,7 @@
             \end{equation}
 
             We use Sech-type ansatz. Assuming $\eta$ is real we define
-            \begin{equation} \label{vsech}
+            \begin{equation} \label{eq45}
                 \begin{cases}
                     \displaystyle S = \mathrm{sech}\left(\eta\mathrm{w}\right), \\
                     \displaystyle T = \tanh\left(\eta\mathrm{w}\right),
@@ -328,7 +331,7 @@
                 \qquad Y = A\,S, \qquad Q = B\,S.
             \end{equation}
             This leads to
-            \begin{equation} \label{vderiv}
+            \begin{equation} \label{eq46}
                 \begin{cases}
                     \displaystyle S' = -\eta ST, \\
                     \displaystyle S'' = \eta^2\left(S-2S^3\right), \\
@@ -336,135 +339,134 @@
                 \end{cases}
             \end{equation}
 
-            After substituting Eq. \ref{vsech} and \ref{vderiv} into Eq. \ref{vode}, it splits by monomials:
-            \begin{equation} \label{vbal}
+            After substituting Eq. \ref{eq45} and \ref{eq46} into Eq. \ref{eq43}, it splits by monomials:
+            \begin{equation} \label{eq47}
                 \begin{cases}
                     \displaystyle ST:\quad a_1 = 0, \\
                     \displaystyle S:\quad a_2\eta^2 + a_0 = 0, \\
-                    \displaystyle S^3:\quad -2a_2\eta^2 A + i\gamma\left[\left(\left|A\right|^2+\frac{2}{3}\left|B\right|^2\right)A + \frac{1}{3}B^2\bar A\right] = 0, \\
-                    \displaystyle S^3:\quad -2a_2\eta^2 B + i\gamma\left[\left(\left|B\right|^2+\frac{2}{3}\left|A\right|^2\right)B + \frac{1}{3}A^2\bar B\right] = 0.
+                    \displaystyle S^3:\quad -2a_2\eta^2 A + i\gamma\left[\left(\left|A\right|^2+\frac{2}{3}\left|B\right|^2\right)A + \frac{1}{3}e^{2i\psi_{0}}B^2\bar A\right] = 0, \\
+                    \displaystyle S^3:\quad -2a_2\eta^2 B + i\gamma\left[\left(\left|B\right|^2+\frac{2}{3}\left|A\right|^2\right)B + \frac{1}{3}e^{-2i\psi_{0}}A^2\bar B\right] = 0.
                 \end{cases}
             \end{equation}
 
             Next we prove that there is no dissipative solution in the sech class.
 
-            \textbf{Theorem.} Let $g\neq0$, $\Omega_g\neq0$, $c_0\neq0$, and let $\eta\neq0$ be real. Then the ansatz Eq. \ref{vsech} has no nontrivial solution of Eq. \ref{vode}. Equivalently, every sech-type solution has $g=0$.
+            \textbf{Theorem.} Let $g\neq0$, $\Omega_g\neq0$, $c_0\neq0$, and let $\eta\neq0$ be real. Then the ansatz Eq. \ref{eq45} has no nontrivial solution of Eq. \ref{eq43}. Equivalently, every sech-type solution has $g=0$.
 
             \textbf{Proof.} Assume $(A,B)\neq(0,0)$.
             \begin{enumerate}
-                \item The $ST$ condition in Eq. \ref{vbal} requires $a_1 = 0$. Its imaginary part is $\dfrac{g\omega c_0}{\Omega_g^2}=0$. Since $g\neq0$ and $c_0\neq0$, this gives $\omega=0$. The real part then gives $\delta = 1/c_0$.
+                \item The $ST$ condition in Eq. \ref{eq47} requires $a_1 = 0$. Its imaginary part is $\dfrac{g\omega c_0}{\Omega_g^2}=0$. Since $g\neq0$ and $c_0\neq0$, this gives $\omega=0$. The real part then gives $\delta = 1/c_0$.
                 \item Choose a nonzero amplitude, say $A\neq0$ (otherwise use $B$). The $S$ condition gives $a_2\eta^2 + a_0 = 0$. With $\omega=0$, $\mathrm{Re}\,a_2 = \dfrac{gc_0^2}{2\Omega_g^2}$ and $\mathrm{Re}\,a_0 = \dfrac{g}{2}$. Since $\eta^2$ is real,
-                \begin{equation} \label{vnogain}
+                \begin{equation} \label{eq48}
                     0 = \mathrm{Re}\left(a_2\eta^2 + a_0\right) = \frac{g}{2}\left(1 + \frac{c_0^2\eta^2}{\Omega_g^2}\right) = \frac{g\left(\Omega_g^2 + c_0^2\eta^2\right)}{2\Omega_g^2}.
                 \end{equation}
-                \item The bracket in Eq. \ref{vnogain} is strictly positive, so $g=0$. This contradicts $g\neq0$. \hfill(end of proof)
+                \item The bracket in Eq. \ref{eq48} is strictly positive, so $g=0$. This contradicts $g\neq0$. \hfill(end of proof)
             \end{enumerate}
 
             Next we will consider conservative vector solitons.
-            For $g=0$, Eq. \ref{vbal} reduces to
-            \begin{equation} \label{vxi}
+            For $g=0$, Eq. \ref{eq47} reduces to
+            \begin{equation} \label{eq49}
                 \begin{cases}
                     \displaystyle \eta^2 = -\xi_1, \\
                     \displaystyle \xi_1 = \frac{\beta_2\omega^2 - 2\omega/c_0 + 2k - \Delta\beta}{\beta_2c_0^2}, \\
                     \displaystyle \delta = \frac{1-\beta_2\omega c_0}{c_0}.
                 \end{cases}
             \end{equation}
-            Write the complex amplitudes in polar form,
-            \begin{equation} \label{vpolar}
+            The common phase of $u$ and $v$ is a symmetry of Eq. \ref{eq1}. Removing it and absorbing the phase of $B$ into $\psi_{0}$, we take $A$ and $B$ real. Then the $S^3$ conditions in Eq. \ref{eq47} become
+            \begin{equation} \label{eq50}
                 \begin{cases}
-                    \displaystyle A = a\,e^{i\alpha}, \\
-                    \displaystyle B = b\,e^{i\beta}, \\
-                    \displaystyle \varphi = 2\left(\beta-\alpha\right).
+                    \displaystyle \gamma\left(A^2+\frac{2+e^{2i\psi_{0}}}{3}B^2\right) = \beta_2c_0^2\xi_1, \\
+                    \displaystyle \gamma\left(B^2+\frac{2+e^{-2i\psi_{0}}}{3}A^2\right) = \beta_2c_0^2\xi_1.
                 \end{cases}
             \end{equation}
-            The $S^3$ conditions then require $\mathrm{Im}\!\left[a^2+\tfrac23 b^2+\tfrac13 b^2 e^{i\varphi}\right]=0$, that is
-            \begin{equation} \label{vphase}
-                \frac{1}{3}\,b^2\sin\varphi = 0 \quad\Rightarrow\quad \varphi\in\{0,\pi\}.
+            The right-hand sides are real, so the imaginary parts vanish:
+            \begin{equation} \label{eq51}
+                \frac{\gamma}{3}\,B^2\sin 2\psi_{0} = 0 \quad\Rightarrow\quad \psi_{0} = \frac{n\pi}{2}.
             \end{equation}
             Two families remain:
-            \begin{equation} \label{vfam}
+            \begin{equation} \label{eq52}
                 \begin{cases}
-                    \displaystyle \varphi = 0: \qquad a^2+b^2 = \frac{\beta_2c_0^2\xi_1}{\gamma}, \\
-                    \displaystyle \varphi = \pi: \qquad a = b, \qquad a^2 = \frac{3\beta_2c_0^2\xi_1}{4\gamma}.
+                    \displaystyle \psi_{0} = 0,\ \pi: \qquad A^2+B^2 = \frac{\beta_2c_0^2\xi_1}{\gamma}, \\
+                    \displaystyle \psi_{0} = \pm\frac{\pi}{2}: \qquad A^2 = B^2 = \frac{3\beta_2c_0^2\xi_1}{4\gamma}.
                 \end{cases}
             \end{equation}
-            The phase difference $\beta-\alpha$ sets the polarization state. Two options are possible:
+            The relative phase $\psi_{0}$ sets the polarization state. Two options are possible:
             \begin{itemize}
-                \item $\varphi=0$ ($\beta-\alpha=0$ or $\pi$): The linear polarization family. The components are in phase, so the field is linearly polarized. Writing $a=\sqrt{\beta_2c_0^2\xi_1/\gamma}\,\cos\theta$ and $b=\sqrt{\beta_2c_0^2\xi_1/\gamma}\,\sin\theta$ gives the Jones vector $(\cos\theta,\sin\theta)$, the polarization angle $\theta$ measured from the $u$ axis. The angle is free because the nonlinearity depends only on $|u|^2+|v|^2$. In this family $|v|/|u| = \tan\theta$.
-                \item $\varphi=\pi$ ($\beta-\alpha=\pm\pi/2$): The circular polarization family. The components are in quadrature with equal amplitudes, which is circular polarization. Both handedness signs are allowed. In this family $|u|=|v|$.
+                \item $\psi_{0}=0$ or $\pi$: The linear polarization family. The components are in phase or in antiphase, so the field is linearly polarized. Writing $A=\sqrt{\beta_2c_0^2\xi_1/\gamma}\,\cos\theta$ and $B=\sqrt{\beta_2c_0^2\xi_1/\gamma}\,\sin\theta$ gives the Jones vector $(\cos\theta,\sin\theta)$, the polarization angle $\theta$ measured from the $u$ axis. The angle is free because the nonlinearity depends only on $|u|^2+|v|^2$. In this family $|v|/|u| = |\tan\theta|$.
+                \item $\psi_{0}=\pm\pi/2$: The circular polarization family. The components are in quadrature with equal amplitudes, which is circular polarization. Both handedness signs ($\psi_{0}=+\pi/2$ and $-\pi/2$) are allowed. In this family $|u|=|v|$.
             \end{itemize}
 
             As the result, two vector analytical solution families found in the form of bright solitons.
 
-            Linear polarization, with angle $\theta$:
-            \begin{equation} \label{vlin}
+            Linear polarization, with angle $\theta$, \(\psi_{0}=\pi n, \, n \in \mathbb{Z}\):
+            \begin{equation} \label{eq53}
                 \begin{cases}
                     \displaystyle u = \sqrt{\frac{\beta_2c_0^2\xi_1}{\gamma}}\,\cos\theta\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}, \\
-                    \displaystyle v = \sqrt{\frac{\beta_2c_0^2\xi_1}{\gamma}}\,\sin\theta\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}.
+                    \displaystyle v = \sqrt{\frac{\beta_2c_0^2\xi_1}{\gamma}}\,\sin\theta\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t+\psi_{0}\right)}.
                 \end{cases}
             \end{equation}
 
-            Circular polarization, $v=iu$:
-            \begin{equation} \label{vcirc}
+            Circular polarization, \(\psi_{0}=\pi/2 + \pi n, \, n \in \mathbb{Z}\):
+            \begin{equation} \label{eq54}
                 \begin{cases}
                     \displaystyle u = \sqrt{\frac{3\beta_2c_0^2\xi_1}{4\gamma}}\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}, \\
-                    \displaystyle v = i\sqrt{\frac{3\beta_2c_0^2\xi_1}{4\gamma}}\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t\right)}.
+                    \displaystyle v = \sqrt{\frac{3\beta_2c_0^2\xi_1}{4\gamma}}\;\mathrm{sech}\left(\eta\mathrm{w}\right)e^{i\left(kz-\omega t+\psi_{0}\right)}.
                 \end{cases}
             \end{equation}
             Both families need $\beta_2\gamma<0$ and $\xi_1<0$.
 
-            Within each family, $|u|$ and $|v|$ share the same sech envelope, as illustrated in Fig. \ref{fig:vsol}.
+            Within each family, $|u|$ and $|v|$ share the same sech envelope, as illustrated in Fig. \ref{fig4}.
 
             \begin{figure}[H]
                 \centering
                 \begin{subfigure}[t]{0.3\linewidth}
                     \centering
-                    \includegraphics[width=\linewidth]{linpol_abs_u.png}
+                    \includegraphics[width=\linewidth]{fig4a.png}
                     \subcaption{$|u(z,t)|$}
                 \end{subfigure}
                 \hfill
                 \begin{subfigure}[t]{0.3\linewidth}
                     \centering
-                    \includegraphics[width=\linewidth]{linpol_abs_v.png}
+                    \includegraphics[width=\linewidth]{fig4b.png}
                     \subcaption{$|v(z,t)|$}
                 \end{subfigure}
                 \hfill
                 \begin{subfigure}[t]{0.3\linewidth}
                     \centering
-                    \includegraphics[width=\linewidth]{linpol_pol.png}
+                    \includegraphics[width=\linewidth]{fig4c.png}
                     \subcaption{Polarization snapshot, $z=0$, $t=0$, $\theta=\pi/8$}
                 \end{subfigure}
                 \\[1em]
                 \begin{subfigure}[t]{0.3\linewidth}
                     \centering
-                    \includegraphics[width=\linewidth]{circular_abs_u.png}
+                    \includegraphics[width=\linewidth]{fig4d.png}
                     \subcaption{$|u(z,t)|$}
                 \end{subfigure}
                 \hfill
                 \begin{subfigure}[t]{0.3\linewidth}
                     \centering
-                    \includegraphics[width=\linewidth]{circular_abs_v.png}
+                    \includegraphics[width=\linewidth]{fig4e.png}
                     \subcaption{$|v(z,t)|$}
                 \end{subfigure}
                 \hfill
                 \begin{subfigure}[t]{0.3\linewidth}
                     \centering
-                    \includegraphics[width=\linewidth]{circular_pol.png}
+                    \includegraphics[width=\linewidth]{fig4f.png}
                     \subcaption{Polarization snapshot, $z=0$, $t=0$}
                 \end{subfigure}
                 \caption{
-                Linear Eq. \ref{vlin} (top) and circular Eq. \ref{vcirc} (bottom) polarized solitons.\\
+                Linear Eq. \ref{eq53} ($\psi_{0}=0$, top) and circular Eq. \ref{eq54} ($\psi_{0}=\pi/2$, bottom) polarized solitons.\\
                 Parameters: $\beta_2 = 0.027$, $\gamma = -0.07$, $\Delta\beta = 25$, $\Omega_g = 66$, $c_0 = 1.4$, $\eta = 0.8$, $\omega = 1.5$, $k=13.52$, $\delta=0.674$, $g=0$.
-                } \label{fig:vsol}
+                } \label{fig4}
             \end{figure}
 
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=0.6\linewidth]{abs_profile.png}
+                \includegraphics[width=0.6\linewidth]{fig5.png}
                 \caption{
                 Pulse envelopes.\\
-                Parameters correspond to Fig. \ref{fig:vsol}.
-                } \label{fig:vabs}
+                Parameters correspond to Fig. \ref{fig4}.
+                } \label{fig5}
             \end{figure}
     \section{Numerical Scheme}
         To build a numerical scheme for numerical analysis, we rewrite original system (\ref{eq1}) in the form:
@@ -480,7 +482,7 @@
             + \left(\frac{g}{2\Omega_{g}^2}-\frac{i\beta_{2}}{2}\right)\frac{\partial^2}{\partial t^2}
         \end{equation}
         contains all linear terms (dispersion, birefringence, and frequency‑dependent gain) and
-        \begin{equation}\label{eq44}
+        \begin{equation}\label{eq57}
             \hat N\begin{pmatrix}u\\v\end{pmatrix} =
             i\gamma \cdot \begin{pmatrix}
                 \Bigl[\bigl(|u|^2+\tfrac{2}{3}|v|^2\bigr)u + \tfrac{1}{3}v^2 u^*\Bigr]\\[4pt]
@@ -542,11 +544,11 @@
 
             \subsubsection{Nonlinear sub‑step}
                 The nonlinear sub‑step advances the ordinary differential equation
-                \begin{equation} \label{eq49}
+                \begin{equation} \label{eq62}
                     \frac{\partial}{\partial z}\begin{pmatrix}u\\v\end{pmatrix}
                     = \hat N\begin{pmatrix}u\\v\end{pmatrix},
                 \end{equation}
-                over a full step $\Delta z$.  We solve \eqref{eq49} with the classical fourth‑order Runge–Kutta method.
+                over a full step $\Delta z$.  We solve \eqref{eq62} with the classical fourth‑order Runge–Kutta method.
                 For given nonlinear term, the integration can be performed independently
                 at each grid point using vectorized operations since there is no derivatives and neighbor-dependencies. We use classic RK4 in the form:
                 \begin{align}
@@ -564,28 +566,28 @@
                     \item \textbf{First linear half-step.} Compute $\tilde u = \mathcal{F}[u]$, $\tilde v = \mathcal{F}[v]$, by FFT.
                     Multiply by $\exp[\widetilde L(\omega)\frac{\Delta z}{2}]$, and transform back:
                     $u \leftarrow \mathcal{F}^{-1}[\tilde u]$, $v \leftarrow \mathcal{F}^{-1}[\tilde v]$.
-                    \item \textbf{Full nonlinear step.} Advance $(u,v)$ by $\Delta z$ using the RK4 integration of \eqref{eq44}.
+                    \item \textbf{Full nonlinear step.} Advance $(u,v)$ by $\Delta z$ using the RK4 integration of \eqref{eq57}.
                     \item \textbf{Second linear half-step.} Repeat step~1.
                 \end{enumerate}
 
             \subsubsection{Scheme approximation order study}
-                We study the approximation order of the scheme on the bright soliton, Eq. \ref{eq40}, with the parameters of Fig. \ref{fig6}. The error is measured in two one-factor series. In the first, \(\Delta t = 0.005\) is fixed and \(\Delta z\) is halved from 0.02 to 0.00125. In the second, \(\Delta z = 10^{-4}\) is fixed and \(\Delta t\) is varied from 0.04 to 0.005. For each run the error is the maximum over \(t\) and \(z\) of \(|u_{\mathrm{num}} - u_{\mathrm{an}}|\), divided by \(\max|u_{\mathrm{an}}|\), in percent. The \(z\) grid is checked every 0.01 along the propagation. Fig. \ref{fig18} shows both series, and Table \ref{tab1} lists the values.
+                We study the approximation order of the scheme on the bright soliton, Eq. \ref{eq40}, with the parameters of Fig. \ref{fig11}. The error is measured in two one-factor series. In the first, \(\Delta t = 0.005\) is fixed and \(\Delta z\) is halved from 0.02 to 0.00125. In the second, \(\Delta z = 10^{-4}\) is fixed and \(\Delta t\) is varied from 0.04 to 0.005. For each run the error is the maximum over \(t\) and \(z\) of \(|u_{\mathrm{num}} - u_{\mathrm{an}}|\), divided by \(\max|u_{\mathrm{an}}|\), in percent. The \(z\) grid is checked every 0.01 along the propagation. Fig. \ref{fig6} shows both series, and Table \ref{tab1} lists the values.
                 \begin{figure}[H]
                     \centering
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig18.png}
+                        \includegraphics[width=\linewidth]{fig6a.png}
                         \subcaption{Series in \(\Delta z\) at fixed \(\Delta t = 0.005\).}
                     \end{subfigure}
                     \hfill
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig19.png}
+                        \includegraphics[width=\linewidth]{fig6b.png}
                         \subcaption{Series in \(\Delta t\) at fixed \(\Delta z = 10^{-4}\).}
                     \end{subfigure}
                     \caption{
                     Maximum relative error of the bright soliton. Dots: measurements. Dotted line in (a): linear fit in log-log scale.
-                    } \label{fig18}
+                    } \label{fig6}
                 \end{figure}
                 \begin{table}[H]
                     \centering
@@ -610,7 +612,7 @@
                     } \label{tab1}
                 \end{table}
 
-                The error decreases by a factor of about 4 each time \(\Delta z\) is halved, and the fitted slope in Fig. \ref{fig18}(a) is \(k = 2.00\). This is the second order in \(\Delta z\) of the Strang splitting, and it is the only power-law dependence found.
+                The error decreases by a factor of about 4 each time \(\Delta z\) is halved, and the fitted slope in Fig. \ref{fig6}(a) is \(k = 2.00\). This is the second order in \(\Delta z\) of the Strang splitting, and it is the only power-law dependence found.
 
                 The error does not follow a power law in \(\Delta t\). It drops by a factor of about 8000 between \(\Delta t = 0.04\) and \(\Delta t = 0.02\). For \(\Delta t \leq 0.02\) it stays at about \(1.2\cdot10^{-3}\,\%\), which is the level set by \(\Delta z = 10^{-4}\). In this range the time discretisation contributes less than the \(z\) discretisation.
 
@@ -627,41 +629,41 @@
                     \centering
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig9.png}
+                        \includegraphics[width=\linewidth]{fig7a.png}
                         \subcaption{Numerical \(|u(z,t)|\).}
                     \end{subfigure}
                     \hfill
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig10.png}
+                        \includegraphics[width=\linewidth]{fig7b.png}
                         \subcaption{Maximum percentage error over \(t\) at each \(z\).}
                     \end{subfigure}
                     \caption{
                     Tanh solution as initial condition, compared with the analytical solution. \\
                     Parameters: to be filled.
-                    } \label{fig9}
+                    } \label{fig7}
                 \end{figure}
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.45\linewidth]{fig11.png}
+                    \includegraphics[width=0.45\linewidth]{fig8.png}
                     \caption{
                     Grid convergence for the tanh solution. Parameters: to be filled.
-                    } \label{fig11}
+                    } \label{fig8}
                 \end{figure}
 
             \subsubsection{Elliptic Jacobi function solution (dark soliton)}
-                Using Elliptic Jacobi function solution Eq. \ref{eq36}, we get the results, illustrated in Fig. \ref{fig12}. The period of the solution in \(t\) equals the length of the time window, so the initial condition is periodic.
+                Using Elliptic Jacobi function solution Eq. \ref{eq36}, we get the results, illustrated in Fig. \ref{fig9}. The period of the solution in \(t\) equals the length of the time window, so the initial condition is periodic.
                 \begin{figure}[H]
                     \centering
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig12.png}
+                        \includegraphics[width=\linewidth]{fig9a.png}
                         \subcaption{Numerical \(|u(z,t)|\).}
                     \end{subfigure}
                     \hfill
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig13.png}
+                        \includegraphics[width=\linewidth]{fig9b.png}
                         \subcaption{Maximum percentage error over \(t\) at each \(z\).}
                     \end{subfigure}
                     \caption{
@@ -683,30 +685,30 @@
                     Grid parameters:
                     \(t \in [-10, 10]\), \(\Delta t = 0.021\),
                     \(z \in [0, 50]\), \(\Delta z = 0.0022\).
-                    } \label{fig12}
+                    } \label{fig9}
                 \end{figure}
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.45\linewidth]{fig14.png}
+                    \includegraphics[width=0.45\linewidth]{fig10.png}
                     \caption{
-                    Grid convergence on solution \ref{eq36}, with the parameters of Fig. \ref{fig12}. Log-log error plot (\(\Delta z = h^{2}\), \(\Delta t = h\), \(h \in [0.2, 0.1, 0.05]\)).
-                    } \label{fig14}
+                    Grid convergence on solution \ref{eq36}, with the parameters of Fig. \ref{fig9}. Log-log error plot (\(\Delta z = h^{2}\), \(\Delta t = h\), \(h \in [0.2, 0.1, 0.05]\)).
+                    } \label{fig10}
                 \end{figure}
                 Convergence on Elliptic Jacobi function solution achieved. Linear coefficients : \(k = 3.99\), \(c = -3.18\).
 
             \subsubsection{Bright soliton solution}
-                Using bright soliton solution Eq. \ref{eq40}, we get the results, illustrated in Fig. \ref{fig6}.
+                Using bright soliton solution Eq. \ref{eq40}, we get the results, illustrated in Fig. \ref{fig11}.
                 \begin{figure}[H]
                     \centering
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig6.png}
+                        \includegraphics[width=\linewidth]{fig11a.png}
                         \subcaption{Numerical \(|u(z,t)|\).}
                     \end{subfigure}
                     \hfill
                     \begin{subfigure}[t]{0.45\linewidth}
                         \centering
-                        \includegraphics[width=\linewidth]{fig7.png}
+                        \includegraphics[width=\linewidth]{fig11b.png}
                         \subcaption{Maximum percentage error over \(t\) at each \(z\).}
                     \end{subfigure}
                     \caption{
@@ -726,21 +728,86 @@
                     Grid parameters:
                     \(t \in [-10, 10]\), \(\Delta t = 0.021\),
                     \(z \in [0, 50]\), \(\Delta z = 0.0022\).
-                    } \label{fig6}
+                    } \label{fig11}
                 \end{figure}
                 \begin{figure}[H]
                     \centering
-                    \includegraphics[width=0.45\linewidth]{fig8.png}
+                    \includegraphics[width=0.45\linewidth]{fig12.png}
                     \caption{
                     Grid convergence for the bright soliton \ref{eq40}. Log-log error plot (\(\Delta z = h^{2}\), \(\Delta t = h\), \(h \in [0.02, 0.01, 0.005]\)).
-                    } \label{fig8}
+                    } \label{fig12}
                 \end{figure}
                 Convergence on bright soliton solution achieved. Linear coefficients : \(k = 4.06\), \(c = 5.19\).
+    \subsection{Energy exchange analysis}
+        The energy of each component is the integral of its squared modulus over the time window:
+        \begin{equation} \label{eq63}
+            E_{u}(z) = \int \left|u(z,t)\right|^{2} dt, \qquad E_{v}(z) = \int \left|v(z,t)\right|^{2} dt.
+        \end{equation}
+        For \(g = 0\) the linear terms of Eq. \ref{eq1} conserve energy, and the self-phase terms \(i\gamma\left(\left|u\right|^2+\frac{2}{3}\left|v\right|^2\right)u\) do not change it either. Only the cross term \(\frac{i\gamma}{3}v^{2}\bar{u}^{2}\) exchanges energy between the components, which gives
+        \begin{equation} \label{eq64}
+            \frac{dE_{u}}{dz} = -\frac{dE_{v}}{dz} = -\frac{2\gamma}{3}\int \mathrm{Im}\left(v^{2}\bar{u}^{2}\right) dt,
+        \end{equation}
+        so the total energy \(E_{u}+E_{v}\) is conserved.
+
+        Writing \(u = |u|e^{i\varphi_{u}}\) and \(v = |v|e^{i\varphi_{v}}\), the integrand is \(|u|^{2}|v|^{2}\sin 2(\varphi_{v}-\varphi_{u})\). Energy therefore moves only when the relative phase \(\varphi_{v}-\varphi_{u}\) is not a multiple of \(\pi/2\). The transfer is maximal at a relative phase of \(\pi/4\), and it vanishes for components in phase or in quadrature.
+
+        The coupling strength \(\gamma\) sets the rate of the exchange, and its sign sets the direction. The relative phase is fixed by the initial condition and then changed by the nonlinear terms. The dispersion, \(\delta\), and gain parameters act identically on \(u\) and \(v\), so they do not create the exchange.
+
+        The to study the energy exchange between components and \(\gamma\) influence, we take initial condition \(u(0,t)\) in the form Eq. \ref{eq40} and parameters from Fig. \ref{fig11}.
+        Since energy exchange is proportional to\(|u|^{2}|v|^{2}\) and need \(\frac{\pi}{4}\) phase offset, we take \(v(0,t) = 0.1\,e^{i\pi/4}\,u(0,t)\).
+        We perform modeling for different \(\gamma \in \left[0, \gamma_{\mathrm{ref}}/2, \gamma_{\mathrm{ref}}, 2\gamma_{\mathrm{ref}}\right]\). All other parameters are kept fixed. Note that \(\gamma_{\mathrm{ref}} = -0.014\) is the value, corresponding to Fig. \ref{fig11}. The dependency of each component energy for different \(\gamma\) is illustrated in Fig. \ref{fig13}.
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{fig13.png}
+            \caption{
+                Energy of \(u\) (blue) and \(v\) (red) along \(z\) for four values of \(\gamma\).
+            } \label{fig13}
+        \end{figure}
+
+        The energy oscillates between the components along \(z\), and the oscillation becomes faster as \(|\gamma|\) grows (Fig. \ref{fig13}). With \(\gamma = 0\) there is no exchange.
+
+        Notably, at certain large \(|\gamma|\), when the initial pulse no longer balances the nonlinearity, the behavior with partial dispersive radiation emission is possible. This case illustrated in Fig. \ref{fig14}. For this and future illustrations, we use centered pulse frame.
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}[t]{0.45\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig14a.png}
+                \subcaption{\(\gamma = -0.02\)}
+            \end{subfigure}
+            \hfill
+            \begin{subfigure}[t]{0.45\linewidth}
+                \centering
+                \includegraphics[width=\linewidth]{fig14b.png}
+                \subcaption{\(\gamma = -0.04\)}
+            \end{subfigure}
+            \caption{
+                \(|u(z,t)|\).
+                Initial condition: bright soliton with \(\gamma_{\mathrm{ref}} = -0.01\), and \(v(0,t) = 0.1\,e^{i\pi/4}\,u(0,t)\). \\
+                Pulse parameters:
+                \(k = 12.8\),
+                \(c_{0} = 1.5\),
+                \(\omega = 4.2\),
+                \(\mathrm{w}_{0} = 0\).\\
+                Model parameters:
+                \(\beta_{2} = 0.04\),
+                \(\Omega_{g} = 10\),
+                \(\delta = 0.50\),
+                \(g = 0\),
+                \(\Delta \beta = 21\).\\
+                Grid parameters:
+                \(t \in [-6, 6]\), \(\Delta t = 0.021\),
+                \(z \in [0, 500]\), \(\Delta z = 0.0022\).
+            } \label{fig14}
+        \end{figure}
+
     \section{Conclusions}
         \begin{enumerate}
-            \item Exact analytical solutions of the initial system were found in Section~\ref{sec:analytical} in three forms: a dark soliton (tanh), a dark elliptic (Jacobi sn) solution, and a bright soliton.
+            \item Exact analytical solutions of the initial system were found in Section~\ref{sec:analytical} in four forms: a dark soliton (tanh), a dark elliptic (Jacobi sn) solution, 1D and 2D bright solitons. Vector bright solitons utilize linear and circular polarization.
             \item The numerical scheme, based on the Fourier method, Strang splitting, and the fourth-order Runge–Kutta method for the nonlinear step, was proposed and implemented.
             \item The approximation order of the scheme was studied on the bright soliton and the elliptic solution. The scheme is second order in \(\Delta z\) and spectral in \(\Delta t\).
-            \item The bright and elliptic solutions were used to validate the numerical scheme, and grid convergence was achieved for both. Validation for the tanh solution has not been carried out yet.
+            \item The analytica solutions were used to validate the numerical scheme. The grid convergence was proved.
+            \item Energy exchange between the components \(u\) and \(v\) was studied. The exchange is maximal for a relative phase offset of \(\pi/4\) and vanishes for components in phase or in quadrature. The coupling \(\gamma\) affects the frequency and the intensity of the exchange. At larger \(|\gamma|\) the pulse radiation emission is possible.
         \end{enumerate}
 \end{document}
