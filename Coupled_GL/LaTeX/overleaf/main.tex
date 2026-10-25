@@ -179,7 +179,7 @@
 
                 The analytical solution of Eq. \ref{eq2} takes the form:
                 \begin{equation} \label{eq25}
-                    u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \left|\tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right)\right| \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
+                    u(z,t) = \frac{2 \sqrt{2 I_{1}}}{\left|\mu\right|} \tanh\left(\frac{\mu\left(z - c_{0} t-\mathrm{w}_{0}\right)}{2}\right) \cdot \mathrm{e}^{i\left(k z-\omega t\right)}
                 \end{equation}
                 The pulse envelope of Eq. \ref{eq25} is illustrated in Fig. \ref{fig1}.
                 \begin{figure}[H]
@@ -625,6 +625,7 @@
             We validate the scheme, using every analytical solution found in section \ref{sec:analytical} as the initial condition at \(z=0\). We compare the numerical solution with the analytical one, showing error over \(z\) dependency and proving grid convergence.
 
             \subsubsection{Tanh solution (dark soliton)}
+                The tanh solution is modeled with the finite-difference scheme and zero-flux (Neumann) boundary conditions to handle the sign jump at boundary. The soliton is illustrated in Fig. \ref{fig7} and Fig. \ref{fig8}.
                 \begin{figure}[H]
                     \centering
                     \begin{subfigure}[t]{0.45\linewidth}
@@ -639,15 +640,32 @@
                         \subcaption{Maximum percentage error over \(t\) at each \(z\).}
                     \end{subfigure}
                     \caption{
-                    Tanh solution as initial condition, compared with the analytical solution. \\
-                    Parameters: to be filled.
+                    Tanh solution modeling. \\
+                    Pulse parameters:
+                    \(k = 13\),
+                    \(c_{0} = 1.4\),
+                    \(\mu = 0.97\),
+                    \(I_{1} = 0.1\),
+                    \(\omega = 0\),
+                    \(\mathrm{w}_{0} = 0\).\\
+                    Model parameters:
+                    \(\beta_{2} = 0.027\),
+                    \(\Omega_{g} = 66\),
+                    \(\delta = 0.71\),
+                    \(\gamma = 0.0146\),
+                    \(g = 0\),
+                    \(\Delta \beta = 25.98\).\\
+                    Grid parameters:
+                    \(t \in [-25, 60]\), \(\Delta t = 0.0125\),
+                    \(z \in [0, 50]\), \(\Delta z = 0.001\).\\
+                    Finite-difference scheme, zero-flux (Neumann) boundary conditions at \(t = -25\) and \(t = 60\).
                     } \label{fig7}
                 \end{figure}
                 \begin{figure}[H]
                     \centering
                     \includegraphics[width=0.45\linewidth]{fig8.png}
                     \caption{
-                    Grid convergence for the tanh solution. Parameters: to be filled.
+                    Grid convergence for the tanh solution, finite-difference scheme with Neumann boundary conditions. Log-log error plot (\(\Delta z = 2.5\cdot10^{-4}\), \(\Delta t = h\), \(h \in [0.05, 0.025, 0.0125]\)).
                     } \label{fig8}
                 \end{figure}
 
@@ -667,7 +685,7 @@
                         \subcaption{Maximum percentage error over \(t\) at each \(z\).}
                     \end{subfigure}
                     \caption{
-                    Elliptic Jacobi function solution as initial condition, compared with the analytical solution. \\
+                    Elliptic Jacobi function solution modeling. \\
                     Pulse parameters:
                     \(k = 13\),
                     \(c_{0} = 1.4\),
@@ -712,7 +730,7 @@
                         \subcaption{Maximum percentage error over \(t\) at each \(z\).}
                     \end{subfigure}
                     \caption{
-                    Bright soliton as initial condition, compared with the analytical solution. \\
+                    Bright soliton solution modeling. \\
                     Pulse parameters:
                     \(k = 13\),
                     \(c_{0} = 1.4\),
@@ -753,7 +771,7 @@
 
         The coupling strength \(\gamma\) sets the rate of the exchange, and its sign sets the direction. The relative phase is fixed by the initial condition and then changed by the nonlinear terms. The dispersion, \(\delta\), and gain parameters act identically on \(u\) and \(v\), so they do not create the exchange.
 
-        The to study the energy exchange between components and \(\gamma\) influence, we take initial condition \(u(0,t)\) in the form Eq. \ref{eq40} and parameters from Fig. \ref{fig11}.
+        To study the energy exchange between components and \(\gamma\) influence, we take initial condition \(u(0,t)\) in the form Eq. \ref{eq40} and parameters from Fig. \ref{fig11}.
         Since energy exchange is proportional to\(|u|^{2}|v|^{2}\) and need \(\frac{\pi}{4}\) phase offset, we take \(v(0,t) = 0.1\,e^{i\pi/4}\,u(0,t)\).
         We perform modeling for different \(\gamma \in \left[0, \gamma_{\mathrm{ref}}/2, \gamma_{\mathrm{ref}}, 2\gamma_{\mathrm{ref}}\right]\). All other parameters are kept fixed. Note that \(\gamma_{\mathrm{ref}} = -0.014\) is the value, corresponding to Fig. \ref{fig11}. The dependency of each component energy for different \(\gamma\) is illustrated in Fig. \ref{fig13}.
 
@@ -807,7 +825,7 @@
             \item Exact analytical solutions of the initial system were found in Section~\ref{sec:analytical} in four forms: a dark soliton (tanh), a dark elliptic (Jacobi sn) solution, 1D and 2D bright solitons. Vector bright solitons utilize linear and circular polarization.
             \item The numerical scheme, based on the Fourier method, Strang splitting, and the fourth-order Runge–Kutta method for the nonlinear step, was proposed and implemented.
             \item The approximation order of the scheme was studied on the bright soliton and the elliptic solution. The scheme is second order in \(\Delta z\) and spectral in \(\Delta t\).
-            \item The analytica solutions were used to validate the numerical scheme. The grid convergence was proved.
+            \item The analytical solutions were used to validate the numerical scheme. The grid convergence was proved.
             \item Energy exchange between the components \(u\) and \(v\) was studied. The exchange is maximal for a relative phase offset of \(\pi/4\) and vanishes for components in phase or in quadrature. The coupling \(\gamma\) affects the frequency and the intensity of the exchange. At larger \(|\gamma|\) the pulse radiation emission is possible.
         \end{enumerate}
 \end{document}

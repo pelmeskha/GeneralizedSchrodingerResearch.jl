@@ -15,8 +15,11 @@ export CoupledGLResiduals
 include("solvers/solve_coupled.jl")
 export solve_coupled_gl
 
+include("solvers/solve_coupled_fd.jl")
+export solve_coupled_gl_fd
+
 include("convergence.jl")
-export max_relative_error_over_run, save_convergence_csv
+export max_relative_error_over_run, max_relative_error_over_run_fd, save_convergence_csv
 
 export RESULTS_DIR, periodic_time
 

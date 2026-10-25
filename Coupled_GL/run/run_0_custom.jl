@@ -5,7 +5,7 @@ using GeneralizedSchrodingerResearch.Plotting: plot_coupled_gl, plot_profiles, p
 
 L       = 5.0
 Tspan = (-L, L)
-zspan = (0.0, 500.0)
+zspan = (0.0, 1000.0)
 dz    = 0.0022 # must be lower than dt. Scheme is 2 order on z
 dt    = 0.021
 N_T   = round(Int, (Tspan[2]-Tspan[1]) / dt)
@@ -32,9 +32,9 @@ v0(T) = 0.1 * exp(1im * pi/4) * bright_solution(0.0, T, args)
 Δβ = args.Δβ
 δ = args.δ - 1/args.c0
 β2 = args.β2
-g = args.g
+g = 0.0002 # args.g
 Ω_g = args.Ω_g
-γ = 0 # [0, -0.01, -0.02, -0.04]
+γ = -0.05 # [0, -0.01, -0.02, -0.04]
 
 clip = envelope_clip_recorder(Tspan, N_T; every=3000, ylims=25)
 T, z, u, v = solve_coupled_gl(

@@ -102,3 +102,37 @@ function vector_circular_reference()
 
     return build_vector_reference("vector_circular", Tspan, zspan, args)
 end
+
+# Non-periodic domain for the finite-difference solver. The pulse travels from T = 0 at z = 0
+# to T ≈ 36 at z = 50, so the window must contain it with margin for the field to be negligible at the ends.
+# Kink solution u = A tanh(μ(z - c0 T)/2) on the non-periodic window; the field tends to ±A at the ends,
+# so it needs the Neumann boundary condition rather than the Dirichlet one.
+function tanh_open_reference()
+    Tspan = (-25.0, 60.0)
+    zspan = (0.0, 50.0)
+
+    args = ModelingArgs(
+        (c0=1.4, k=13, ω=0, β2=0.027, Ω_g=66, w0=0, Tspan=Tspan, mu=0.97, I1=0.1),
+        construct_dependent_args_for_tanh,
+    )
+
+    true_u(z, T) = tanh_solution(z, T, args)
+    true_v(z, T) = 0
+    return (; tag="tanh_open", Tspan, zspan, args,
+        u0=T -> true_u(0.0, T), v0=T -> 0.0, true_u, true_v)
+end
+
+function vector_circular_open_reference()
+    Tspan = (-25.0, 60.0)
+    zspan = (0.0, 50.0)
+
+    args = ModelingArgs(
+        (c0=1.4, k=13.52, ω=1.5, β2=0.027, Ω_g=66, w0=0, Tspan=Tspan, Δβ=25, γ=-0.07, ψ0=π/2, θ=0.0),
+        construct_dependent_args_for_vector,
+    )
+
+    true_u(z, T) = vector_u_solution(z, T, args)
+    true_v(z, T) = vector_v_solution(z, T, args)
+    return (; tag="vector_circular_open", Tspan, zspan, args,
+        u0=T -> true_u(0.0, T), v0=T -> true_v(0.0, T), true_u, true_v)
+end
